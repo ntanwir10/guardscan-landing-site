@@ -11,6 +11,7 @@ export const Navigation = () => {
     { name: "How it Works", path: "/how-it-works" },
     { name: "Comparison", path: "/comparison" },
     { name: "Docs", path: "/docs" },
+    { name: "Blog", path: "/blog" },
     { name: "Pricing", path: "/#pricing" },
   ];
 

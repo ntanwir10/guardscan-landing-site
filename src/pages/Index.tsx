@@ -7,6 +7,7 @@ import { Pricing } from "@/components/Pricing";
 import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { TerminalDemo } from "@/components/TerminalDemo";
+import { FAQ } from "@/components/FAQ";
 
 const Index = () => {
   return (
@@ -37,6 +38,7 @@ const Index = () => {
       <div id="pricing">
         <Pricing />
       </div>
+      <FAQ />
       <CTA />
       <Footer />
     </div>
