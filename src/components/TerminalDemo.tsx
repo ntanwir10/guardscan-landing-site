@@ -70,7 +70,6 @@ export const TerminalDemo = () => {
     if (!isRunning) return;
 
     if (currentLineIndex === 0 && displayedText.length === 0) {
-      // Type the command first
       setIsTyping(true);
       const command = currentCommand.command;
       let charIndex = 0;
