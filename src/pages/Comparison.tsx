@@ -23,6 +23,11 @@ const competitors = [
     name: "GitHub Copilot",
     logo: "🤖",
     pricing: "$10-19/user/month"
+  },
+  {
+    name: "CodeRabbit",
+    logo: "🐰",
+    pricing: "$12/user/month"
   }
 ];
 
@@ -35,28 +40,32 @@ const features = [
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Works completely offline",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "No code upload to third-party servers",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Air-gapped environment support",
         guardscan: true,
         sonarqube: "partial",
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       }
     ]
   },
@@ -68,28 +77,32 @@ const features = [
         guardscan: true,
         sonarqube: "limited",
         codeclimate: "limited",
-        copilot: false
+        copilot: false,
+        coderabbit: "limited"
       },
       {
         feature: "Pay only for what you use",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "No monthly subscription required",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Transparent LOC-based pricing",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       }
     ]
   },
@@ -101,28 +114,32 @@ const features = [
         guardscan: true,
         sonarqube: "limited",
         codeclimate: false,
-        copilot: true
+        copilot: true,
+        coderabbit: true
       },
       {
         feature: "Multi-provider support (OpenAI, Claude, etc)",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Local AI support (Ollama, LM Studio)",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "No vendor lock-in",
         guardscan: true,
         sonarqube: true,
         codeclimate: true,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       }
     ]
   },
@@ -134,49 +151,56 @@ const features = [
         guardscan: true,
         sonarqube: true,
         codeclimate: true,
-        copilot: false
+        copilot: false,
+        coderabbit: true
       },
       {
         feature: "Code quality analysis",
         guardscan: true,
         sonarqube: true,
         codeclimate: true,
-        copilot: "limited"
+        copilot: "limited",
+        coderabbit: true
       },
       {
         feature: "Test coverage analysis",
         guardscan: true,
         sonarqube: true,
         codeclimate: true,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Secrets detection",
         guardscan: true,
         sonarqube: "limited",
         codeclimate: "limited",
-        copilot: false
+        copilot: false,
+        coderabbit: "limited"
       },
       {
         feature: "OWASP Top 10 coverage",
         guardscan: true,
         sonarqube: true,
         codeclimate: true,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "Dockerfile security scanning",
         guardscan: true,
         sonarqube: "limited",
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       },
       {
         feature: "IaC scanning (Terraform, K8s)",
         guardscan: true,
         sonarqube: "limited",
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       }
     ]
   },
@@ -188,28 +212,32 @@ const features = [
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: true
       },
       {
         feature: "Setup time under 2 minutes",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: true
+        copilot: true,
+        coderabbit: true
       },
       {
         feature: "Markdown report generation",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: true
       },
       {
         feature: "No external account required (for free tier)",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
-        copilot: false
+        copilot: false,
+        coderabbit: false
       }
     ]
   }
@@ -315,7 +343,7 @@ export default function Comparison() {
                 {features.map((category) => (
                   <>
                     <tr key={category.category} className="bg-card/30">
-                      <td colSpan={5} className="p-4 font-bold text-lg">
+                      <td colSpan={6} className="p-4 font-bold text-lg">
                         {category.category}
                       </td>
                     </tr>
@@ -333,6 +361,9 @@ export default function Comparison() {
                         </td>
                         <td className="p-4">
                           <FeatureIcon value={item.copilot} />
+                        </td>
+                        <td className="p-4">
+                          <FeatureIcon value={item.coderabbit} />
                         </td>
                       </tr>
                     ))}
@@ -353,7 +384,7 @@ export default function Comparison() {
                   {category.items.map((item, idx) => (
                     <div key={idx} className="p-4 rounded-lg bg-card border border-border">
                       <div className="font-medium mb-3">{item.feature}</div>
-                      <div className="grid grid-cols-4 gap-2 text-xs">
+                      <div className="grid grid-cols-5 gap-2 text-xs">
                         <div className="text-center">
                           <div className="font-bold text-primary mb-1">GuardScan</div>
                           <FeatureIcon value={item.guardscan} />
@@ -369,6 +400,10 @@ export default function Comparison() {
                         <div className="text-center">
                           <div className="font-bold mb-1">Copilot</div>
                           <FeatureIcon value={item.copilot} />
+                        </div>
+                        <div className="text-center">
+                          <div className="font-bold mb-1">CodeRabbit</div>
+                          <FeatureIcon value={item.coderabbit} />
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,7 @@
 import { Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { PricingCalculator } from "./PricingCalculator";
 
 const plans = [
   {
@@ -103,23 +104,9 @@ export const Pricing = () => {
           ))}
         </div>
         
-        {/* Pricing examples */}
-        <div className="mt-16 p-8 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm max-w-3xl mx-auto">
-          <h3 className="text-xl font-semibold mb-4 text-center">Pricing Examples</h3>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-primary mb-2">$0.50</div>
-              <div className="text-sm text-muted-foreground">10,000 LOC repo</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-secondary mb-2">$2.50</div>
-              <div className="text-sm text-muted-foreground">50,000 LOC repo</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-accent mb-2">$5.00</div>
-              <div className="text-sm text-muted-foreground">100,000 LOC repo</div>
-            </div>
-          </div>
+        {/* Pricing Calculator */}
+        <div className="mt-16 max-w-2xl mx-auto">
+          <PricingCalculator />
         </div>
       </div>
     </section>
