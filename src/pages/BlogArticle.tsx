@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, ArrowLeft, ArrowRight, User } from "lucide-react";
 import { blogArticles, type BlogArticle } from "@/data/blogArticles";
 import { Helmet } from "react-helmet";
+import { CodeBlock } from "@/components/CodeBlock";
 
 export default function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
@@ -128,29 +129,23 @@ export default function BlogArticle() {
             </header>
 
             {/* Article Content */}
-            <div className="prose prose-lg dark:prose-invert max-w-none mb-12">
+            <div className="article-content space-y-6">
               <div 
-                className="article-content"
+                className="prose-content"
                 dangerouslySetInnerHTML={{ __html: formatArticleContent(article.content) }}
               />
 
               {/* Code Examples */}
               {article.codeExamples && article.codeExamples.length > 0 && (
                 <div className="my-12 space-y-6">
-                  <h2 className="text-2xl font-bold mb-6">Code Examples</h2>
+                  <h2 className="text-3xl font-bold mb-8 text-foreground">Code Examples</h2>
                   {article.codeExamples.map((example, index) => (
-                    <Card key={index} className="bg-card/50 border-border/50">
-                      <CardContent className="p-6">
-                        {example.title && (
-                          <h3 className="text-lg font-semibold mb-4">{example.title}</h3>
-                        )}
-                        <pre className="bg-background/50 rounded-lg p-4 overflow-x-auto">
-                          <code className={`language-${example.language}`}>
-                            {example.code}
-                          </code>
-                        </pre>
-                      </CardContent>
-                    </Card>
+                    <CodeBlock
+                      key={index}
+                      code={example.code}
+                      language={example.language}
+                      title={example.title}
+                    />
                   ))}
                 </div>
               )}
@@ -242,22 +237,62 @@ export default function BlogArticle() {
 
 // Helper function to format article content (convert markdown-style to HTML)
 function formatArticleContent(content: string): string {
-  return content
-    // Headers
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    // Bold
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Code blocks
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
-    // Inline code
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Line breaks
-    .replace(/\n\n/g, '</p><p>')
-    // Wrap in paragraphs
-    .replace(/^(?!<[h|p|pre])(.+)$/gim, '<p>$1</p>')
-    // Lists
-    .replace(/^\- (.*)$/gim, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  let html = content;
+  
+  // Code blocks with copy button wrapper
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+    const language = lang || 'bash';
+    const trimmedCode = code.trim();
+    return `<div class="code-block-wrapper"><pre class="bg-code-bg text-foreground rounded-lg p-4 overflow-x-auto border border-border my-6"><code class="language-${language} text-sm leading-relaxed block">${trimmedCode}</code></pre></div>`;
+  });
+  
+  // Headers with proper styling
+  html = html.replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h3>');
+  html = html.replace(/^## (.*$)/gim, '<h2 class="text-3xl font-bold mt-10 mb-6 text-foreground">$1</h2>');
+  html = html.replace(/^# (.*$)/gim, '<h1 class="text-4xl font-bold mt-12 mb-8 text-foreground">$1</h1>');
+  
+  // Bold text
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
+  
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code class="px-2 py-1 bg-muted text-foreground rounded text-sm font-mono">$1</code>');
+  
+  // Process lists properly
+  const lines = html.split('\n');
+  let inList = false;
+  const processedLines: string[] = [];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const listMatch = line.match(/^[\-\*] (.+)$/);
+    
+    if (listMatch) {
+      if (!inList) {
+        processedLines.push('<ul class="list-disc list-inside space-y-2 my-4 ml-4 text-foreground">');
+        inList = true;
+      }
+      processedLines.push(`<li class="text-muted-foreground leading-relaxed">${listMatch[1]}</li>`);
+    } else {
+      if (inList) {
+        processedLines.push('</ul>');
+        inList = false;
+      }
+      processedLines.push(line);
+    }
+  }
+  
+  if (inList) {
+    processedLines.push('</ul>');
+  }
+  
+  html = processedLines.join('\n');
+  
+  // Paragraphs with proper spacing
+  html = html.replace(/\n\n+/g, '</p><p class="text-muted-foreground leading-relaxed mb-4">');
+  html = html.replace(/^(?!<[h|u|d|c])(.+)$/gim, '<p class="text-muted-foreground leading-relaxed mb-4">$1</p>');
+  
+  // Clean up empty paragraphs
+  html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+  
+  return html;
 }

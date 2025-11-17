@@ -99,3 +99,48 @@ All colors MUST be HSL.
                 0 0 20px -10px hsl(var(--terminal-cyan) / 0.3);
   }
 }
+
+/* Blog Article Styling */
+.article-content {
+  @apply text-base leading-relaxed;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4 {
+  @apply font-bold;
+}
+
+.article-content p {
+  @apply mb-4 text-muted-foreground leading-relaxed;
+}
+
+.article-content strong {
+  @apply font-semibold text-foreground;
+}
+
+.article-content code {
+  @apply px-2 py-1 bg-muted text-foreground rounded text-sm font-mono;
+}
+
+.article-content pre {
+  @apply my-6 overflow-x-auto;
+}
+
+.article-content pre code {
+  @apply block bg-transparent px-0 py-0;
+}
+
+.article-content ul,
+.article-content ol {
+  @apply my-4 ml-6 space-y-2;
+}
+
+.article-content li {
+  @apply text-muted-foreground leading-relaxed;
+}
+
+.article-content a {
+  @apply text-primary hover:text-primary/80 underline transition-colors;
+}
