@@ -12,7 +12,6 @@ export const Navigation = () => {
     { name: "Comparison", path: "/comparison" },
     { name: "Docs", path: "/docs" },
     { name: "Blog", path: "/blog" },
-    { name: "Pricing", path: "/#pricing" },
   ];
 
   return (
