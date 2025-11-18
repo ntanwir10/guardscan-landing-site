@@ -16,8 +16,8 @@ const features = [
   },
   {
     icon: DollarSign,
-    title: "Pay Per Use",
-    description: "$5 per 100K lines of code. No subscriptions, no monthly fees. Only pay for what you scan with AI.",
+    title: "100% Free & Open Source",
+    description: "No subscriptions, no paywalls, no hidden costs. BYOK (Bring Your Own Key) for AI providers or use local Ollama.",
     color: "text-terminal-cyan",
   },
   {
