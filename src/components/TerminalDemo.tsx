@@ -5,54 +5,42 @@ import { Play, RotateCcw } from "lucide-react";
 
 const commands = [
   {
-    command: "guardscan init",
+    command: "guardscan --help",
     output: [
-      "🛡️  Initializing GuardScan...",
-      "✓ Created config file: ~/.guardscan/config.yml",
-      "✓ Generated client ID: gs_abc123def456",
-      "✓ Privacy mode: ENABLED (source code stays local)",
+      "🛡️  GuardScan - Privacy-First Code Security & Quality Scanner",
       "",
-      "🎉 GuardScan initialized! Run 'guardscan security' to start scanning."
-    ]
-  },
-  {
-    command: "guardscan security",
-    output: [
-      "🔍 Scanning for security vulnerabilities...",
+      "USAGE:",
+      "  guardscan [COMMAND] [OPTIONS]",
       "",
-      "📊 Analyzing 47 files (12,458 LOC)...",
-      "⚡ Running 18 security checks...",
+      "COMMANDS:",
+      "  init           Initialize GuardScan in your project",
+      "  security       Scan for security vulnerabilities",
+      "  quality        Analyze code quality and complexity",
+      "  dependencies   Check for outdated and vulnerable packages",
+      "  secrets        Detect hardcoded secrets and API keys",
+      "  docker         Scan Dockerfile for security issues",
+      "  all            Run all scans (security, quality, dependencies)",
+      "  run            Execute AI-powered code review (requires API key)",
+      "  report         Generate comprehensive HTML/PDF report",
+      "  config         Manage configuration settings",
       "",
-      "✓ Secrets detection: 0 issues",
-      "✓ Dependency scan: 2 vulnerabilities found",
-      "✓ OWASP Top 10: 1 issue detected",
-      "✓ Dockerfile security: No issues",
+      "OPTIONS:",
+      "  --ai           Enable AI-powered analysis",
+      "  --local        Use local Ollama for AI analysis",
+      "  --output, -o   Specify output format (json, md, html)",
+      "  --verbose, -v  Show detailed output",
+      "  --help, -h     Display this help message",
+      "  --version      Show version information",
       "",
-      "📝 Report generated: ./guardscan-report.md",
+      "EXAMPLES:",
+      "  guardscan init                    Initialize in current directory",
+      "  guardscan security --verbose      Detailed security scan",
+      "  guardscan run --ai --local        AI review with Ollama",
+      "  guardscan all -o json             All scans, JSON output",
       "",
-      "Summary: 3 issues found (1 high, 2 medium)"
-    ]
-  },
-  {
-    command: "guardscan run --ai",
-    output: [
-      "🤖 Starting AI-enhanced code review...",
-      "📊 Project size: 12,458 LOC",
-      "💰 Cost: $0.62 (0.62 credits)",
-      "",
-      "⚡ Analyzing code with Claude 3...",
-      "🔍 Reviewing security patterns...",
-      "🎨 Checking code quality...",
-      "✨ Generating recommendations...",
-      "",
-      "✓ AI review complete!",
-      "",
-      "Key Findings:",
-      "• Function complexity too high in auth.ts:45",
-      "• Consider using environment variables for API keys",
-      "• Add input validation in user handler",
-      "",
-      "📝 Full report: ./guardscan-ai-report.md"
+      "🔒 Privacy: Your code stays local. No data sent to GuardScan servers.",
+      "📖 Docs: https://docs.guardscan.dev",
+      "💬 Support: https://github.com/guardscan/cli/issues"
     ]
   }
 ];
