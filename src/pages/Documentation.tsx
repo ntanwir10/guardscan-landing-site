@@ -1,6 +1,11 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen } from "lucide-react";
+import { CodeBlock } from "@/components/CodeBlock";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen, Key, Server, CheckCircle, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const commands = [
   {
@@ -92,136 +97,48 @@ const commands = [
       { flag: "--output <file>", description: "Save SBOM to file" }
     ],
     examples: [
-      { command: "guardscan sbom", description: "Generate SBOM" },
+      { command: "guardscan sbom", description: "Generate SBOM in JSON" },
       { command: "guardscan sbom --format cyclonedx", description: "Generate CycloneDX format" },
       { command: "guardscan sbom --include-dev", description: "Include dev dependencies" }
-    ]
-  },
-  {
-    name: "perf",
-    icon: Zap,
-    description: "Run performance testing and profiling",
-    usage: "guardscan perf [options]",
-    options: [
-      { flag: "--benchmark", description: "Run benchmark tests" },
-      { flag: "--profile", description: "Generate performance profile" },
-      { flag: "--iterations <n>", description: "Number of test iterations" }
-    ],
-    examples: [
-      { command: "guardscan perf", description: "Run performance tests" },
-      { command: "guardscan perf --benchmark", description: "Run benchmarks" },
-      { command: "guardscan perf --iterations 100", description: "Run 100 iterations" }
-    ]
-  },
-  {
-    name: "mutation",
-    icon: FlaskConical,
-    description: "Run mutation testing to verify test quality",
-    usage: "guardscan mutation [options]",
-    options: [
-      { flag: "--files <pattern>", description: "Files to mutate (glob pattern)" },
-      { flag: "--mutators <list>", description: "Comma-separated mutator types" },
-      { flag: "--threshold <percent>", description: "Minimum mutation score" }
-    ],
-    examples: [
-      { command: "guardscan mutation", description: "Run mutation testing" },
-      { command: "guardscan mutation --files 'src/**/*.ts'", description: "Test TypeScript files" },
-      { command: "guardscan mutation --threshold 75", description: "Require 75% mutation score" }
-    ]
-  },
-  {
-    name: "rules",
-    icon: FileCode,
-    description: "Custom YAML-based rule engine for code analysis",
-    usage: "guardscan rules [options]",
-    options: [
-      { flag: "--config <file>", description: "Path to rules YAML file" },
-      { flag: "--validate", description: "Validate rules syntax" },
-      { flag: "--list", description: "List all active rules" }
-    ],
-    examples: [
-      { command: "guardscan rules --config .guardscan-rules.yml", description: "Run custom rules" },
-      { command: "guardscan rules --validate", description: "Check rules syntax" },
-      { command: "guardscan rules --list", description: "Show active rules" }
-    ]
-  },
-  {
-    name: "run",
-    icon: Zap,
-    description: "AI-powered comprehensive code review (requires credits)",
-    usage: "guardscan run [options]",
-    options: [
-      { flag: "--files <pattern>", description: "Files to review (glob pattern)" },
-      { flag: "--max-tokens <n>", description: "Maximum tokens to send to AI" },
-      { flag: "--provider <name>", description: "Override configured AI provider" },
-      { flag: "--skip-static", description: "Skip static analysis, AI review only" }
-    ],
-    examples: [
-      { command: "guardscan run", description: "Full AI-powered review" },
-      { command: "guardscan run --files 'src/**/*.ts'", description: "Review TypeScript only" },
-      { command: "guardscan run --provider claude", description: "Use Claude for this scan" },
-      { command: "guardscan run --max-tokens 4000", description: "Limit AI context" }
-    ]
-  },
-  {
-    name: "reset",
-    icon: RotateCcw,
-    description: "Clear local cache and configuration",
-    usage: "guardscan reset [options]",
-    options: [
-      { flag: "--config", description: "Reset configuration only" },
-      { flag: "--cache", description: "Clear cache only" },
-      { flag: "--all", description: "Reset everything (config + cache)" }
-    ],
-    examples: [
-      { command: "guardscan reset --cache", description: "Clear cache" },
-      { command: "guardscan reset --all", description: "Full reset" }
     ]
   }
 ];
 
 const configOptions = [
   {
-    key: "provider",
+    key: "ai.provider",
     type: "string",
     default: "openai",
-    description: "AI provider to use for code review",
-    possibleValues: ["openai", "claude", "gemini", "ollama", "lmstudio", "openrouter"]
+    description: "Default AI provider",
+    possibleValues: ["openai", "claude", "gemini", "ollama"]
   },
   {
-    key: "api_key",
+    key: "ai.model",
     type: "string",
-    default: "null",
-    description: "API key for the chosen provider",
-    possibleValues: ["Your provider API key"]
+    default: "gpt-4",
+    description: "Default AI model for the chosen provider",
+    possibleValues: ["gpt-4", "gpt-3.5-turbo", "claude-3-opus", "gemini-pro", "codellama"]
   },
   {
-    key: "client_id",
-    type: "uuid",
-    default: "auto-generated",
-    description: "Unique client identifier (auto-generated on init)",
-    possibleValues: ["UUID v4"]
-  },
-  {
-    key: "offline_mode",
+    key: "scan.verbose",
     type: "boolean",
     default: "false",
-    description: "Run all scans in offline mode by default",
+    description: "Enable verbose output for all scans",
     possibleValues: ["true", "false"]
   },
   {
-    key: "telemetry",
+    key: "scan.output_format",
+    type: "string",
+    default: "markdown",
+    description: "Default output format for reports",
+    possibleValues: ["markdown", "json", "html"]
+  },
+  {
+    key: "privacy.telemetry",
     type: "boolean",
     default: "true",
-    description: "Send anonymous usage statistics",
+    description: "Enable anonymous usage telemetry",
     possibleValues: ["true", "false"]
-  },
-  {
-    key: "max_file_size",
-    type: "integer",
-    default: "1048576",
-    description: "Maximum file size to scan (bytes)",
-    possibleValues: ["Any integer"]
   },
   {
     key: "exclude_patterns",
@@ -232,217 +149,566 @@ const configOptions = [
   }
 ];
 
+const navigationSections = [
+  {
+    title: "Getting Started",
+    items: [
+      { id: "introduction", label: "Introduction" },
+      { id: "quick-start", label: "Quick Start" },
+    ]
+  },
+  {
+    title: "Commands",
+    items: [
+      { id: "commands", label: "Command Reference" },
+    ]
+  },
+  {
+    title: "Configuration",
+    items: [
+      { id: "byok-setup", label: "BYOK Setup" },
+      { id: "config-reference", label: "Config Reference" },
+      { id: "env-vars", label: "Environment Variables" },
+    ]
+  }
+];
+
 export default function Documentation() {
+  const [activeSection, setActiveSection] = useState("introduction");
+
+  const scrollToSection = (id: string) => {
+    setActiveSection(id);
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
       
-      {/* Hero Section */}
-      <section className="py-16 px-4 relative">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            <span className="text-gradient">Documentation</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Complete API reference, configuration options, and examples for all GuardScan CLI commands
-          </p>
-        </div>
-      </section>
-
-      {/* Quick Start */}
-      <section className="py-12 px-4 bg-card/50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold mb-8">
-            Quick <span className="text-gradient">Start</span>
-          </h2>
-          
-          <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-code-bg border border-border/50">
-              <div className="text-muted-foreground mb-2"># Install globally</div>
-              <div className="font-mono text-terminal-green">
-                <span className="text-terminal-cyan">$ </span>npm install -g guardscan
-              </div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-code-bg border border-border/50">
-              <div className="text-muted-foreground mb-2"># Initialize in your project</div>
-              <div className="font-mono text-terminal-green">
-                <span className="text-terminal-cyan">$ </span>guardscan init
-              </div>
-            </div>
-            
-            <div className="p-4 rounded-lg bg-code-bg border border-border/50">
-              <div className="text-muted-foreground mb-2"># Run your first scan</div>
-              <div className="font-mono text-terminal-green">
-                <span className="text-terminal-cyan">$ </span>guardscan security --offline
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Commands Reference */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold mb-12">
-            Commands <span className="text-gradient">Reference</span>
-          </h2>
-          
-          <div className="space-y-12">
-            {commands.map((cmd) => (
-              <div key={cmd.name} id={cmd.name} className="scroll-mt-20">
-                <div className="p-6 rounded-lg bg-card border border-border">
-                  {/* Command Header */}
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <cmd.icon className="w-6 h-6 text-primary" />
-                    </div>
-                    <div className="flex-grow">
-                      <h3 className="text-2xl font-bold mb-2">
-                        guardscan {cmd.name}
-                      </h3>
-                      <p className="text-muted-foreground">{cmd.description}</p>
-                    </div>
-                  </div>
-
-                  {/* Usage */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-bold text-primary mb-2">USAGE</h4>
-                    <div className="p-3 rounded bg-code-bg font-mono text-sm text-terminal-green">
-                      {cmd.usage}
-                    </div>
-                  </div>
-
-                  {/* Options */}
-                  <div className="mb-6">
-                    <h4 className="text-sm font-bold text-primary mb-3">OPTIONS</h4>
-                    <div className="space-y-2">
-                      {cmd.options.map((opt, idx) => (
-                        <div key={idx} className="flex gap-4 text-sm">
-                          <code className="text-terminal-cyan font-mono whitespace-nowrap">
-                            {opt.flag}
-                          </code>
-                          <span className="text-muted-foreground">{opt.description}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Examples */}
-                  <div>
-                    <h4 className="text-sm font-bold text-primary mb-3">EXAMPLES</h4>
-                    <div className="space-y-3">
-                      {cmd.examples.map((ex, idx) => (
-                        <div key={idx}>
-                          <div className="p-3 rounded bg-code-bg font-mono text-sm text-terminal-green mb-1">
-                            <span className="text-terminal-cyan">$ </span>{ex.command}
-                          </div>
-                          <p className="text-sm text-muted-foreground pl-3">{ex.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+      <div className="flex-1 flex pt-20">
+        {/* Sidebar Navigation */}
+        <aside className="hidden lg:block w-64 border-r border-border bg-card/30 fixed left-0 top-20 bottom-0 overflow-y-auto">
+          <nav className="p-6 space-y-6">
+            {navigationSections.map((section) => (
+              <div key={section.title}>
+                <h4 className="font-semibold text-sm text-foreground mb-3">{section.title}</h4>
+                <ul className="space-y-2">
+                  {section.items.map((item) => (
+                    <li key={item.id}>
+                      <button
+                        onClick={() => scrollToSection(item.id)}
+                        className={cn(
+                          "w-full text-left text-sm px-3 py-2 rounded-md transition-colors",
+                          activeSection === item.id
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                        )}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
+          </nav>
+        </aside>
 
-      {/* Configuration Reference */}
-      <section className="py-12 px-4 bg-card/50">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold mb-8">
-            Configuration <span className="text-gradient">Reference</span>
-          </h2>
-          
-          <p className="text-muted-foreground mb-6">
-            Configuration is stored in <code className="text-terminal-cyan">~/.guardscan/config.yml</code>. 
-            You can also create a <code className="text-terminal-cyan">.guardscanrc</code> file in your project root for project-specific settings.
-          </p>
+        {/* Main Content */}
+        <main className="flex-1 lg:ml-64">
+          <div className="container mx-auto max-w-4xl px-4 py-12">
+            {/* Introduction */}
+            <section id="introduction" className="mb-16">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
+                Documentation
+              </h1>
+              <p className="text-xl text-muted-foreground mb-6">
+                GuardScan is a free, open-source CLI tool for comprehensive codebase analysis. This documentation provides everything you need to get started and master GuardScan.
+              </p>
+            </section>
 
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left p-4 font-bold">Key</th>
-                  <th className="text-left p-4 font-bold">Type</th>
-                  <th className="text-left p-4 font-bold">Default</th>
-                  <th className="text-left p-4 font-bold">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {configOptions.map((opt, idx) => (
-                  <tr key={idx} className="border-b border-border/50">
-                    <td className="p-4">
-                      <code className="text-terminal-cyan font-mono">{opt.key}</code>
-                    </td>
-                    <td className="p-4 text-muted-foreground">{opt.type}</td>
-                    <td className="p-4 text-sm">
-                      <code className="text-terminal-green">{opt.default}</code>
-                    </td>
-                    <td className="p-4 text-muted-foreground">{opt.description}</td>
-                  </tr>
+            {/* Quick Start */}
+            <section id="quick-start" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <Zap className="w-8 h-8 text-primary" />
+                Quick Start
+              </h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">Installation</h3>
+                  <CodeBlock
+                    code={`# Install GuardScan globally
+npm install -g guardscan
+
+# Or use with npx
+npx guardscan --help`}
+                  />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-3 text-foreground">First Scan</h3>
+                  <CodeBlock
+                    code={`# Initialize in your project
+guardscan init
+
+# Run a security scan (works offline)
+guardscan security
+
+# Run with AI analysis (requires API key)
+guardscan run --ai`}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* Commands Reference */}
+            <section id="commands" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <Terminal className="w-8 h-8 text-primary" />
+                Command Reference
+              </h2>
+              <div className="space-y-8">
+                {commands.map((cmd) => {
+                  const Icon = cmd.icon;
+                  return (
+                    <Card key={cmd.name} className="p-6 bg-card/50 border-primary/20">
+                      <div className="flex items-start gap-3 mb-4">
+                        <Icon className="w-6 h-6 text-primary mt-1" />
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-foreground mb-2">{cmd.name}</h3>
+                          <p className="text-muted-foreground mb-3">{cmd.description}</p>
+                          <CodeBlock code={cmd.usage} />
+                        </div>
+                      </div>
+
+                      {cmd.options && cmd.options.length > 0 && (
+                        <div className="mb-4">
+                          <h4 className="font-semibold text-foreground mb-2">Options:</h4>
+                          <div className="space-y-2">
+                            {cmd.options.map((option, idx) => (
+                              <div key={idx} className="flex gap-3">
+                                <code className="text-sm text-primary font-mono">{option.flag}</code>
+                                <span className="text-sm text-muted-foreground">{option.description}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {cmd.examples && cmd.examples.length > 0 && (
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Examples:</h4>
+                          <div className="space-y-3">
+                            {cmd.examples.map((example, idx) => (
+                              <div key={idx}>
+                                <CodeBlock code={example.command} />
+                                <p className="text-sm text-muted-foreground mt-1 ml-1">{example.description}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* BYOK Setup */}
+            <section id="byok-setup" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <Key className="w-8 h-8 text-primary" />
+                Bring Your Own Key (BYOK)
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                Use GuardScan with your preferred AI provider or run it completely free with local AI
+              </p>
+
+              {/* Key Benefits */}
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <Zap className="w-8 h-8 text-primary mb-3" />
+                  <h3 className="font-semibold mb-2 text-foreground">Your Choice</h3>
+                  <p className="text-sm text-muted-foreground">Choose from OpenAI, Claude, Gemini, or local AI</p>
+                </Card>
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <Server className="w-8 h-8 text-secondary mb-3" />
+                  <h3 className="font-semibold mb-2 text-foreground">Full Control</h3>
+                  <p className="text-sm text-muted-foreground">Your API keys, your data, your control</p>
+                </Card>
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <CheckCircle className="w-8 h-8 text-accent mb-3" />
+                  <h3 className="font-semibold mb-2 text-foreground">Zero Cost Option</h3>
+                  <p className="text-sm text-muted-foreground">Run completely free with Ollama locally</p>
+                </Card>
+              </div>
+
+              {/* Setup Tabs */}
+              <Tabs defaultValue="openai" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-8">
+                  <TabsTrigger value="openai">OpenAI</TabsTrigger>
+                  <TabsTrigger value="claude">Claude</TabsTrigger>
+                  <TabsTrigger value="gemini">Gemini</TabsTrigger>
+                  <TabsTrigger value="ollama">Ollama (Local)</TabsTrigger>
+                </TabsList>
+
+                {/* OpenAI Setup */}
+                <TabsContent value="openai" className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">OpenAI Setup</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Get your API key from OpenAI and configure GuardScan to use GPT-4 or GPT-3.5 for AI-powered code analysis.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 1: Get Your API Key</h4>
+                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
+                        <li>Visit <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OpenAI API Keys</a></li>
+                        <li>Sign in or create an account</li>
+                        <li>Click "Create new secret key"</li>
+                        <li>Copy your API key (starts with "sk-")</li>
+                      </ol>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 2: Configure GuardScan</h4>
+                      <CodeBlock
+                        title="Set environment variable"
+                        code={`# Linux/macOS
+export OPENAI_API_KEY="sk-your-api-key-here"
+
+# Windows (Command Prompt)
+set OPENAI_API_KEY=sk-your-api-key-here
+
+# Windows (PowerShell)
+$env:OPENAI_API_KEY="sk-your-api-key-here"`}
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 3: Run AI-Powered Scan</h4>
+                      <CodeBlock
+                        title="Execute scan"
+                        code={`guardscan run --ai
+
+# Or specify a model
+guardscan run --ai --model gpt-4
+
+# For GPT-3.5 (faster, cheaper)
+guardscan run --ai --model gpt-3.5-turbo`}
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Claude Setup */}
+                <TabsContent value="claude" className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">Claude (Anthropic) Setup</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Use Anthropic's Claude models for advanced reasoning and code analysis capabilities.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 1: Get Your API Key</h4>
+                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
+                        <li>Visit <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Anthropic Console</a></li>
+                        <li>Sign in or create an account</li>
+                        <li>Navigate to API Keys section</li>
+                        <li>Create a new API key</li>
+                        <li>Copy your API key</li>
+                      </ol>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 2: Configure GuardScan</h4>
+                      <CodeBlock
+                        title="Set environment variable"
+                        code={`# Linux/macOS
+export ANTHROPIC_API_KEY="sk-ant-your-api-key-here"
+
+# Windows (Command Prompt)
+set ANTHROPIC_API_KEY=sk-ant-your-api-key-here
+
+# Windows (PowerShell)
+$env:ANTHROPIC_API_KEY="sk-ant-your-api-key-here"`}
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 3: Run AI-Powered Scan</h4>
+                      <CodeBlock
+                        title="Execute scan"
+                        code={`guardscan run --ai --provider claude
+
+# Or specify a model
+guardscan run --ai --provider claude --model claude-3-opus
+
+# For Claude Sonnet (balanced performance)
+guardscan run --ai --provider claude --model claude-3-sonnet`}
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Gemini Setup */}
+                <TabsContent value="gemini" className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">Google Gemini Setup</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Leverage Google's Gemini models for multimodal AI analysis and code review.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 1: Get Your API Key</h4>
+                      <ol className="list-decimal list-inside space-y-2 text-muted-foreground ml-4">
+                        <li>Visit <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google AI Studio</a></li>
+                        <li>Sign in with your Google account</li>
+                        <li>Click "Create API Key"</li>
+                        <li>Copy your API key</li>
+                      </ol>
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 2: Configure GuardScan</h4>
+                      <CodeBlock
+                        title="Set environment variable"
+                        code={`# Linux/macOS
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Windows (Command Prompt)
+set GOOGLE_API_KEY=your-api-key-here
+
+# Windows (PowerShell)
+$env:GOOGLE_API_KEY="your-api-key-here"`}
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 3: Run AI-Powered Scan</h4>
+                      <CodeBlock
+                        title="Execute scan"
+                        code={`guardscan run --ai --provider gemini
+
+# Or specify a model
+guardscan run --ai --provider gemini --model gemini-pro
+
+# For Gemini Flash (faster response)
+guardscan run --ai --provider gemini --model gemini-flash`}
+                      />
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Ollama Setup */}
+                <TabsContent value="ollama" className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl font-bold mb-4 text-foreground">Ollama Local AI Setup</h3>
+                    <p className="text-muted-foreground mb-6">
+                      Run GuardScan completely free with local AI models. No API keys, no cloud costs, 100% private.
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 1: Install Ollama</h4>
+                      <CodeBlock
+                        title="Installation"
+                        code={`# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Windows
+# Download from https://ollama.com/download
+
+# Verify installation
+ollama --version`}
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 2: Pull AI Model</h4>
+                      <CodeBlock
+                        title="Download model"
+                        code={`# Pull Code Llama (recommended for code analysis)
+ollama pull codellama
+
+# Or pull Llama 2
+ollama pull llama2
+
+# For faster inference (smaller model)
+ollama pull llama2:7b
+
+# Verify model is available
+ollama list`}
+                      />
+                    </div>
+
+                    <div>
+                      <h4 className="text-lg font-semibold mb-3 text-foreground">Step 3: Run Local AI Scan</h4>
+                      <CodeBlock
+                        title="Execute scan with local AI"
+                        code={`guardscan run --local
+
+# Or specify a model
+guardscan run --local --model codellama
+
+# With specific Ollama model
+guardscan run --local --model llama2:7b`}
+                      />
+                    </div>
+
+                    <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+                      <h5 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <CheckCircle className="w-5 h-5 text-accent" />
+                        Benefits of Local AI
+                      </h5>
+                      <ul className="space-y-2 text-sm text-muted-foreground ml-7">
+                        <li>✓ 100% free - no API costs</li>
+                        <li>✓ Complete privacy - code never leaves your machine</li>
+                        <li>✓ Works offline - no internet required</li>
+                        <li>✓ No rate limits or quotas</li>
+                        <li>✓ Full control over the AI model</li>
+                      </ul>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              {/* Configuration File */}
+              <div className="mt-12 space-y-6">
+                <h3 className="text-2xl font-bold text-foreground">Configuration File (Optional)</h3>
+                <p className="text-muted-foreground">
+                  Store your preferences in <code className="px-2 py-1 bg-muted rounded text-sm">~/.guardscan/config.yml</code> for convenience:
+                </p>
+                <CodeBlock
+                  title="~/.guardscan/config.yml"
+                  language="yaml"
+                  code={`# AI Provider Configuration
+ai:
+  provider: openai  # openai, claude, gemini, or ollama
+  model: gpt-4      # model name
+  
+# For local AI
+local:
+  enabled: true
+  model: codellama
+  
+# Default scan options
+scan:
+  verbose: true
+  output_format: md
+  
+# Privacy settings
+privacy:
+  telemetry: false
+  anonymous_stats: false`}
+                />
+              </div>
+            </section>
+
+            {/* Configuration Reference */}
+            <section id="config-reference" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <Settings className="w-8 h-8 text-primary" />
+                Configuration Reference
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                GuardScan can be configured using a <code className="px-2 py-1 bg-muted rounded text-sm">~/.guardscan/config.yml</code> file.
+              </p>
+              <div className="space-y-4">
+                {configOptions.map((option) => (
+                  <Card key={option.key} className="p-4 bg-card/50 border-primary/20">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-start justify-between gap-4">
+                        <code className="text-primary font-mono font-semibold">{option.key}</code>
+                        <span className="text-xs px-2 py-1 rounded bg-secondary/20 text-secondary">{option.type}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{option.description}</p>
+                      <div className="flex gap-4 text-sm">
+                        <div>
+                          <span className="text-muted-foreground">Default:</span>{" "}
+                          <code className="text-foreground font-mono">{option.default}</code>
+                        </div>
+                      </div>
+                      {option.possibleValues && (
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Possible values:</span>{" "}
+                          <span className="text-foreground">{option.possibleValues.join(", ")}</span>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </section>
 
-          {/* Example Config */}
-          <div className="mt-8">
-            <h3 className="text-xl font-bold mb-4">Example Configuration</h3>
-            <div className="p-4 rounded-lg bg-code-bg border border-border/50 font-mono text-sm overflow-x-auto">
-              <pre className="text-terminal-green">
-{`# ~/.guardscan/config.yml
-provider: openai
-api_key: sk-your-api-key-here
-client_id: 550e8400-e29b-41d4-a716-446655440000
-offline_mode: false
-telemetry: true
-max_file_size: 1048576
-exclude_patterns:
-  - node_modules
-  - .git
-  - dist
-  - build
-  - coverage`}
-              </pre>
-            </div>
+            {/* Environment Variables */}
+            <section id="env-vars" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <FileCode className="w-8 h-8 text-primary" />
+                Environment Variables
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                GuardScan supports the following environment variables for API key configuration:
+              </p>
+              <div className="space-y-4">
+                {[
+                  {
+                    name: "OPENAI_API_KEY",
+                    description: "Your OpenAI API key for GPT models",
+                    example: "sk-..."
+                  },
+                  {
+                    name: "ANTHROPIC_API_KEY",
+                    description: "Your Anthropic API key for Claude models",
+                    example: "sk-ant-..."
+                  },
+                  {
+                    name: "GOOGLE_API_KEY",
+                    description: "Your Google API key for Gemini models",
+                    example: "AIza..."
+                  },
+                  {
+                    name: "GUARDSCAN_CONFIG",
+                    description: "Path to custom configuration file",
+                    example: "~/my-config.yml"
+                  },
+                  {
+                    name: "GUARDSCAN_TELEMETRY",
+                    description: "Enable/disable telemetry",
+                    example: "false"
+                  }
+                ].map((env) => (
+                  <Card key={env.name} className="p-4 bg-card/50 border-primary/20">
+                    <div className="flex flex-col gap-2">
+                      <code className="text-primary font-mono font-semibold">{env.name}</code>
+                      <p className="text-sm text-muted-foreground">{env.description}</p>
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Example:</span>{" "}
+                        <code className="text-foreground font-mono">{env.example}</code>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
           </div>
-        </div>
-      </section>
-
-      {/* Environment Variables */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold mb-8">
-            Environment <span className="text-gradient">Variables</span>
-          </h2>
-          
-          <p className="text-muted-foreground mb-6">
-            GuardScan supports environment variable overrides for all configuration options:
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg bg-card border border-border">
-              <code className="text-terminal-cyan font-mono text-sm">GUARDSCAN_PROVIDER</code>
-              <p className="text-muted-foreground text-sm mt-2">Override AI provider</p>
-            </div>
-            <div className="p-4 rounded-lg bg-card border border-border">
-              <code className="text-terminal-cyan font-mono text-sm">GUARDSCAN_API_KEY</code>
-              <p className="text-muted-foreground text-sm mt-2">Override API key</p>
-            </div>
-            <div className="p-4 rounded-lg bg-card border border-border">
-              <code className="text-terminal-cyan font-mono text-sm">GUARDSCAN_OFFLINE</code>
-              <p className="text-muted-foreground text-sm mt-2">Force offline mode (true/false)</p>
-            </div>
-            <div className="p-4 rounded-lg bg-card border border-border">
-              <code className="text-terminal-cyan font-mono text-sm">GUARDSCAN_CONFIG_PATH</code>
-              <p className="text-muted-foreground text-sm mt-2">Custom config file path</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </main>
+      </div>
 
       <Footer />
     </div>

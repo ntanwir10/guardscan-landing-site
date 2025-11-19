@@ -9,7 +9,6 @@ import Comparison from "./pages/Comparison";
 import Documentation from "./pages/Documentation";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
-import BYOKSetup from "./pages/BYOKSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +24,6 @@ const App = () => (
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/comparison" element={<Comparison />} />
           <Route path="/docs" element={<Documentation />} />
-          <Route path="/byok-setup" element={<BYOKSetup />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
