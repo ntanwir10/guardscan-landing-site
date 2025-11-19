@@ -5,6 +5,8 @@ import { Play, RotateCcw } from "lucide-react";
 
 const commands = [
   {
+    id: "help",
+    label: "--help",
     command: "guardscan --help",
     output: [
       "🛡️  GuardScan - Privacy-First Code Security & Quality Scanner",
@@ -21,38 +23,203 @@ const commands = [
       "  docker         Scan Dockerfile for security issues",
       "  all            Run all scans (security, quality, dependencies)",
       "  run            Execute AI-powered code review (requires API key)",
-      "  report         Generate comprehensive HTML/PDF report",
-      "  config         Manage configuration settings",
       "",
       "OPTIONS:",
       "  --ai           Enable AI-powered analysis",
       "  --local        Use local Ollama for AI analysis",
       "  --output, -o   Specify output format (json, md, html)",
-      "  --verbose, -v  Show detailed output",
-      "  --help, -h     Display this help message",
-      "  --version      Show version information",
-      "",
-      "EXAMPLES:",
-      "  guardscan init                    Initialize in current directory",
-      "  guardscan security --verbose      Detailed security scan",
-      "  guardscan run --ai --local        AI review with Ollama",
-      "  guardscan all -o json             All scans, JSON output",
       "",
       "🔒 Privacy: Your code stays local. No data sent to GuardScan servers.",
-      "📖 Docs: https://docs.guardscan.dev",
-      "💬 Support: https://github.com/guardscan/cli/issues"
+      "📖 Docs: https://docs.guardscan.dev"
+    ]
+  },
+  {
+    id: "init",
+    label: "init",
+    command: "guardscan init",
+    output: [
+      "🛡️  Initializing GuardScan...",
+      "",
+      "✓ Created config file: ~/.guardscan/config.yml",
+      "✓ Generated client ID: gs_abc123def456",
+      "✓ Privacy mode: ENABLED (source code stays local)",
+      "",
+      "Configuration options:",
+      "  • Security scanning: enabled",
+      "  • Quality analysis: enabled",
+      "  • Secret detection: enabled",
+      "  • AI provider: Not configured (optional)",
+      "",
+      "🎉 GuardScan initialized successfully!",
+      "",
+      "Next steps:",
+      "  1. Run 'guardscan security' to scan for vulnerabilities",
+      "  2. Or run 'guardscan all' for a complete analysis"
+    ]
+  },
+  {
+    id: "security",
+    label: "security",
+    command: "guardscan security",
+    output: [
+      "🔍 Running security scan...",
+      "",
+      "📊 Analyzing 47 files (12,458 LOC)...",
+      "⚡ Running 18 security checks...",
+      "",
+      "✓ SQL Injection: No issues found",
+      "✓ XSS Vulnerabilities: No issues found",
+      "✓ CSRF Protection: 1 warning",
+      "✓ Authentication: No issues found",
+      "✓ Secrets Detection: 0 hardcoded secrets",
+      "✓ Dependency Scan: 2 vulnerabilities found",
+      "  • lodash@4.17.19 (High) - Prototype Pollution",
+      "  • axios@0.19.0 (Medium) - SSRF vulnerability",
+      "✓ OWASP Top 10: 1 issue detected",
+      "✓ Dockerfile Security: No issues found",
+      "",
+      "📝 Report generated: ./guardscan-security-report.md",
+      "",
+      "Summary: 3 issues found (1 high, 2 medium, 1 low)",
+      "⚡ Scan completed in 2.4s"
+    ]
+  },
+  {
+    id: "quality",
+    label: "quality",
+    command: "guardscan quality",
+    output: [
+      "📊 Analyzing code quality...",
+      "",
+      "🔍 Checking 47 files...",
+      "",
+      "Code Complexity:",
+      "✓ Average cyclomatic complexity: 3.2 (good)",
+      "⚠ 2 functions exceed complexity threshold:",
+      "  • src/auth/validator.ts:45 (complexity: 12)",
+      "  • src/api/handler.ts:89 (complexity: 15)",
+      "",
+      "Code Duplication:",
+      "✓ Duplication: 4.2% (acceptable)",
+      "  • 3 duplicate blocks found",
+      "",
+      "Maintainability Index:",
+      "✓ Overall: 78/100 (good)",
+      "",
+      "Test Coverage:",
+      "⚠ Coverage: 67% (recommended: 80%)",
+      "",
+      "📝 Report generated: ./guardscan-quality-report.md",
+      "⚡ Analysis completed in 1.8s"
+    ]
+  },
+  {
+    id: "dependencies",
+    label: "dependencies",
+    command: "guardscan dependencies",
+    output: [
+      "📦 Checking dependencies...",
+      "",
+      "🔍 Analyzing package.json and lock files...",
+      "",
+      "Security Vulnerabilities:",
+      "🔴 2 high severity vulnerabilities",
+      "  • lodash@4.17.19 - Prototype Pollution (CVE-2020-8203)",
+      "    Fix: upgrade to lodash@4.17.21",
+      "  • axios@0.19.0 - SSRF (CVE-2020-28168)",
+      "    Fix: upgrade to axios@0.21.1",
+      "",
+      "🟡 1 medium severity vulnerability",
+      "  • node-fetch@2.6.0 - Information Exposure",
+      "    Fix: upgrade to node-fetch@2.6.7",
+      "",
+      "Outdated Packages:",
+      "⚠ 5 packages have updates available:",
+      "  • react: 17.0.2 → 18.2.0",
+      "  • typescript: 4.5.2 → 5.0.4",
+      "  • eslint: 8.0.0 → 8.42.0",
+      "",
+      "📝 Run 'npm update' to update packages",
+      "⚡ Scan completed in 3.1s"
+    ]
+  },
+  {
+    id: "ai",
+    label: "run --ai",
+    command: "guardscan run --ai",
+    output: [
+      "🤖 Starting AI-powered code review...",
+      "",
+      "Using API key: OpenAI (gpt-4)",
+      "📊 Project size: 12,458 LOC",
+      "",
+      "⚡ Analyzing code patterns...",
+      "🔍 Reviewing security practices...",
+      "🎨 Checking code quality...",
+      "✨ Generating recommendations...",
+      "",
+      "✓ AI review complete!",
+      "",
+      "🎯 Key Findings:",
+      "",
+      "Security:",
+      "  • Consider implementing rate limiting on API endpoints",
+      "  • Add input sanitization in user registration flow",
+      "  • Use parameterized queries instead of string concatenation",
+      "",
+      "Code Quality:",
+      "  • auth.ts:45 - Function too complex, consider refactoring",
+      "  • Inconsistent error handling patterns across modules",
+      "  • Missing TypeScript strict mode in 3 files",
+      "",
+      "Best Practices:",
+      "  • Add JSDoc comments for public APIs",
+      "  • Consider implementing request timeout handling",
+      "  • Use environment variables for all configuration",
+      "",
+      "📝 Full report: ./guardscan-ai-report.md",
+      "⚡ Analysis completed in 8.2s"
+    ]
+  },
+  {
+    id: "secrets",
+    label: "secrets",
+    command: "guardscan secrets",
+    output: [
+      "🔐 Scanning for hardcoded secrets...",
+      "",
+      "🔍 Analyzing 47 files...",
+      "",
+      "✓ No hardcoded secrets detected!",
+      "",
+      "Checked patterns:",
+      "  • API keys and tokens",
+      "  • Database credentials",
+      "  • Private keys (RSA, SSH)",
+      "  • AWS/GCP/Azure credentials",
+      "  • OAuth tokens",
+      "  • JWT secrets",
+      "  • Password patterns",
+      "",
+      "Best Practices:",
+      "✓ All sensitive config uses environment variables",
+      "✓ .env files properly gitignored",
+      "✓ No credentials in commit history",
+      "",
+      "📝 Report generated: ./guardscan-secrets-report.md",
+      "⚡ Scan completed in 1.2s"
     ]
   }
 ];
 
 export const TerminalDemo = () => {
-  const [currentCommandIndex, setCurrentCommandIndex] = useState(0);
+  const [selectedCommandId, setSelectedCommandId] = useState<string>("help");
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [displayedText, setDisplayedText] = useState<string[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
-  const currentCommand = commands[currentCommandIndex];
+  const currentCommand = commands.find(cmd => cmd.id === selectedCommandId) || commands[0];
 
   useEffect(() => {
     if (!isRunning) return;
@@ -92,37 +259,46 @@ export const TerminalDemo = () => {
     }
 
     if (currentLineIndex >= currentCommand.output.length && !isTyping) {
-      const nextTimer = setTimeout(() => {
-        if (currentCommandIndex < commands.length - 1) {
-          setCurrentCommandIndex(prev => prev + 1);
-          setCurrentLineIndex(0);
-          setDisplayedText([]);
-        } else {
-          setIsRunning(false);
-        }
-      }, 2000);
-
-      return () => clearTimeout(nextTimer);
+      setIsRunning(false);
     }
-  }, [currentCommandIndex, currentLineIndex, isTyping, isRunning, displayedText, currentCommand]);
+  }, [selectedCommandId, currentLineIndex, isTyping, isRunning, displayedText, currentCommand]);
 
   const startDemo = () => {
     setIsRunning(true);
-    setCurrentCommandIndex(0);
     setCurrentLineIndex(0);
     setDisplayedText([]);
   };
 
   const resetDemo = () => {
     setIsRunning(false);
-    setCurrentCommandIndex(0);
     setCurrentLineIndex(0);
     setDisplayedText([]);
   };
 
   return (
-    <Card className="bg-code-bg border-terminal-green/30 overflow-hidden">
-      <div className="bg-terminal-green/10 border-b border-terminal-green/30 px-4 py-2 flex items-center justify-between">
+    <div className="space-y-4">
+      {/* Command Buttons */}
+      <div className="flex flex-wrap gap-2 justify-center">
+        {commands.map((cmd) => (
+          <Button
+            key={cmd.id}
+            size="sm"
+            variant={selectedCommandId === cmd.id ? "default" : "outline"}
+            onClick={() => {
+              setSelectedCommandId(cmd.id);
+              startDemo();
+            }}
+            disabled={isRunning}
+            className="font-mono text-xs"
+          >
+            guardscan {cmd.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Terminal */}
+      <Card className="bg-code-bg border-terminal-green/30 overflow-hidden">
+        <div className="bg-terminal-green/10 border-b border-terminal-green/30 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
@@ -186,6 +362,7 @@ export const TerminalDemo = () => {
           </div>
         )}
       </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
