@@ -6,7 +6,7 @@ const competitors = [
   {
     name: "GuardScan",
     logo: "🛡️",
-    pricing: "Pay-per-use: $5 per 100K LOC",
+    pricing: "100% Free & Open-Source",
     isGuardScan: true
   },
   {
@@ -25,9 +25,9 @@ const competitors = [
     pricing: "$10-19/user/month"
   },
   {
-    name: "CodeRabbit",
-    logo: "🐰",
-    pricing: "$12/user/month"
+    name: "Snyk",
+    logo: "🔐",
+    pricing: "$98/month (Team) - Custom pricing"
   }
 ];
 
@@ -70,18 +70,10 @@ const features = [
     ]
   },
   {
-    category: "Pricing Model",
+    category: "Cost & Licensing",
     items: [
       {
-        feature: "Free tier (unlimited static analysis)",
-        guardscan: true,
-        sonarqube: "limited",
-        codeclimate: "limited",
-        copilot: false,
-        coderabbit: "limited"
-      },
-      {
-        feature: "Pay only for what you use",
+        feature: "100% Free & Open-Source",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
@@ -89,7 +81,7 @@ const features = [
         coderabbit: false
       },
       {
-        feature: "No monthly subscription required",
+        feature: "No subscription fees ever",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
@@ -97,7 +89,15 @@ const features = [
         coderabbit: false
       },
       {
-        feature: "Transparent LOC-based pricing",
+        feature: "Bring Your Own API Key",
+        guardscan: true,
+        sonarqube: false,
+        codeclimate: false,
+        copilot: false,
+        coderabbit: false
+      },
+      {
+        feature: "Use local AI (Ollama) for zero cost",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,
