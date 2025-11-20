@@ -7,7 +7,6 @@ export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", path: "/" },
     { name: "How it Works", path: "/how-it-works" },
     { name: "Comparison", path: "/comparison" },
     { name: "Docs", path: "/docs" },
@@ -37,7 +36,7 @@ export const Navigation = () => {
               </NavLink>
             ))}
             <Button asChild size="sm" className="ml-4">
-              <a href="https://github.com/guardscan/guardscan" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md" target="_blank" rel="noopener noreferrer">
                 Get Started
               </a>
             </Button>
@@ -69,7 +68,7 @@ export const Navigation = () => {
                 </NavLink>
               ))}
               <Button asChild size="sm" className="w-full mt-2">
-                <a href="https://github.com/guardscan/guardscan" target="_blank" rel="noopener noreferrer">
+                <a href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md" target="_blank" rel="noopener noreferrer">
                   Get Started
                 </a>
               </Button>

@@ -19,13 +19,17 @@ export const CTA = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                <Terminal className="w-5 h-5 mr-2" />
-                Install GuardScan
+              <Button asChild size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
+                <a href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md" target="_blank" rel="noopener noreferrer">
+                  <Terminal className="w-5 h-5 mr-2" />
+                  Install GuardScan
+                </a>
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-foreground/20 hover:bg-foreground/5">
-                <Github className="w-5 h-5 mr-2" />
-                Star on GitHub
+              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 border-foreground/20 hover:bg-foreground/5">
+                <a href="https://github.com/ntanwir10/GuardScan" target="_blank" rel="noopener noreferrer">
+                  <Github className="w-5 h-5 mr-2" />
+                  Star on GitHub
+                </a>
               </Button>
             </div>
             
