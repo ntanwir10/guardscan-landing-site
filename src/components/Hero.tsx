@@ -34,13 +34,17 @@ export const Hero = () => {
           
           {/* CTA buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold animate-glow">
-              <Terminal className="w-5 h-5 mr-2" />
-              Get Started Free
+            <Button asChild size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold animate-glow">
+              <a href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md" target="_blank" rel="noopener noreferrer">
+                <Terminal className="w-5 h-5 mr-2" />
+                Get Started Free
+              </a>
             </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-primary/50 hover:bg-primary/10">
-              <Zap className="w-5 h-5 mr-2" />
-              View on GitHub
+            <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 border-primary/50 hover:bg-primary/10">
+              <a href="https://github.com/ntanwir10/GuardScan" target="_blank" rel="noopener noreferrer">
+                <Zap className="w-5 h-5 mr-2" />
+                View on GitHub
+              </a>
             </Button>
           </div>
           
