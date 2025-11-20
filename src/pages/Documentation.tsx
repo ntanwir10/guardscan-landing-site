@@ -4,7 +4,9 @@ import { CodeBlock } from "@/components/CodeBlock";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen, Key, Server, CheckCircle, ChevronRight, Search, X } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen, Key, Server, CheckCircle, ChevronRight, Search, X, Menu } from "lucide-react";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
@@ -178,9 +180,11 @@ const navigationSections = [
 export default function Documentation() {
   const [activeSection, setActiveSection] = useState("introduction");
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
+    setMobileMenuOpen(false); // Close mobile menu on navigation
     const element = document.getElementById(id);
     if (element) {
       const offset = 100;
@@ -276,100 +280,124 @@ export default function Documentation() {
     return fuse.search(searchQuery).slice(0, 8);
   }, [searchQuery, fuse]);
 
+  // Sidebar Navigation Component
+  const SidebarNav = () => (
+    <nav className="space-y-6">
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          type="text"
+          placeholder="Search docs..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 pr-9 bg-background/50 border-border/50 focus:border-primary"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Search Results */}
+      {searchQuery && searchResults.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wide">
+            Search Results ({searchResults.length})
+          </h4>
+          <ul className="space-y-1">
+            {searchResults.map((result) => (
+              <li key={result.item.id}>
+                <button
+                  onClick={() => {
+                    scrollToSection(result.item.section);
+                    setSearchQuery("");
+                  }}
+                  className="w-full text-left text-sm px-3 py-2 rounded-md transition-colors hover:bg-primary/10 hover:text-primary group"
+                >
+                  <div className="flex items-start gap-2">
+                    <ChevronRight className="w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{result.item.title}</div>
+                      <div className="text-xs text-muted-foreground">{result.item.category}</div>
+                    </div>
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* No Results */}
+      {searchQuery && searchResults.length === 0 && (
+        <div className="text-sm text-muted-foreground px-3 py-2">
+          No results found for "{searchQuery}"
+        </div>
+      )}
+
+      {/* Navigation Sections (hidden when searching) */}
+      {!searchQuery && navigationSections.map((section) => (
+        <div key={section.title}>
+          <h4 className="font-semibold text-sm text-foreground mb-3">{section.title}</h4>
+          <ul className="space-y-2">
+            {section.items.map((item) => (
+              <li key={item.id}>
+                <button
+                  onClick={() => scrollToSection(item.id)}
+                  className={cn(
+                    "w-full text-left text-sm px-3 py-2 rounded-md transition-colors",
+                    activeSection === item.id
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  )}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
       
-      <div className="flex-1 flex pt-20">
-        {/* Sidebar Navigation */}
-        <aside className="hidden lg:block w-64 border-r border-border bg-card/30 fixed left-0 top-20 bottom-0 overflow-y-auto">
-          <nav className="p-6 space-y-6">
-            {/* Search Input */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search docs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-9 bg-background/50 border-border/50 focus:border-primary"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-20 left-4 z-50">
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="bg-background shadow-lg">
+              <Menu className="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[280px] p-6 overflow-y-auto">
+            <div className="mb-4">
+              <h2 className="text-lg font-bold text-foreground">Documentation</h2>
             </div>
-
-            {/* Search Results */}
-            {searchQuery && searchResults.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wide">
-                  Search Results ({searchResults.length})
-                </h4>
-                <ul className="space-y-1">
-                  {searchResults.map((result) => (
-                    <li key={result.item.id}>
-                      <button
-                        onClick={() => {
-                          scrollToSection(result.item.section);
-                          setSearchQuery("");
-                        }}
-                        className="w-full text-left text-sm px-3 py-2 rounded-md transition-colors hover:bg-primary/10 hover:text-primary group"
-                      >
-                        <div className="flex items-start gap-2">
-                          <ChevronRight className="w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium truncate">{result.item.title}</div>
-                            <div className="text-xs text-muted-foreground">{result.item.category}</div>
-                          </div>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* No Results */}
-            {searchQuery && searchResults.length === 0 && (
-              <div className="text-sm text-muted-foreground px-3 py-2">
-                No results found for "{searchQuery}"
-              </div>
-            )}
-
-            {/* Navigation Sections (hidden when searching) */}
-            {!searchQuery && navigationSections.map((section) => (
-              <div key={section.title}>
-                <h4 className="font-semibold text-sm text-foreground mb-3">{section.title}</h4>
-                <ul className="space-y-2">
-                  {section.items.map((item) => (
-                    <li key={item.id}>
-                      <button
-                        onClick={() => scrollToSection(item.id)}
-                        className={cn(
-                          "w-full text-left text-sm px-3 py-2 rounded-md transition-colors",
-                          activeSection === item.id
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
-                        )}
-                      >
-                        {item.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
+            <SidebarNav />
+          </SheetContent>
+        </Sheet>
+      </div>
+      
+      <div className="flex-1 flex pt-20">
+        {/* Sidebar Navigation - Desktop Only */}
+        <aside className="hidden lg:block w-64 border-r border-border bg-card/30 fixed left-0 top-20 bottom-0 overflow-y-auto">
+          <div className="p-6">
+            <SidebarNav />
+          </div>
         </aside>
 
         {/* Main Content */}
         <main className="flex-1 lg:ml-64">
-          <div className="container mx-auto max-w-4xl px-4 py-12">
+          <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 pt-16 lg:pt-12">
             {/* Introduction */}
             <section id="introduction" className="mb-16">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
