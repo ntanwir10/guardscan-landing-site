@@ -3,9 +3,11 @@ import { Footer } from "@/components/Footer";
 import { CodeBlock } from "@/components/CodeBlock";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen, Key, Server, CheckCircle, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Terminal, Settings, Shield, TestTube, Package, Zap, Activity, FlaskConical, FileCode, RotateCcw, BookOpen, Key, Server, CheckCircle, ChevronRight, Search, X } from "lucide-react";
+import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import Fuse from "fuse.js";
 
 const commands = [
   {
@@ -175,6 +177,7 @@ const navigationSections = [
 
 export default function Documentation() {
   const [activeSection, setActiveSection] = useState("introduction");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
@@ -190,6 +193,89 @@ export default function Documentation() {
     }
   };
 
+  // Create searchable content from all documentation sections
+  const searchableContent = useMemo(() => {
+    const content: Array<{
+      id: string;
+      title: string;
+      content: string;
+      category: string;
+      section: string;
+    }> = [];
+
+    // Add commands
+    commands.forEach((cmd) => {
+      content.push({
+        id: `cmd-${cmd.name}`,
+        title: cmd.name,
+        content: `${cmd.name} ${cmd.description} ${cmd.usage} ${cmd.options?.map(o => `${o.flag} ${o.description}`).join(' ')} ${cmd.examples?.map(e => `${e.command} ${e.description}`).join(' ')}`,
+        category: "Commands",
+        section: "commands"
+      });
+    });
+
+    // Add configuration options
+    configOptions.forEach((opt) => {
+      content.push({
+        id: `config-${opt.key}`,
+        title: opt.key,
+        content: `${opt.key} ${opt.description} ${opt.type} ${opt.default} ${opt.possibleValues?.join(' ')}`,
+        category: "Configuration",
+        section: "config-reference"
+      });
+    });
+
+    // Add sections
+    content.push(
+      {
+        id: "intro",
+        title: "Introduction",
+        content: "GuardScan free open-source CLI tool comprehensive codebase analysis documentation",
+        category: "Getting Started",
+        section: "introduction"
+      },
+      {
+        id: "quick-start",
+        title: "Quick Start",
+        content: "installation npm install guardscan first scan initialize security AI analysis",
+        category: "Getting Started",
+        section: "quick-start"
+      },
+      {
+        id: "byok",
+        title: "BYOK Setup",
+        content: "bring your own key API OpenAI Claude Gemini Ollama local AI provider configuration environment variables",
+        category: "Configuration",
+        section: "byok-setup"
+      },
+      {
+        id: "env-vars",
+        title: "Environment Variables",
+        content: "OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY GUARDSCAN_CONFIG GUARDSCAN_TELEMETRY environment variables configuration",
+        category: "Configuration",
+        section: "env-vars"
+      }
+    );
+
+    return content;
+  }, []);
+
+  // Setup Fuse.js for fuzzy search
+  const fuse = useMemo(() => {
+    return new Fuse(searchableContent, {
+      keys: ['title', 'content', 'category'],
+      threshold: 0.3,
+      includeScore: true,
+      minMatchCharLength: 2
+    });
+  }, [searchableContent]);
+
+  // Filter results based on search query
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return fuse.search(searchQuery).slice(0, 8);
+  }, [searchQuery, fuse]);
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navigation />
@@ -198,7 +284,65 @@ export default function Documentation() {
         {/* Sidebar Navigation */}
         <aside className="hidden lg:block w-64 border-r border-border bg-card/30 fixed left-0 top-20 bottom-0 overflow-y-auto">
           <nav className="p-6 space-y-6">
-            {navigationSections.map((section) => (
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search docs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-9 bg-background/50 border-border/50 focus:border-primary"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Search Results */}
+            {searchQuery && searchResults.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wide">
+                  Search Results ({searchResults.length})
+                </h4>
+                <ul className="space-y-1">
+                  {searchResults.map((result) => (
+                    <li key={result.item.id}>
+                      <button
+                        onClick={() => {
+                          scrollToSection(result.item.section);
+                          setSearchQuery("");
+                        }}
+                        className="w-full text-left text-sm px-3 py-2 rounded-md transition-colors hover:bg-primary/10 hover:text-primary group"
+                      >
+                        <div className="flex items-start gap-2">
+                          <ChevronRight className="w-4 h-4 mt-0.5 flex-shrink-0 text-muted-foreground group-hover:text-primary" />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{result.item.title}</div>
+                            <div className="text-xs text-muted-foreground">{result.item.category}</div>
+                          </div>
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* No Results */}
+            {searchQuery && searchResults.length === 0 && (
+              <div className="text-sm text-muted-foreground px-3 py-2">
+                No results found for "{searchQuery}"
+              </div>
+            )}
+
+            {/* Navigation Sections (hidden when searching) */}
+            {!searchQuery && navigationSections.map((section) => (
               <div key={section.title}>
                 <h4 className="font-semibold text-sm text-foreground mb-3">{section.title}</h4>
                 <ul className="space-y-2">
