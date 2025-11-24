@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import HowItWorksPage from "./pages/HowItWorksPage";
 import Comparison from "./pages/Comparison";
 import Documentation from "./pages/Documentation";
+import Features from "./pages/Features";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/how-it-works" element={<HowItWorksPage />} />
           <Route path="/comparison" element={<Comparison />} />
           <Route path="/docs" element={<Documentation />} />
+          <Route path="/features" element={<Features />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

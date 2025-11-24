@@ -1,5 +1,12 @@
 import { Shield, Terminal, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InlineCode } from "@/components/InlineCode";
+
+const installCommands = [
+  "$ npm install -g guardscan",
+  "$ guardscan init",
+  "$ guardscan security",
+];
 
 export const Hero = () => {
   return (
@@ -49,7 +56,7 @@ export const Hero = () => {
           </div>
           
           {/* Quick install */}
-          <div className="mt-8 p-6 rounded-lg bg-code-bg border border-border/50 backdrop-blur-sm max-w-2xl w-full">
+          <div className="mt-8 p-6 rounded-lg bg-code-bg border border-border/50 backdrop-blur-sm max-w-2xl w-full space-y-3">
             <div className="flex items-center gap-2 mb-3">
               <div className="flex gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-destructive/80" />
@@ -58,11 +65,15 @@ export const Hero = () => {
               </div>
               <span className="text-xs text-muted-foreground ml-2">Terminal</span>
             </div>
-            <code className="text-terminal-green font-mono text-sm md:text-base block">
-              <span className="text-terminal-cyan">$</span> npm install -g guardscan<br/>
-              <span className="text-terminal-cyan">$</span> guardscan init<br/>
-              <span className="text-terminal-cyan">$</span> guardscan security
-            </code>
+            <div className="flex flex-col gap-2">
+              {installCommands.map((cmd) => (
+                <InlineCode
+                  key={cmd}
+                  value={cmd}
+                  className="w-full justify-between bg-transparent border border-terminal-green/30 text-terminal-green"
+                />
+              ))}
+            </div>
           </div>
           
           {/* Trust indicators */}

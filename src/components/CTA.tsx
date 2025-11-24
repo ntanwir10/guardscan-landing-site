@@ -1,5 +1,6 @@
 import { Terminal, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { InlineCode } from "@/components/InlineCode";
 
 export const CTA = () => {
   return (
@@ -35,9 +36,10 @@ export const CTA = () => {
             
             {/* Quick install reminder */}
             <div className="pt-6 text-sm text-muted-foreground">
-              <code className="px-3 py-1.5 rounded bg-code-bg border border-border/50 text-terminal-green font-mono">
-                npm install -g guardscan
-              </code>
+              <InlineCode
+                value="npm install -g guardscan"
+                className="bg-code-bg border border-border/50 text-terminal-green"
+              />
             </div>
           </div>
         </div>

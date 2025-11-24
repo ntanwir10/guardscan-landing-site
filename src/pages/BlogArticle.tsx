@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -10,6 +11,7 @@ import { CodeBlock } from "@/components/CodeBlock";
 
 export default function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
+  const contentRef = useRef<HTMLDivElement | null>(null);
   
   if (!slug || !blogArticles[slug]) {
     return <Navigate to="/blog" replace />;
@@ -19,6 +21,41 @@ export default function BlogArticle() {
   const relatedArticles = article.relatedArticles
     .map(slug => blogArticles[slug])
     .filter(Boolean);
+
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container) return;
+
+    const buttons = Array.from(
+      container.querySelectorAll<HTMLButtonElement>(".inline-code-copy-btn")
+    );
+
+    const handleClick = async (event: Event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      const encodedValue = button.dataset.code;
+      if (!encodedValue) return;
+      const value = decodeURIComponent(encodedValue);
+
+      try {
+        await navigator.clipboard.writeText(value);
+        const originalLabel = button.textContent;
+        button.textContent = "Copied";
+        button.classList.add("text-primary");
+        setTimeout(() => {
+          button.textContent = originalLabel ?? "Copy";
+          button.classList.remove("text-primary");
+        }, 1500);
+      } catch (error) {
+        console.error("Failed to copy inline code snippet:", error);
+      }
+    };
+
+    buttons.forEach((btn) => btn.addEventListener("click", handleClick));
+
+    return () => {
+      buttons.forEach((btn) => btn.removeEventListener("click", handleClick));
+    };
+  }, [article.content]);
 
   return (
     <>
@@ -132,6 +169,7 @@ export default function BlogArticle() {
             <div className="article-content space-y-6">
               <div 
                 className="prose-content"
+                ref={contentRef}
                 dangerouslySetInnerHTML={{ __html: formatArticleContent(article.content) }}
               />
 
@@ -238,11 +276,18 @@ export default function BlogArticle() {
 // Helper function to format article content (convert markdown-style to HTML)
 function formatArticleContent(content: string): string {
   let html = content;
+  const escapeHtml = (str: string) =>
+    str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   
   // Code blocks with copy button wrapper
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
     const language = lang || 'bash';
-    const trimmedCode = code.trim();
+    const trimmedCode = escapeHtml(code.trim());
     return `<div class="code-block-wrapper"><pre class="bg-code-bg text-foreground rounded-lg p-4 overflow-x-auto border border-border my-6"><code class="language-${language} text-sm leading-relaxed block">${trimmedCode}</code></pre></div>`;
   });
   
@@ -254,8 +299,13 @@ function formatArticleContent(content: string): string {
   // Bold text
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
   
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code class="px-2 py-1 bg-muted text-foreground rounded text-sm font-mono">$1</code>');
+  // Inline code with copy button
+  html = html.replace(/`([^`]+)`/g, (match, code) => {
+    const trimmed = code.trim();
+    const displayValue = escapeHtml(trimmed);
+    const dataValue = encodeURIComponent(trimmed);
+    return `<span class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-sm font-mono text-foreground"><code>${displayValue}</code><button class="inline-code-copy-btn text-xs px-2 py-1 rounded bg-transparent border border-border/50 hover:bg-border/20 transition-colors" data-code="${dataValue}" type="button">Copy</button></span>`;
+  });
   
   // Process lists properly
   const lines = html.split('\n');

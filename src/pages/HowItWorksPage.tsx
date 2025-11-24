@@ -1,6 +1,15 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Terminal, ScanSearch, FileText, Code, Shield, Zap, CheckCircle2 } from "lucide-react";
+import { InlineCode } from "@/components/InlineCode";
+import {
+  Terminal,
+  ScanSearch,
+  FileText,
+  Code,
+  Shield,
+  Zap,
+  CheckCircle2,
+} from "lucide-react";
 
 const steps = [
   {
@@ -144,9 +153,10 @@ export default function HowItWorksPage() {
                     <cmd.icon className="w-6 h-6 text-primary" />
                   </div>
                   <div className="flex-grow">
-                    <code className="text-terminal-cyan font-mono text-sm">
-                      {cmd.command}
-                    </code>
+                    <InlineCode
+                      value={cmd.command}
+                      className="text-terminal-cyan font-mono text-sm bg-terminal-green/10 border border-terminal-green/30"
+                    />
                     <p className="text-muted-foreground mt-2">
                       {cmd.description}
                     </p>
@@ -158,7 +168,12 @@ export default function HowItWorksPage() {
 
           <div className="mt-12 text-center">
             <p className="text-muted-foreground mb-4">
-              Run <code className="text-terminal-cyan font-mono">guardscan --help</code> to see all 11 commands
+              Run{" "}
+              <InlineCode
+                value="guardscan --help"
+                className="text-terminal-cyan font-mono bg-terminal-green/10 border border-terminal-green/30"
+              />{" "}
+              to see all 11 commands
             </p>
           </div>
         </div>
