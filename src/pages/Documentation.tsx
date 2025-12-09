@@ -872,6 +872,10 @@ const navigationSections = [
     ],
   },
   {
+    title: "Guides",
+    items: [{ id: "chat-guide", label: "Chat Guide" }],
+  },
+  {
     title: "Configuration",
     items: [
       { id: "byok-setup", label: "BYOK Setup" },
@@ -897,12 +901,15 @@ export default function Documentation() {
     const element = document.getElementById(id);
     if (element) {
       const offset = 100;
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
+      // Scroll to section accounting for fixed header; fallback to scrollIntoView
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+      // Ensure navigation still works if custom offsets change
+      if (Math.abs(window.pageYOffset - offsetPosition) > 5) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
@@ -993,6 +1000,14 @@ export default function Documentation() {
           "Fully AI-Dependent commands AI-Enhanced commands AI Configuration commit explain test-gen docs chat refactor threat-model migrate review run scan security config --ai --skip-ai --ai-fix",
         category: "Commands",
         section: "ai-commands-overview",
+      },
+      {
+        id: "chat-guide",
+        title: "Chat Guide",
+        content:
+          "GuardScan Chat RAG overview interactive commands /help /clear /stats /export /exit CLI options model temperature rebuild embedding-provider session export best practices troubleshooting privacy security use cases",
+        category: "Guides",
+        section: "chat-guide",
       }
     );
 
@@ -1009,6 +1024,57 @@ export default function Documentation() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Scroll spy: Update active section based on scroll position
+  useEffect(() => {
+    // Get all section IDs from navigationSections
+    const sectionIds = navigationSections.flatMap((section) =>
+      section.items.map((item) => item.id)
+    );
+
+    // Create an Intersection Observer
+    const observerOptions = {
+      // rootMargin accounts for the fixed header (100px) and focuses on top portion of viewport
+      rootMargin: "-100px 0px -66% 0px",
+      threshold: 0,
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        // When a section becomes visible, update activeSection
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          if (sectionIds.includes(id)) {
+            setActiveSection(id);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
+
+    // Observe all sections
+    sectionIds.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      sectionIds.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          observer.unobserve(element);
+        }
+      });
+      observer.disconnect();
+    };
   }, []);
 
   // Setup Fuse.js for fuzzy search
@@ -1777,6 +1843,215 @@ guardscan init`}
                     Anthropic, Google, Ollama)
                   </p>
                 </Card>
+              </div>
+            </section>
+
+            {/* Chat Guide */}
+            <section id="chat-guide" className="mb-16">
+              <h2 className="text-3xl font-bold mb-6 text-foreground flex items-center gap-2">
+                <MessageSquare className="w-8 h-8 text-primary" />
+                Chat Guide
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8">
+                GuardScan Chat is a RAG-powered assistant that answers questions
+                about your codebase with context-aware responses. Use it to
+                explore architecture, find issues, and explain complex code.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-xl font-semibold text-foreground mb-3">
+                    How it works (RAG)
+                  </h3>
+                  <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                    <li>
+                      <strong className="text-foreground">Retrieve:</strong>{" "}
+                      finds relevant code/docs from your repo
+                    </li>
+                    <li>
+                      <strong className="text-foreground">Augment:</strong>{" "}
+                      injects that context into your question
+                    </li>
+                    <li>
+                      <strong className="text-foreground">Generate:</strong>{" "}
+                      responds with repo-specific answers
+                    </li>
+                  </ul>
+                </Card>
+
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-xl font-semibold text-foreground mb-3">
+                    Quick start
+                  </h3>
+                  <CodeBlock code="guardscan chat" />
+                  <p className="text-sm text-muted-foreground mt-3">
+                    First run will index your codebase. Subsequent runs reuse
+                    the index unless you pass{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      --rebuild
+                    </code>
+                    .
+                  </p>
+                </Card>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">
+                    Interactive commands
+                  </h3>
+                  <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /help
+                      </code>{" "}
+                      show commands and examples
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /clear
+                      </code>{" "}
+                      clear conversation history
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /stats
+                      </code>{" "}
+                      session stats (messages, tokens, duration)
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /export
+                      </code>{" "}
+                      save conversation to markdown (parent directory)
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /exit
+                      </code>{" "}
+                      quit chat session
+                    </li>
+                  </ul>
+                </Card>
+
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">
+                    Useful CLI options
+                  </h3>
+                  <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --model &lt;name&gt;
+                      </code>{" "}
+                      pick model (e.g., gpt-5.1, claude-sonnet-4.5)
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --temperature &lt;0-1&gt;
+                      </code>{" "}
+                      control creativity (default 0.7)
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --rebuild
+                      </code>{" "}
+                      regenerate embeddings index
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --embedding-provider &lt;provider&gt;
+                      </code>{" "}
+                      choose embedding backend (openai, gemini, ollama, etc.)
+                    </li>
+                    <li>
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --session &lt;path&gt;
+                      </code>{" "}
+                      load existing chat session;{" "}
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --export &lt;path&gt;
+                      </code>{" "}
+                      save to custom location
+                    </li>
+                  </ul>
+                </Card>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">
+                    Best practices
+                  </h3>
+                  <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                    <li>
+                      Ask specific questions; include file or function names
+                    </li>
+                    <li>Use follow-ups to refine answers</li>
+                    <li>
+                      Rebuild index after large code changes (
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --rebuild
+                      </code>
+                      )
+                    </li>
+                    <li>
+                      Lower{" "}
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --temperature
+                      </code>{" "}
+                      for precise answers; raise for brainstorming
+                    </li>
+                  </ul>
+                </Card>
+
+                <Card className="p-6 bg-card/50 border-primary/20">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">
+                    Troubleshooting
+                  </h3>
+                  <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
+                    <li>
+                      If responses feel generic: try{" "}
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        --rebuild
+                      </code>{" "}
+                      and ask more specific questions
+                    </li>
+                    <li>
+                      For slow replies: use a faster model or reduce context
+                      size
+                    </li>
+                    <li>
+                      Export chats for sharing with{" "}
+                      <code className="px-1 py-0.5 rounded bg-muted">
+                        /export
+                      </code>
+                    </li>
+                    <li>
+                      Keep AI keys local—GuardScan never uploads source; RAG
+                      runs against your repo
+                    </li>
+                  </ul>
+                </Card>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Example prompts
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="p-4 bg-card/50 border-primary/20">
+                    <CodeBlock code="How does authentication work in this repo?" />
+                  </Card>
+                  <Card className="p-4 bg-card/50 border-primary/20">
+                    <CodeBlock code="Find potential security issues in the payment service" />
+                  </Card>
+                  <Card className="p-4 bg-card/50 border-primary/20">
+                    <CodeBlock code="Explain the function handleWebhook in src/api/webhooks.ts" />
+                  </Card>
+                  <Card className="p-4 bg-card/50 border-primary/20">
+                    <CodeBlock code="Generate tests for calculateTotal in src/utils/pricing.ts" />
+                  </Card>
+                </div>
               </div>
             </section>
 
