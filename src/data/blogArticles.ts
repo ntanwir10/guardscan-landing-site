@@ -3821,14 +3821,14 @@ pipeline {
                     def critical = report.findings.count { it.severity == 'critical' }
                     def high = report.findings.count { it.severity == 'high' }
                     
-                    echo "Critical: ${critical}, High: ${high}"
+                    echo "Critical: \${critical}, High: \${high}"
                     
                     if (critical > 0) {
-                        error("Found ${critical} critical vulnerabilities")
+                        error("Found \${critical} critical vulnerabilities")
                     }
                     
                     if (high > 3) {
-                        unstable("Found ${high} high-severity vulnerabilities")
+                        unstable("Found \${high} high-severity vulnerabilities")
                     }
                 }
             }
@@ -3851,9 +3851,9 @@ pipeline {
         
         failure {
             emailext(
-                subject: "Security Scan Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                subject: "Security Scan Failed: \${env.JOB_NAME} - \${env.BUILD_NUMBER}",
                 body: "Check the security report for details.",
-                to: "${env.SECURITY_TEAM_EMAIL}"
+                to: "\${env.SECURITY_TEAM_EMAIL}"
             )
         }
     }
@@ -3984,8 +3984,8 @@ guardscan security --fail-on medium
       
       const body = \`## 🚨 Security Scan Results
       
-      **Critical:** ${critical}
-      **High:** ${high}
+      **Critical:** \${critical}
+      **High:** \${high}
       
       Please review the security report artifact for full details.
       
@@ -4948,7 +4948,7 @@ ignore_patterns:
 severity_threshold: "high"
 
 custom_rules:
-  - pattern: "password.*=.*\".*\""
+  - pattern: "password.*=.*".*"
     severity: "critical"
 \`\`\`
 
