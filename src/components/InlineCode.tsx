@@ -35,7 +35,7 @@ export function InlineCode({ value, className, ariaLabel }: InlineCodeProps) {
         size="icon"
         className="h-6 w-6 text-muted-foreground hover:text-foreground"
         onClick={handleCopy}
-        aria-label={ariaLabel ?? `Copy \"${value}\"`}
+        aria-label={ariaLabel ?? `Copy "${value}"`}
       >
         {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
       </Button>

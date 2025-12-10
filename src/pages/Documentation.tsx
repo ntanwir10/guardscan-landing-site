@@ -1,6 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { CodeBlock } from "@/components/CodeBlock";
+import { SEO } from "@/components/SEO";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -1146,6 +1147,12 @@ export default function Documentation() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO
+        title="Documentation - GuardScan CLI Guide"
+        description="Complete documentation for GuardScan CLI. Learn installation, configuration, security scanning, AI features, and integrations. Step-by-step guides and examples."
+        canonical="https://guardscancli.com/docs"
+        keywords="guardscan documentation, CLI guide, security scanning docs, SAST documentation, code review setup, API reference"
+      />
       <Navigation onSearchClick={() => setSearchOpen(true)} />
 
       {/* Search Modal */}

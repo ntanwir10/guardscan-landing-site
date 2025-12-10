@@ -1,34 +1,41 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Check, X, Minus } from "lucide-react";
+import { SEO } from "@/components/SEO";
+import { Check, X, Minus, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const competitors = [
   {
     name: "GuardScan",
     logo: "🛡️",
     pricing: "100% Free & Open-Source",
-    isGuardScan: true
+    isGuardScan: true,
+    link: "",
   },
   {
     name: "SonarQube",
     logo: "🔍",
-    pricing: "$150/month (Team) - $30K+/year (Enterprise)"
+    pricing: "$150/month (Team) - $30K+/year (Enterprise)",
+    link: "/comparison/sonarqube-alternative",
   },
   {
     name: "CodeClimate",
     logo: "☁️",
-    pricing: "$249/month (Team) - Custom pricing"
+    pricing: "$249/month (Team) - Custom pricing",
+    link: "/comparison/codeclimate-alternative",
   },
   {
     name: "GitHub Copilot",
     logo: "🤖",
-    pricing: "$10-19/user/month"
+    pricing: "$10-19/user/month",
+    link: "",
   },
   {
     name: "Snyk",
     logo: "🔐",
-    pricing: "$98/month (Team) - Custom pricing"
-  }
+    pricing: "$98/month (Team) - Custom pricing",
+    link: "/comparison/snyk-alternative",
+  },
 ];
 
 const features = [
@@ -41,7 +48,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Works completely offline",
@@ -49,7 +56,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "No code upload to third-party servers",
@@ -57,7 +64,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Air-gapped environment support",
@@ -65,9 +72,9 @@ const features = [
         sonarqube: "partial",
         codeclimate: false,
         copilot: false,
-        coderabbit: false
-      }
-    ]
+        coderabbit: false,
+      },
+    ],
   },
   {
     category: "Cost & Licensing",
@@ -78,7 +85,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "No subscription fees ever",
@@ -86,7 +93,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Bring Your Own API Key",
@@ -94,7 +101,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Use local AI (Ollama) for zero cost",
@@ -102,9 +109,9 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
-      }
-    ]
+        coderabbit: false,
+      },
+    ],
   },
   {
     category: "AI Capabilities",
@@ -115,7 +122,7 @@ const features = [
         sonarqube: "limited",
         codeclimate: false,
         copilot: true,
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "Multi-provider support (OpenAI, Claude, etc)",
@@ -123,7 +130,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Local AI support (Ollama, LM Studio)",
@@ -131,7 +138,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "No vendor lock-in",
@@ -139,9 +146,9 @@ const features = [
         sonarqube: true,
         codeclimate: true,
         copilot: false,
-        coderabbit: false
-      }
-    ]
+        coderabbit: false,
+      },
+    ],
   },
   {
     category: "Features",
@@ -152,7 +159,7 @@ const features = [
         sonarqube: true,
         codeclimate: true,
         copilot: false,
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "Code quality analysis",
@@ -160,7 +167,7 @@ const features = [
         sonarqube: true,
         codeclimate: true,
         copilot: "limited",
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "Test coverage analysis",
@@ -168,7 +175,7 @@ const features = [
         sonarqube: true,
         codeclimate: true,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Secrets detection",
@@ -176,7 +183,7 @@ const features = [
         sonarqube: "limited",
         codeclimate: "limited",
         copilot: false,
-        coderabbit: "limited"
+        coderabbit: "limited",
       },
       {
         feature: "OWASP Top 10 coverage",
@@ -184,7 +191,7 @@ const features = [
         sonarqube: true,
         codeclimate: true,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "Dockerfile security scanning",
@@ -192,7 +199,7 @@ const features = [
         sonarqube: "limited",
         codeclimate: false,
         copilot: false,
-        coderabbit: false
+        coderabbit: false,
       },
       {
         feature: "IaC scanning (Terraform, K8s)",
@@ -200,9 +207,9 @@ const features = [
         sonarqube: "limited",
         codeclimate: false,
         copilot: false,
-        coderabbit: false
-      }
-    ]
+        coderabbit: false,
+      },
+    ],
   },
   {
     category: "Developer Experience",
@@ -213,7 +220,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "Setup time under 2 minutes",
@@ -221,7 +228,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: true,
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "Markdown report generation",
@@ -229,7 +236,7 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: true
+        coderabbit: true,
       },
       {
         feature: "No external account required (for free tier)",
@@ -237,10 +244,10 @@ const features = [
         sonarqube: false,
         codeclimate: false,
         copilot: false,
-        coderabbit: false
-      }
-    ]
-  }
+        coderabbit: false,
+      },
+    ],
+  },
 ];
 
 const FeatureIcon = ({ value }: { value: boolean | string }) => {
@@ -256,8 +263,14 @@ const FeatureIcon = ({ value }: { value: boolean | string }) => {
 export default function Comparison() {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="GuardScan vs SonarQube, Snyk, CodeClimate - Comparison"
+        description="Compare GuardScan with leading code review tools: SonarQube, Snyk, CodeClimate, GitHub Copilot, and CodeRabbit. See pricing, features, and privacy differences."
+        canonical="https://guardscancli.com/comparison"
+        keywords="guardscan vs sonarqube, guardscan vs snyk, guardscan vs codeclimate, code review tool comparison, SAST tool comparison, security scanning comparison"
+      />
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="py-16 px-4 relative">
         <div className="container mx-auto max-w-7xl text-center">
@@ -265,8 +278,9 @@ export default function Comparison() {
             Why Choose <span className="text-gradient">GuardScan</span>?
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-            Compare GuardScan with leading code review tools. See how we deliver enterprise-grade security 
-            without compromising on privacy or burning your budget.
+            Compare GuardScan with leading code review tools. See how we deliver
+            enterprise-grade security without compromising on privacy or burning
+            your budget.
           </p>
         </div>
       </section>
@@ -277,31 +291,46 @@ export default function Comparison() {
           <h2 className="text-4xl font-bold text-center mb-12">
             Pricing <span className="text-gradient">Breakdown</span>
           </h2>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {competitors.map((competitor) => (
-              <div 
+              <div
                 key={competitor.name}
                 className={`p-6 rounded-lg border ${
-                  competitor.isGuardScan 
-                    ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary shadow-lg" 
+                  competitor.isGuardScan
+                    ? "bg-gradient-to-br from-primary/10 to-accent/10 border-primary shadow-lg"
                     : "bg-background border-border"
                 }`}
               >
-                <div className="text-4xl mb-4 text-center">{competitor.logo}</div>
+                <div className="text-4xl mb-4 text-center">
+                  {competitor.logo}
+                </div>
                 <h3 className="text-xl font-bold text-center mb-4">
                   {competitor.name}
                 </h3>
-                <p className={`text-center ${
-                  competitor.isGuardScan 
-                    ? "text-foreground font-medium" 
-                    : "text-muted-foreground"
-                }`}>
+                <p
+                  className={`text-center ${
+                    competitor.isGuardScan
+                      ? "text-foreground font-medium"
+                      : "text-muted-foreground"
+                  }`}
+                >
                   {competitor.pricing}
                 </p>
                 {competitor.isGuardScan && (
                   <div className="mt-4 pt-4 border-t border-border/50 text-sm text-center text-muted-foreground">
                     Example: 10K LOC = $0.50
+                  </div>
+                )}
+                {competitor.link && (
+                  <div className="mt-4 text-center">
+                    <Link
+                      to={competitor.link}
+                      className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold text-sm"
+                    >
+                      Compare in Detail
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 )}
               </div>
@@ -310,7 +339,8 @@ export default function Comparison() {
 
           <div className="mt-12 text-center">
             <p className="text-muted-foreground">
-              * All competitor pricing is approximate and based on publicly available information as of 2025
+              * All competitor pricing is approximate and based on publicly
+              available information as of 2025
             </p>
           </div>
         </div>
@@ -330,9 +360,12 @@ export default function Comparison() {
                 <tr className="border-b border-border">
                   <th className="text-left p-4 font-bold text-lg">Feature</th>
                   {competitors.map((comp) => (
-                    <th key={comp.name} className={`p-4 text-center font-bold ${
-                      comp.isGuardScan ? "text-primary" : ""
-                    }`}>
+                    <th
+                      key={comp.name}
+                      className={`p-4 text-center font-bold ${
+                        comp.isGuardScan ? "text-primary" : ""
+                      }`}
+                    >
                       <div className="text-2xl mb-2">{comp.logo}</div>
                       {comp.name}
                     </th>
@@ -348,7 +381,10 @@ export default function Comparison() {
                       </td>
                     </tr>
                     {category.items.map((item, idx) => (
-                      <tr key={idx} className="border-b border-border/50 hover:bg-card/20">
+                      <tr
+                        key={idx}
+                        className="border-b border-border/50 hover:bg-card/20"
+                      >
                         <td className="p-4">{item.feature}</td>
                         <td className="p-4">
                           <FeatureIcon value={item.guardscan} />
@@ -382,11 +418,16 @@ export default function Comparison() {
                 </h3>
                 <div className="space-y-4">
                   {category.items.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-card border border-border">
+                    <div
+                      key={idx}
+                      className="p-4 rounded-lg bg-card border border-border"
+                    >
                       <div className="font-medium mb-3">{item.feature}</div>
                       <div className="grid grid-cols-5 gap-2 text-xs">
                         <div className="text-center">
-                          <div className="font-bold text-primary mb-1">GuardScan</div>
+                          <div className="font-bold text-primary mb-1">
+                            GuardScan
+                          </div>
                           <FeatureIcon value={item.guardscan} />
                         </div>
                         <div className="text-center">
@@ -426,6 +467,58 @@ export default function Comparison() {
             <div className="flex items-center gap-2">
               <X className="w-5 h-5 text-muted-foreground" />
               <span>Not Supported</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Solution Pages */}
+      <section className="py-16 px-4">
+        <div className="container-custom">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Explore GuardScan Solutions
+            </h2>
+            <p className="text-xl text-muted-foreground mb-12">
+              Learn more about GuardScan's key capabilities
+            </p>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <Link to="/solutions/secrets-detection" className="block group">
+                <div className="p-6 rounded-lg border border-border hover:border-primary transition-colors bg-card">
+                  <div className="text-4xl mb-4">🔐</div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    Secrets Detection
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Find API keys, passwords, and tokens in your code
+                  </p>
+                </div>
+              </Link>
+
+              <Link to="/solutions/dockerfile-security" className="block group">
+                <div className="p-6 rounded-lg border border-border hover:border-primary transition-colors bg-card">
+                  <div className="text-4xl mb-4">🐳</div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    Dockerfile Security
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Scan Docker containers for security vulnerabilities
+                  </p>
+                </div>
+              </Link>
+
+              <Link to="/solutions/offline-analysis" className="block group">
+                <div className="p-6 rounded-lg border border-border hover:border-primary transition-colors bg-card">
+                  <div className="text-4xl mb-4">✈️</div>
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                    Offline Analysis
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Security scanning for air-gapped environments
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
         </div>

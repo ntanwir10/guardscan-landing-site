@@ -1,6 +1,8 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { InlineCode } from "@/components/InlineCode";
+import { SEO } from "@/components/SEO";
+import { generateHowToSchema } from "@/lib/seo-schemas";
 import {
   Terminal,
   ScanSearch,
@@ -15,38 +17,41 @@ const steps = [
   {
     icon: Terminal,
     title: "Install & Initialize",
-    description: "One command to install globally. Initialize your project config and client ID in seconds.",
+    description:
+      "One command to install globally. Initialize your project config and client ID in seconds.",
     command: "npm install -g guardscan && guardscan init",
     details: [
       "Creates ~/.guardscan/config.yml with your settings",
       "Generates unique client_id for privacy-first tracking",
       "Auto-detects your repository and language",
-      "Ready to scan in under 30 seconds"
-    ]
+      "Ready to scan in under 30 seconds",
+    ],
   },
   {
     icon: ScanSearch,
     title: "Run Analysis",
-    description: "Choose from security scanning, code quality checks, or full AI-powered review. All run locally.",
+    description:
+      "Choose from security scanning, code quality checks, or full AI-powered review. All run locally.",
     command: "guardscan security --offline",
     details: [
       "Security: Detect secrets, vulnerabilities, OWASP Top 10",
       "Quality: LOC counting, complexity metrics, code smells",
       "Testing: Run tests with coverage analysis",
-      "AI Review: Optional AI-powered insights (requires credits)"
-    ]
+      "AI Review: Optional AI-powered insights (requires credits)",
+    ],
   },
   {
     icon: FileText,
     title: "Get Actionable Reports",
-    description: "Beautiful Markdown reports with severity levels, file references, and specific recommendations.",
+    description:
+      "Beautiful Markdown reports with severity levels, file references, and specific recommendations.",
     command: "cat guardscan-report.md",
     details: [
       "Executive summary with severity breakdown",
       "File and line number references for every finding",
       "Color-coded severity (critical, high, medium, low)",
-      "Shareable reports (commit to repo or share with team)"
-    ]
+      "Shareable reports (commit to repo or share with team)",
+    ],
   },
 ];
 
@@ -54,38 +59,69 @@ const commands = [
   {
     command: "guardscan security",
     description: "Security vulnerability scanning (offline)",
-    icon: Shield
+    icon: Shield,
   },
   {
     command: "guardscan test",
     description: "Run tests & code quality analysis",
-    icon: CheckCircle2
+    icon: CheckCircle2,
   },
   {
     command: "guardscan run",
     description: "AI-powered code review (requires credits)",
-    icon: Zap
+    icon: Zap,
   },
   {
     command: "guardscan config",
     description: "Configure AI provider & API key",
-    icon: Code
+    icon: Code,
   },
 ];
 
 export default function HowItWorksPage() {
+  const howToSchema = generateHowToSchema(
+    "How to Use GuardScan for Code Security Scanning",
+    "Complete guide to installing and running GuardScan for privacy-first code security analysis in under 2 minutes.",
+    [
+      {
+        name: "Install GuardScan",
+        text: "Install GuardScan globally using npm and initialize your project configuration.",
+        url: "https://guardscancli.com/how-it-works",
+      },
+      {
+        name: "Run Security Analysis",
+        text: "Execute security scanning, code quality checks, or AI-powered review - all running locally on your machine.",
+        url: "https://guardscancli.com/how-it-works",
+      },
+      {
+        name: "Review Actionable Reports",
+        text: "Get detailed Markdown reports with severity levels, file references, and specific security recommendations.",
+        url: "https://guardscancli.com/how-it-works",
+      },
+    ]
+  );
+
   return (
     <div className="min-h-screen">
+      <SEO
+        title="How It Works - GuardScan Setup Guide"
+        description="Learn how to install and use GuardScan for privacy-first code security scanning. Get started in under 2 minutes with our simple CLI workflow."
+        canonical="https://guardscancli.com/how-it-works"
+        keywords="guardscan tutorial, code security setup, SAST tool installation, security scanning guide, code review workflow"
+        structuredData={howToSchema}
+      />
       <Navigation />
-      
+
       {/* Hero Section */}
       <section className="py-16 px-4 relative">
         <div className="container mx-auto max-w-6xl text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6">
-            Get Started in <span className="text-gradient">Under 2 Minutes</span>
+            Get Started in{" "}
+            <span className="text-gradient">Under 2 Minutes</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Simple, fast, and developer-friendly workflow. No complex setup, no external accounts required.
+            Simple, fast, and developer-friendly workflow. No complex setup, no
+            external accounts required.
           </p>
         </div>
       </section>
@@ -95,7 +131,7 @@ export default function HowItWorksPage() {
         <div className="container mx-auto max-w-6xl">
           <div className="space-y-16">
             {steps.map((step, index) => (
-              <div 
+              <div
                 key={index}
                 className="flex flex-col md:flex-row gap-8 items-start group"
               >
@@ -103,7 +139,7 @@ export default function HowItWorksPage() {
                 <div className="flex-shrink-0 w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl font-bold shadow-lg group-hover:scale-110 transition-transform">
                   {index + 1}
                 </div>
-                
+
                 {/* Content */}
                 <div className="flex-grow space-y-4">
                   <div className="flex items-center gap-3">
@@ -113,16 +149,20 @@ export default function HowItWorksPage() {
                   <p className="text-muted-foreground text-lg">
                     {step.description}
                   </p>
-                  
+
                   {/* Command */}
                   <div className="p-4 rounded-lg bg-code-bg border border-border/50 font-mono text-sm text-terminal-green">
-                    <span className="text-terminal-cyan">$ </span>{step.command}
+                    <span className="text-terminal-cyan">$ </span>
+                    {step.command}
                   </div>
 
                   {/* Details */}
                   <ul className="space-y-2 mt-4">
                     {step.details.map((detail, i) => (
-                      <li key={i} className="flex items-start gap-2 text-foreground/80">
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 text-foreground/80"
+                      >
                         <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
                         <span>{detail}</span>
                       </li>
@@ -141,10 +181,10 @@ export default function HowItWorksPage() {
           <h2 className="text-4xl font-bold text-center mb-12">
             All Available <span className="text-gradient">Commands</span>
           </h2>
-          
+
           <div className="grid md:grid-cols-2 gap-6">
             {commands.map((cmd, index) => (
-              <div 
+              <div
                 key={index}
                 className="p-6 rounded-lg bg-background border border-border hover:border-primary/50 transition-all"
               >
