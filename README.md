@@ -1,22 +1,16 @@
-# Welcome to your Lovable project
+# Welcome to your GuardScan project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/610b0550-a327-4cdb-a5db-9694cfd203ab
+This repository contains the source for **GuardScan**, a privacy-first AI code review CLI.
 
-## How can I edit this code?
+## How can I work with this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/610b0550-a327-4cdb-a5db-9694cfd203ab) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+If you want to work locally using your own IDE, you can clone this repo and push changes.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -62,12 +56,14 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/610b0550-a327-4cdb-a5db-9694cfd203ab) and click on Share -> Publish.
+You can deploy GuardScan like any other Vite-powered React application. A common workflow is:
 
-## Can I connect a custom domain to my Lovable project?
+1. Build the production assets:
 
-Yes, you can!
+```sh
+npm run build
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+2. Serve the contents of the generated `dist` directory using your preferred hosting provider (for example, Netlify, Vercel, Cloudflare Pages, or any static file host).
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Refer to your hosting provider's documentation for details on deploying a static site built with Vite.
