@@ -1,6 +1,7 @@
-import { Terminal, Github } from "lucide-react";
+import { Terminal, Github, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InlineCode } from "@/components/InlineCode";
+import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export const CTA = () => {
   return (
@@ -9,37 +10,68 @@ export const CTA = () => {
         <div className="relative p-12 rounded-2xl bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 border border-primary/30 terminal-shadow overflow-hidden">
           {/* Background pattern */}
           <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.1)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.1)_1px,transparent_1px)] bg-[size:2rem_2rem]" />
-          
+
           <div className="relative z-10 text-center space-y-6">
             <h2 className="text-4xl md:text-5xl font-bold">
-              Ready to Protect Your <span className="text-gradient">Code Privacy</span>?
+              Ready to Protect Your{" "}
+              <span className="text-gradient">Code Privacy</span>?
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Join developers who never compromise on security. 
-              Start scanning in under 2 minutes.
+              Join developers who never compromise on security. Start scanning
+              in under 2 minutes.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-                <a href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md" target="_blank" rel="noopener noreferrer">
+              <Button
+                asChild
+                size="lg"
+                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+              >
+                <a
+                  href="https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Terminal className="w-5 h-5 mr-2" />
                   Install GuardScan
                 </a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 border-foreground/20 hover:bg-foreground/5">
-                <a href="https://github.com/ntanwir10/GuardScan" target="_blank" rel="noopener noreferrer">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6 border-foreground/20 hover:bg-foreground/5"
+              >
+                <a
+                  href="https://github.com/ntanwir10/GuardScan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Github className="w-5 h-5 mr-2" />
                   Star on GitHub
                 </a>
               </Button>
             </div>
-            
+
             {/* Quick install reminder */}
             <div className="pt-6 text-sm text-muted-foreground">
               <InlineCode
                 value="npm install -g guardscan"
                 className="bg-code-bg border border-border/50 text-terminal-green"
               />
+            </div>
+
+            {/* Subtle support link */}
+            <div className="pt-4">
+              <a
+                href={BUY_ME_A_COFFEE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+              >
+                <Coffee className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
+                <span>Enjoying GuardScan? Support the project</span>
+              </a>
             </div>
           </div>
         </div>

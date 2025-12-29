@@ -43,10 +43,12 @@ import {
   MessageSquare,
   FileText,
   Container,
+  Coffee,
 } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
+import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 const commands = [
   {
@@ -1237,15 +1239,15 @@ export default function Documentation() {
 
       <div className="flex-1 flex pt-20">
         {/* Sidebar Navigation - Desktop Only */}
-        <aside className="hidden lg:block w-64 border-r border-border bg-card/30 fixed left-0 top-20 bottom-0 overflow-y-auto">
+        <aside className="hidden lg:block w-64 border-r border-border bg-card fixed left-0 top-16 h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="p-6">
             <SidebarNav />
           </div>
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64">
-          <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 pt-16 lg:pt-12">
+        <main className="flex-1 lg:ml-64 w-full overflow-x-hidden">
+          <div className="w-full max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-12 pt-12 sm:pt-16 lg:pt-12">
             {/* Introduction */}
             <section id="introduction" className="mb-16">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
@@ -3190,6 +3192,17 @@ docker run -v C:\\Users\\username\\project:/workspace`}
                       Docker Documentation
                     </a>
                   </li>
+                  <li>
+                    •{" "}
+                    <a
+                      href={BUY_ME_A_COFFEE_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Support GuardScan Development
+                    </a>
+                  </li>
                 </ul>
               </div>
             </section>
@@ -3197,7 +3210,9 @@ docker run -v C:\\Users\\username\\project:/workspace`}
         </main>
       </div>
 
-      <Footer />
+      <div className="lg:ml-64">
+        <Footer />
+      </div>
     </div>
   );
 }

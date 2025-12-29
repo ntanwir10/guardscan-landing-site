@@ -4,22 +4,30 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ArrowLeft, ArrowRight, User } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  ArrowLeft,
+  ArrowRight,
+  User,
+  Coffee,
+} from "lucide-react";
 import { blogArticles, type BlogArticle } from "@/data/blogArticles";
 import { Helmet } from "react-helmet";
 import { CodeBlock } from "@/components/CodeBlock";
+import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export default function BlogArticle() {
   const { slug } = useParams<{ slug: string }>();
   const contentRef = useRef<HTMLDivElement | null>(null);
-  
+
   if (!slug || !blogArticles[slug]) {
     return <Navigate to="/blog" replace />;
   }
 
   const article: BlogArticle = blogArticles[slug];
   const relatedArticles = article.relatedArticles
-    .map(slug => blogArticles[slug])
+    .map((slug) => blogArticles[slug])
     .filter(Boolean);
 
   useEffect(() => {
@@ -63,7 +71,7 @@ export default function BlogArticle() {
         <title>{article.title} | GuardScan Blog</title>
         <meta name="description" content={article.description} />
         <meta name="keywords" content={article.keywords.join(", ")} />
-        
+
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={article.title} />
@@ -85,38 +93,38 @@ export default function BlogArticle() {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "BlogPosting",
-            "headline": article.title,
-            "description": article.description,
-            "datePublished": article.date,
-            "author": {
+            headline: article.title,
+            description: article.description,
+            datePublished: article.date,
+            author: {
               "@type": "Person",
-              "name": article.author.name,
-              "jobTitle": article.author.role
+              name: article.author.name,
+              jobTitle: article.author.role,
             },
-            "keywords": article.keywords.join(", "),
-            "articleSection": article.category,
-            "wordCount": article.content.split(/\s+/).length,
-            "timeRequired": article.readTime,
-            "publisher": {
+            keywords: article.keywords.join(", "),
+            articleSection: article.category,
+            wordCount: article.content.split(/\s+/).length,
+            timeRequired: article.readTime,
+            publisher: {
               "@type": "Organization",
-              "name": "GuardScan",
-              "logo": {
+              name: "GuardScan",
+              logo: {
                 "@type": "ImageObject",
-                "url": "https://guardscan.dev/logo.png"
-              }
-            }
+                url: "https://guardscan.dev/logo.png",
+              },
+            },
           })}
         </script>
       </Helmet>
 
       <div className="min-h-screen">
         <Navigation />
-        
+
         {/* Breadcrumb */}
         <section className="py-6 px-4 border-b border-border/50">
           <div className="container mx-auto max-w-4xl">
-            <Link 
-              to="/blog" 
+            <Link
+              to="/blog"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -133,11 +141,11 @@ export default function BlogArticle() {
                 <Badge variant="secondary">{article.category}</Badge>
                 <span className="text-5xl">{article.image}</span>
               </div>
-              
+
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
                 {article.title}
               </h1>
-              
+
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
                 {article.description}
               </p>
@@ -146,16 +154,18 @@ export default function BlogArticle() {
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4" />
                   <div>
-                    <div className="font-semibold text-foreground">{article.author.name}</div>
+                    <div className="font-semibold text-foreground">
+                      {article.author.name}
+                    </div>
                     <div className="text-xs">{article.author.role}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  {new Date(article.date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date(article.date).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
                   })}
                 </div>
                 <div className="flex items-center gap-2">
@@ -167,16 +177,20 @@ export default function BlogArticle() {
 
             {/* Article Content */}
             <div className="article-content space-y-6">
-              <div 
+              <div
                 className="prose-content"
                 ref={contentRef}
-                dangerouslySetInnerHTML={{ __html: formatArticleContent(article.content) }}
+                dangerouslySetInnerHTML={{
+                  __html: formatArticleContent(article.content),
+                }}
               />
 
               {/* Code Examples */}
               {article.codeExamples && article.codeExamples.length > 0 && (
                 <div className="my-12 space-y-6">
-                  <h2 className="text-3xl font-bold mb-8 text-foreground">Code Examples</h2>
+                  <h2 className="text-3xl font-bold mb-8 text-foreground">
+                    Code Examples
+                  </h2>
                   {article.codeExamples.map((example, index) => (
                     <CodeBlock
                       key={index}
@@ -244,7 +258,8 @@ export default function BlogArticle() {
                 Ready to Secure Your Code?
               </h3>
               <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Start using GuardScan today for privacy-first, AI-powered code security analysis.
+                Start using GuardScan today for privacy-first, AI-powered code
+                security analysis.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
@@ -262,6 +277,19 @@ export default function BlogArticle() {
                 >
                   Read Documentation
                 </Link>
+              </div>
+
+              {/* Subtle support link */}
+              <div className="mt-6 pt-6 border-t border-border/30">
+                <a
+                  href={BUY_ME_A_COFFEE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+                >
+                  <Coffee className="w-4 h-4 opacity-60 group-hover:opacity-100 transition-opacity" />
+                  <span>Found this helpful? Support the project</span>
+                </a>
               </div>
             </section>
           </div>
@@ -283,22 +311,34 @@ function formatArticleContent(content: string): string {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
-  
+
   // Code blocks with copy button wrapper
   html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-    const language = lang || 'bash';
+    const language = lang || "bash";
     const trimmedCode = escapeHtml(code.trim());
     return `<div class="code-block-wrapper"><pre class="bg-code-bg text-foreground rounded-lg p-4 overflow-x-auto border border-border my-6"><code class="language-${language} text-sm leading-relaxed block">${trimmedCode}</code></pre></div>`;
   });
-  
+
   // Headers with proper styling
-  html = html.replace(/^### (.*$)/gim, '<h3 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h3>');
-  html = html.replace(/^## (.*$)/gim, '<h2 class="text-3xl font-bold mt-10 mb-6 text-foreground">$1</h2>');
-  html = html.replace(/^# (.*$)/gim, '<h1 class="text-4xl font-bold mt-12 mb-8 text-foreground">$1</h1>');
-  
+  html = html.replace(
+    /^### (.*$)/gim,
+    '<h3 class="text-2xl font-bold mt-8 mb-4 text-foreground">$1</h3>'
+  );
+  html = html.replace(
+    /^## (.*$)/gim,
+    '<h2 class="text-3xl font-bold mt-10 mb-6 text-foreground">$1</h2>'
+  );
+  html = html.replace(
+    /^# (.*$)/gim,
+    '<h1 class="text-4xl font-bold mt-12 mb-8 text-foreground">$1</h1>'
+  );
+
   // Bold text
-  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
-  
+  html = html.replace(
+    /\*\*(.*?)\*\*/g,
+    '<strong class="font-bold text-foreground">$1</strong>'
+  );
+
   // Inline code with copy button
   html = html.replace(/`([^`]+)`/g, (match, code) => {
     const trimmed = code.trim();
@@ -306,43 +346,53 @@ function formatArticleContent(content: string): string {
     const dataValue = encodeURIComponent(trimmed);
     return `<span class="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-sm font-mono text-foreground"><code>${displayValue}</code><button class="inline-code-copy-btn text-xs px-2 py-1 rounded bg-transparent border border-border/50 hover:bg-border/20 transition-colors" data-code="${dataValue}" type="button">Copy</button></span>`;
   });
-  
+
   // Process lists properly
-  const lines = html.split('\n');
+  const lines = html.split("\n");
   let inList = false;
   const processedLines: string[] = [];
-  
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const listMatch = line.match(/^[\-\*] (.+)$/);
-    
+
     if (listMatch) {
       if (!inList) {
-        processedLines.push('<ul class="list-disc list-inside space-y-2 my-4 ml-4 text-foreground">');
+        processedLines.push(
+          '<ul class="list-disc list-inside space-y-2 my-4 ml-4 text-foreground">'
+        );
         inList = true;
       }
-      processedLines.push(`<li class="text-muted-foreground leading-relaxed">${listMatch[1]}</li>`);
+      processedLines.push(
+        `<li class="text-muted-foreground leading-relaxed">${listMatch[1]}</li>`
+      );
     } else {
       if (inList) {
-        processedLines.push('</ul>');
+        processedLines.push("</ul>");
         inList = false;
       }
       processedLines.push(line);
     }
   }
-  
+
   if (inList) {
-    processedLines.push('</ul>');
+    processedLines.push("</ul>");
   }
-  
-  html = processedLines.join('\n');
-  
+
+  html = processedLines.join("\n");
+
   // Paragraphs with proper spacing
-  html = html.replace(/\n\n+/g, '</p><p class="text-muted-foreground leading-relaxed mb-4">');
-  html = html.replace(/^(?!<[h|u|d|c])(.+)$/gim, '<p class="text-muted-foreground leading-relaxed mb-4">$1</p>');
-  
+  html = html.replace(
+    /\n\n+/g,
+    '</p><p class="text-muted-foreground leading-relaxed mb-4">'
+  );
+  html = html.replace(
+    /^(?!<[h|u|d|c])(.+)$/gim,
+    '<p class="text-muted-foreground leading-relaxed mb-4">$1</p>'
+  );
+
   // Clean up empty paragraphs
-  html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
-  
+  html = html.replace(/<p[^>]*>\s*<\/p>/g, "");
+
   return html;
 }

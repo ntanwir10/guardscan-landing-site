@@ -1,4 +1,12 @@
-import { Github, Twitter, FileText, Shield, Package } from "lucide-react";
+import {
+  Github,
+  Twitter,
+  FileText,
+  Shield,
+  Package,
+  Coffee,
+} from "lucide-react";
+import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -94,6 +102,16 @@ export const Footer = () => {
                   Support
                 </a>
               </li>
+              <li>
+                <a
+                  href={BUY_ME_A_COFFEE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-primary transition-colors"
+                >
+                  Support Project
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -175,6 +193,15 @@ export const Footer = () => {
               className="text-muted-foreground hover:text-primary transition-colors"
             >
               <Package className="w-5 h-5" />
+            </a>
+            <a
+              href={BUY_ME_A_COFFEE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground hover:text-primary transition-colors"
+              aria-label="Buy Me a Coffee"
+            >
+              <Coffee className="w-5 h-5" />
             </a>
           </div>
         </div>
