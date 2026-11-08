@@ -1002,9 +1002,9 @@ export default function Documentation() {
               </p>
               <p className="text-sm text-muted-foreground mb-6">
                 Documentation version:{" "}
-                <strong className="text-foreground">v1.1.0</strong>. GuardScan
-                1.1.0 is not yet published to npm; until it is, the latest
-                published version is 1.0.5 and some behavior below will differ.
+                <strong className="text-foreground">v1.1.0</strong>. Install
+                it with <code>npm install -g guardscan</code> (Node.js 22 or
+                newer).
               </p>
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
                 <h4 className="font-semibold text-foreground mb-2">
