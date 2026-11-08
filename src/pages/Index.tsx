@@ -29,7 +29,7 @@ const Index = () => {
       <SEO
         title="GuardScan - Privacy-First AI Code Review CLI"
         description="AI code review that never sees your code. GuardScan runs locally with offline security scanning, multi-AI support, 100% free and open source."
-        canonical="https://guardscancli.com/"
+        canonical="https://guardscancli.vercel.app/"
         keywords="code review, static analysis, security scanning, privacy-first, offline code analysis, AI code review, developer tools, SAST, secrets detection, code security scanner"
         structuredData={structuredData}
       />

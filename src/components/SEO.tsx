@@ -24,7 +24,7 @@ export const SEO = ({
   description,
   canonical,
   ogType = "website",
-  ogImage = "https://guardscancli.com/og-image.png",
+  ogImage = "https://guardscancli.vercel.app/og-image.png",
   twitterCard = "summary_large_image",
   keywords,
   author = "GuardScan",
@@ -40,7 +40,7 @@ export const SEO = ({
 
   // Default canonical to current page if not provided
   const canonicalUrl =
-    canonical || `https://guardscancli.com${window.location.pathname}`;
+    canonical || `https://guardscancli.vercel.app${window.location.pathname}`;
 
   // Default keywords if not provided
   const defaultKeywords =

@@ -86,17 +86,17 @@ export default function HowItWorksPage() {
       {
         name: "Install GuardScan",
         text: "Install GuardScan globally using npm and initialize your project configuration.",
-        url: "https://guardscancli.com/how-it-works",
+        url: "https://guardscancli.vercel.app/how-it-works",
       },
       {
         name: "Run Security Analysis",
         text: "Execute security scanning, code quality checks, or AI-powered review - all running locally on your machine.",
-        url: "https://guardscancli.com/how-it-works",
+        url: "https://guardscancli.vercel.app/how-it-works",
       },
       {
         name: "Review Actionable Reports",
         text: "Get detailed Markdown reports with severity levels, file references, and specific security recommendations.",
-        url: "https://guardscancli.com/how-it-works",
+        url: "https://guardscancli.vercel.app/how-it-works",
       },
     ]
   );
@@ -106,7 +106,7 @@ export default function HowItWorksPage() {
       <SEO
         title="How It Works - GuardScan Setup Guide"
         description="Learn how to install and use GuardScan for privacy-first code security scanning. Get started in under 2 minutes with our simple CLI workflow."
-        canonical="https://guardscancli.com/how-it-works"
+        canonical="https://guardscancli.vercel.app/how-it-works"
         keywords="guardscan tutorial, code security setup, SAST tool installation, security scanning guide, code review workflow"
         structuredData={howToSchema}
       />

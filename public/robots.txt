@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://guardscancli.com/sitemap.xml
+Sitemap: https://guardscancli.vercel.app/sitemap.xml

@@ -266,7 +266,7 @@ export default function Comparison() {
       <SEO
         title="GuardScan vs SonarQube, Snyk, CodeClimate - Comparison"
         description="Compare GuardScan with leading code review tools: SonarQube, Snyk, CodeClimate, GitHub Copilot, and CodeRabbit. See pricing, features, and privacy differences."
-        canonical="https://guardscancli.com/comparison"
+        canonical="https://guardscancli.vercel.app/comparison"
         keywords="guardscan vs sonarqube, guardscan vs snyk, guardscan vs codeclimate, code review tool comparison, SAST tool comparison, security scanning comparison"
       />
       <Navigation />

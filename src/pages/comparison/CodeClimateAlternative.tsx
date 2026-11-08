@@ -60,7 +60,7 @@ export default function CodeClimateAlternative() {
       <SEO
         title="GuardScan vs Code Climate: Privacy-First Alternative for Code Quality"
         description="Compare GuardScan and Code Climate for code quality analysis. GuardScan offers 100% local analysis, privacy-first architecture, and zero cost vs Code Climate's $249/month plans."
-        canonical="https://guardscancli.com/comparison/codeclimate-alternative"
+        canonical="https://guardscancli.vercel.app/comparison/codeclimate-alternative"
         keywords="codeclimate alternative, guardscan vs codeclimate, privacy-first code quality, local code quality, free codeclimate alternative, code quality tool comparison"
         structuredData={structuredData}
       />

@@ -58,7 +58,7 @@ export default function SnykAlternative() {
       <SEO
         title="GuardScan vs Snyk: Privacy-First Alternative for Dependency Scanning"
         description="Compare GuardScan and Snyk for security scanning. GuardScan offers 100% local analysis, unlimited scans, and zero cost vs Snyk's cloud-based approach starting at $98/month."
-        canonical="https://guardscancli.com/comparison/snyk-alternative"
+        canonical="https://guardscancli.vercel.app/comparison/snyk-alternative"
         keywords="snyk alternative, guardscan vs snyk, privacy-first security scanning, local dependency scanning, free snyk alternative, vulnerability scanner comparison"
         structuredData={structuredData}
       />

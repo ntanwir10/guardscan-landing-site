@@ -24,7 +24,7 @@ export default function Blog() {
       <SEO
         title="Blog - Security Insights, Privacy & Code Review Best Practices"
         description="Learn about code security, privacy-first development, AI-powered code review, OWASP Top 10, secrets detection, and secure development best practices."
-        canonical="https://guardscancli.com/blog"
+        canonical="https://guardscancli.vercel.app/blog"
         keywords="security blog, code review articles, OWASP tutorials, secrets detection guide, privacy-first development, AI code review, DevOps security"
       />
       <Navigation />

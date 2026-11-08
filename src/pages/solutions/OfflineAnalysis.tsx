@@ -30,22 +30,22 @@ export default function OfflineAnalysis() {
       {
         name: "Install GuardScan",
         text: "Install GuardScan globally: npm install -g guardscan",
-        url: "https://guardscancli.com/solutions/offline-analysis",
+        url: "https://guardscancli.vercel.app/solutions/offline-analysis",
       },
       {
         name: "Run Security Scan Offline",
         text: "Execute: guardscan security (no internet required)",
-        url: "https://guardscancli.com/solutions/offline-analysis",
+        url: "https://guardscancli.vercel.app/solutions/offline-analysis",
       },
       {
         name: "Optional: Set Up Offline AI",
         text: "Install Ollama for AI code review: curl -fsSL https://ollama.ai/install.sh | sh",
-        url: "https://guardscancli.com/solutions/offline-analysis",
+        url: "https://guardscancli.vercel.app/solutions/offline-analysis",
       },
       {
         name: "Review Security Findings",
         text: "Check the generated markdown report with all security findings",
-        url: "https://guardscancli.com/solutions/offline-analysis",
+        url: "https://guardscancli.vercel.app/solutions/offline-analysis",
       },
     ]
   );
@@ -83,7 +83,7 @@ export default function OfflineAnalysis() {
       <SEO
         title="Offline Code Security Scanning | GuardScan - Air-Gapped Ready"
         description="Security scanning for air-gapped environments. Works 100% offline with no internet required. Perfect for government, military, finance, healthcare. Free and local."
-        canonical="https://guardscancli.com/solutions/offline-analysis"
+        canonical="https://guardscancli.vercel.app/solutions/offline-analysis"
         keywords="offline code analysis, air-gapped security, offline security scanning, privacy-first code review, local code analysis, no internet code scanner"
         structuredData={structuredData}
       />

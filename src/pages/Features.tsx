@@ -19,7 +19,7 @@ export default function Features() {
       <SEO
         title="Features - Security Scanning, Code Quality & AI Tools"
         description="Comprehensive security scanning, secrets detection, OWASP Top 10 coverage, code quality analysis, and AI-powered features. All free and offline-capable."
-        canonical="https://guardscancli.com/features"
+        canonical="https://guardscancli.vercel.app/features"
         keywords="code security features, SAST features, secrets detection, code quality analysis, AI code review, offline security scanning, OWASP scanning, docker security"
       />
       <Navigation />

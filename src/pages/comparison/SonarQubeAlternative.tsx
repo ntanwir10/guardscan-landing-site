@@ -58,7 +58,7 @@ export default function SonarQubeAlternative() {
       <SEO
         title="GuardScan vs SonarQube: Privacy-First Alternative for Code Quality"
         description="Compare GuardScan and SonarQube for code security scanning. GuardScan offers 100% local analysis, privacy-first architecture, and zero cost vs SonarQube's server-based approach."
-        canonical="https://guardscancli.com/comparison/sonarqube-alternative"
+        canonical="https://guardscancli.vercel.app/comparison/sonarqube-alternative"
         keywords="sonarqube alternative, guardscan vs sonarqube, privacy-first code quality, local code analysis, free sonarqube alternative, SAST tool comparison"
         structuredData={structuredData}
       />

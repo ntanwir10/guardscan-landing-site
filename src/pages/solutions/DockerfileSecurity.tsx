@@ -26,22 +26,22 @@ export default function DockerfileSecurity() {
       {
         name: "Install GuardScan",
         text: "Install GuardScan globally using npm: npm install -g guardscan",
-        url: "https://guardscancli.com/solutions/dockerfile-security",
+        url: "https://guardscancli.vercel.app/solutions/dockerfile-security",
       },
       {
         name: "Navigate to Your Project",
         text: "Change to your project directory containing the Dockerfile",
-        url: "https://guardscancli.com/solutions/dockerfile-security",
+        url: "https://guardscancli.vercel.app/solutions/dockerfile-security",
       },
       {
         name: "Run Security Scan",
         text: "Execute: guardscan security to scan your Dockerfile for vulnerabilities",
-        url: "https://guardscancli.com/solutions/dockerfile-security",
+        url: "https://guardscancli.vercel.app/solutions/dockerfile-security",
       },
       {
         name: "Review Results",
         text: "Check the detailed markdown report for security findings and recommendations",
-        url: "https://guardscancli.com/solutions/dockerfile-security",
+        url: "https://guardscancli.vercel.app/solutions/dockerfile-security",
       },
     ]
   );
@@ -79,7 +79,7 @@ export default function DockerfileSecurity() {
       <SEO
         title="Dockerfile Security Scanner - Free & Local | GuardScan"
         description="Scan Dockerfiles for security vulnerabilities. 15+ automated checks including root users, exposed ports, secrets, and insecure configurations. 100% free, runs locally."
-        canonical="https://guardscancli.com/solutions/dockerfile-security"
+        canonical="https://guardscancli.vercel.app/solutions/dockerfile-security"
         keywords="dockerfile security, docker security scanner, container security scanning, dockerfile best practices, docker vulnerability scanner"
         structuredData={structuredData}
       />

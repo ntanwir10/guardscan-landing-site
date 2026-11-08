@@ -10,8 +10,8 @@ export const generateOrganizationSchema = () => ({
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "GuardScan",
-  url: "https://guardscancli.com",
-  logo: "https://guardscancli.com/logo.png",
+  url: "https://guardscancli.vercel.app",
+  logo: "https://guardscancli.vercel.app/logo.png",
   description:
     "Privacy-first AI code review tool that runs locally on your machine. Free, open source, and works offline.",
   sameAs: ["https://github.com/ntanwir10/GuardScan"],
@@ -46,7 +46,7 @@ export const generateSoftwareApplicationSchema = () => ({
   softwareVersion: "1.0.0",
   downloadUrl: "https://github.com/ntanwir10/GuardScan",
   installUrl: "https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md",
-  screenshot: "https://guardscancli.com/screenshot.png",
+  screenshot: "https://guardscancli.vercel.app/screenshot.png",
   featureList: [
     "Privacy-first code review",
     "Offline security scanning",

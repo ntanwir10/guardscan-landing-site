@@ -1152,7 +1152,7 @@ export default function Documentation() {
       <SEO
         title="Documentation - GuardScan CLI Guide"
         description="Complete documentation for GuardScan CLI. Learn installation, configuration, security scanning, AI features, and integrations. Step-by-step guides and examples."
-        canonical="https://guardscancli.com/docs"
+        canonical="https://guardscancli.vercel.app/docs"
         keywords="guardscan documentation, CLI guide, security scanning docs, SAST documentation, code review setup, API reference"
       />
       <Navigation onSearchClick={() => setSearchOpen(true)} />

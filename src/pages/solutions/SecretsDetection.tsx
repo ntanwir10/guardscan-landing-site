@@ -19,7 +19,7 @@ export default function SecretsDetection() {
       <SEO
         title="Secrets Detection - Find API Keys & Passwords in Your Codebase"
         description="Detect hardcoded API keys, passwords, tokens, and secrets in your source code with GuardScan. Supports 20+ secret patterns with local, privacy-first analysis."
-        canonical="https://guardscancli.com/solutions/secrets-detection"
+        canonical="https://guardscancli.vercel.app/solutions/secrets-detection"
         keywords="secrets detection, API keys scanner, password detection, token scanner, credentials scanner, hardcoded secrets, security scanning, find api keys in code"
       />
       <Navigation />

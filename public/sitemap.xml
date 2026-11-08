@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>https://guardscancli.com/</loc>
+    <loc>https://guardscancli.vercel.app/</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -10,49 +10,49 @@
 
   <!-- Main Pages -->
   <url>
-    <loc>https://guardscancli.com/how-it-works</loc>
+    <loc>https://guardscancli.vercel.app/how-it-works</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/comparison</loc>
+    <loc>https://guardscancli.vercel.app/comparison</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/comparison/sonarqube-alternative</loc>
+    <loc>https://guardscancli.vercel.app/comparison/sonarqube-alternative</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/comparison/snyk-alternative</loc>
+    <loc>https://guardscancli.vercel.app/comparison/snyk-alternative</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/comparison/codeclimate-alternative</loc>
+    <loc>https://guardscancli.vercel.app/comparison/codeclimate-alternative</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/features</loc>
+    <loc>https://guardscancli.vercel.app/features</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/docs</loc>
+    <loc>https://guardscancli.vercel.app/docs</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -60,7 +60,7 @@
 
   <!-- Blog Index -->
   <url>
-    <loc>https://guardscancli.com/blog</loc>
+    <loc>https://guardscancli.vercel.app/blog</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -68,77 +68,77 @@
 
   <!-- Blog Articles -->
   <url>
-    <loc>https://guardscancli.com/blog/privacy-first-code-review</loc>
+    <loc>https://guardscancli.vercel.app/blog/privacy-first-code-review</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/secrets-detection-deep-dive</loc>
+    <loc>https://guardscancli.vercel.app/blog/secrets-detection-deep-dive</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/ai-code-review-best-practices</loc>
+    <loc>https://guardscancli.vercel.app/blog/ai-code-review-best-practices</loc>
     <lastmod>2025-01-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/guardscan-quickstart</loc>
+    <loc>https://guardscancli.vercel.app/blog/guardscan-quickstart</loc>
     <lastmod>2024-12-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/ci-cd-integration</loc>
+    <loc>https://guardscancli.vercel.app/blog/ci-cd-integration</loc>
     <lastmod>2024-12-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/owasp-top-10-guide</loc>
+    <loc>https://guardscancli.vercel.app/blog/owasp-top-10-guide</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/dockerfile-security-checklist</loc>
+    <loc>https://guardscancli.vercel.app/blog/dockerfile-security-checklist</loc>
     <lastmod>2024-12-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/local-ai-ollama-setup</loc>
+    <loc>https://guardscancli.vercel.app/blog/local-ai-ollama-setup</loc>
     <lastmod>2024-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/best-sast-tools-2025</loc>
+    <loc>https://guardscancli.vercel.app/blog/best-sast-tools-2025</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/sonarqube-vs-snyk-vs-guardscan</loc>
+    <loc>https://guardscancli.vercel.app/blog/sonarqube-vs-snyk-vs-guardscan</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/offline-code-security-scanning</loc>
+    <loc>https://guardscancli.vercel.app/blog/offline-code-security-scanning</loc>
     <lastmod>2025-01-16</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -146,35 +146,35 @@
 
   <!-- Additional SEO-optimized blog articles -->
   <url>
-    <loc>https://guardscancli.com/blog/prevent-api-key-leaks</loc>
+    <loc>https://guardscancli.vercel.app/blog/prevent-api-key-leaks</loc>
     <lastmod>2025-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/sast-vs-dast-vs-iast</loc>
+    <loc>https://guardscancli.vercel.app/blog/sast-vs-dast-vs-iast</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/github-security-scanning</loc>
+    <loc>https://guardscancli.vercel.app/blog/github-security-scanning</loc>
     <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/cicd-security-integration</loc>
+    <loc>https://guardscancli.vercel.app/blog/cicd-security-integration</loc>
     <lastmod>2025-01-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/blog/open-source-sast-tools</loc>
+    <loc>https://guardscancli.vercel.app/blog/open-source-sast-tools</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -182,21 +182,21 @@
 
   <!-- Solution pages -->
   <url>
-    <loc>https://guardscancli.com/solutions/secrets-detection</loc>
+    <loc>https://guardscancli.vercel.app/solutions/secrets-detection</loc>
     <lastmod>2025-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/solutions/dockerfile-security</loc>
+    <loc>https://guardscancli.vercel.app/solutions/dockerfile-security</loc>
     <lastmod>2025-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://guardscancli.com/solutions/offline-analysis</loc>
+    <loc>https://guardscancli.vercel.app/solutions/offline-analysis</loc>
     <lastmod>2025-01-22</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
