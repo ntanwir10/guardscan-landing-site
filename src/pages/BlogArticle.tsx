@@ -110,7 +110,7 @@ export default function BlogArticle() {
               name: "GuardScan",
               logo: {
                 "@type": "ImageObject",
-                url: "https://guardscan.dev/logo.png",
+                url: "https://guardscancli.vercel.app/web-app-manifest-512x512.png",
               },
             },
           })}

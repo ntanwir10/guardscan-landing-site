@@ -11,7 +11,7 @@ export const generateOrganizationSchema = () => ({
   "@type": "Organization",
   name: "GuardScan",
   url: "https://guardscancli.vercel.app",
-  logo: "https://guardscancli.vercel.app/logo.png",
+  logo: "https://guardscancli.vercel.app/web-app-manifest-512x512.png",
   description:
     "Privacy-first AI code review tool that runs locally on your machine. Free, open source, and works offline.",
   sameAs: ["https://github.com/ntanwir10/GuardScan"],
@@ -46,7 +46,7 @@ export const generateSoftwareApplicationSchema = () => ({
   softwareVersion: "1.0.0",
   downloadUrl: "https://github.com/ntanwir10/GuardScan",
   installUrl: "https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md",
-  screenshot: "https://guardscancli.vercel.app/screenshot.png",
+  screenshot: "https://guardscancli.vercel.app/opengraph-image.png",
   featureList: [
     "Privacy-first code review",
     "Offline security scanning",

@@ -35,7 +35,7 @@ const commands = [
       "  --output, -o   Specify output format (json, md, html)",
       "",
       "🔒 Privacy: Your code stays local. No data sent to GuardScan servers.",
-      "📖 Docs: https://docs.guardscan.dev",
+      "📖 Docs: https://guardscancli.vercel.app/docs",
     ],
   },
   {

@@ -24,7 +24,7 @@ export const SEO = ({
   description,
   canonical,
   ogType = "website",
-  ogImage = "https://guardscancli.vercel.app/og-image.png",
+  ogImage = "https://guardscancli.vercel.app/opengraph-image.png",
   twitterCard = "summary_large_image",
   keywords,
   author = "GuardScan",
