@@ -11,12 +11,12 @@ const faqs: Array<{ question: string; answer: ReactNode }> = [
   {
     question: "How does GuardScan guarantee privacy?",
     answer:
-      "GuardScan performs all static analysis locally on your machine. Your source code never leaves your computer. Only anonymized metadata (like line count and scan statistics) is sent to our servers for credit validation. When using AI features, code snippets are sent directly to your chosen AI provider (OpenAI, Claude, etc.), not to GuardScan servers. You maintain complete control over your code.",
+      "GuardScan performs all static analysis locally on your machine. Your source code never leaves your computer. GuardScan operates no hosted telemetry or credit service. Telemetry is opt-in and off by default: if you enable it, a strict allowlist of aggregate events is queued locally and is sent only when you run `guardscan telemetry sync` to a collector you operate. When using AI features, code snippets are sent directly to your chosen AI provider (OpenAI, Claude, etc.), not to GuardScan servers. You maintain complete control over your code.",
   },
   {
     question: "Can I use GuardScan without an internet connection?",
     answer:
-      "Yes! GuardScan's core features (security scanning, code quality analysis, dependency checking, secrets detection) work completely offline. The only features that require internet are: credit validation for AI scans and the AI-powered code review itself. You can scan your codebase in air-gapped environments without any limitations on static analysis.",
+      "Yes! GuardScan's core features (security scanning, code quality analysis, dependency checking, secrets detection) work completely offline. The only features that require internet are cloud AI providers, update checks, and online OSV dependency vulnerability lookups (which can reuse a fresh offline snapshot). You can scan your codebase in air-gapped environments without any limitations on static analysis.",
   },
   {
     question: "Which AI providers are supported?",

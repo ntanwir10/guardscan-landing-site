@@ -37,7 +37,7 @@ const steps = [
       "Security: Detect secrets, vulnerabilities, OWASP Top 10",
       "Quality: LOC counting, complexity metrics, code smells",
       "Testing: Run tests with coverage analysis",
-      "AI Review: Optional AI-powered insights (requires credits)",
+      "AI Review: Optional AI-powered insights (bring your own key, or use local Ollama/LM Studio)",
     ],
   },
   {
@@ -68,7 +68,7 @@ const commands = [
   },
   {
     command: "guardscan run",
-    description: "AI-powered code review (requires credits)",
+    description: "Local code review with optional AI enrichment (bring your own key)",
     icon: Zap,
   },
   {

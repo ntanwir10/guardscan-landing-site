@@ -394,7 +394,7 @@ Get your codebase scanned for security vulnerabilities in 5 minutes.
 
 ## Prerequisites
 
-- Node.js 18+ installed
+- Node.js 22+ installed
 - A JavaScript/TypeScript project
 - Terminal access
 
@@ -1310,7 +1310,7 @@ Edit your \`.guardscan.yml\` configuration:
 ai:
   provider: ollama
   model: codellama:34b
-  endpoint: http://localhost:11434
+  endpoint: http://127.0.0.1:11434
   temperature: 0.2
   maxTokens: 4096
 \`\`\`
@@ -1549,7 +1549,7 @@ ollama run codellama:34b "Explain SQL injection"`,
 ai:
   provider: ollama
   model: codellama:34b
-  endpoint: http://localhost:11434
+  endpoint: http://127.0.0.1:11434
   temperature: 0.2
   maxTokens: 4096
   

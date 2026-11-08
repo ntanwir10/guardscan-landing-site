@@ -54,808 +54,550 @@ const commands = [
   {
     name: "init",
     icon: Settings,
-    description: "Initialize GuardScan configuration and generate client ID",
+    description: "Initialize GuardScan local configuration",
     usage: "guardscan init",
     options: [
-      { flag: "--force", description: "Overwrite existing configuration" },
-      { flag: "--skip-git", description: "Skip git repository detection" },
     ],
     examples: [
-      { command: "guardscan init", description: "Initialize with defaults" },
-      {
-        command: "guardscan init --force",
-        description: "Reset and reinitialize",
-      },
+      { command: "guardscan init", description: "Create the local configuration interactively" },
     ],
   },
   {
     name: "config",
     icon: Settings,
-    description: "Configure AI provider and API keys",
+    description: "Configure AI provider, privacy controls, and local settings",
     usage: "guardscan config [options]",
     options: [
-      {
-        flag: "--provider <name>",
-        description: "Set AI provider (openai, claude, gemini, ollama, etc.)",
-      },
-      {
-        flag: "--api-key <key>",
-        description: "Set API key for chosen provider",
-      },
-      { flag: "--list", description: "List all available providers" },
+      { flag: "-p, --provider <provider>", description: "Set AI provider (openai, claude, gemini, ollama, lmstudio, openrouter, none)" },
+      { flag: "-k, --key <key>", description: "Set API key" },
+      { flag: "--telemetry <enabled>", description: "Enable or disable telemetry (true or false). Telemetry is off by default" },
+      { flag: "--offline <enabled>", description: "Enable or disable offline mode (true or false)" },
+      { flag: "--show", description: "Show current configuration" },
     ],
     examples: [
-      {
-        command: "guardscan config --provider openai --api-key sk-...",
-        description: "Configure OpenAI",
-      },
-      {
-        command: "guardscan config --provider ollama",
-        description: "Use local Ollama (no API key needed)",
-      },
-      { command: "guardscan config --list", description: "Show all providers" },
+      { command: "guardscan config", description: "Interactive configuration" },
+      { command: "guardscan config --provider ollama", description: "Use local Ollama (no API key needed)" },
+      { command: "guardscan config --offline=false", description: "Allow network-backed features such as OSV lookups" },
+      { command: "guardscan config --telemetry=false", description: "Disable telemetry and delete any queued events" },
+      { command: "guardscan config --show", description: "Show current configuration" },
     ],
   },
   {
     name: "status",
     icon: Activity,
-    description: "Show current configuration, credits, and system status",
-    usage: "guardscan status",
+    description: "Show provider, repository, and local configuration status",
+    usage: "guardscan status [options]",
     options: [
-      { flag: "--json", description: "Output in JSON format" },
-      { flag: "--verbose", description: "Show detailed information" },
+      { flag: "--check-network", description: "Check internet connectivity" },
     ],
     examples: [
       { command: "guardscan status", description: "Show status summary" },
-      { command: "guardscan status --json", description: "Get status as JSON" },
+      { command: "guardscan status --check-network", description: "Include a connectivity check" },
     ],
   },
   {
     name: "security",
     icon: Shield,
-    description: "Run security vulnerability scanning (works offline)",
+    description: "Run local heuristic security checks",
     usage: "guardscan security [options]",
     options: [
-      {
-        flag: "--offline",
-        description: "Force offline mode (no credit validation)",
-      },
-      {
-        flag: "--ai-fix",
-        description: "Get AI-powered fix suggestions for vulnerabilities",
-      },
-      {
-        flag: "--severity <level>",
-        description: "Filter by severity (critical, high, medium, low)",
-      },
-      { flag: "--output <file>", description: "Save report to file" },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json, html)",
-      },
+      { flag: "-f, --files <patterns...>", description: "Specific files or patterns to scan" },
+      { flag: "--licenses", description: "Include license compliance scanning" },
+      { flag: "--cve", description: "Include exact-version dependency vulnerability scanning (on by default when supported manifests are present)" },
+      { flag: "--no-cve", description: "Skip dependency vulnerability scanning" },
+      { flag: "--scope <scope>", description: "Dependency scope for CVE scanning (all or runtime)" },
+      { flag: "--allow-partial", description: "Allow incomplete scanner coverage without an operational failure" },
+      { flag: "--concurrency <number>", description: "Maximum number of scanners to run concurrently (default: 4)" },
+      { flag: "--ai-fix", description: "Generate AI-powered fix suggestions" },
+      { flag: "--interactive", description: "Interactively review and apply fixes" },
+      { flag: "--debug", description: "Enable verbose debug logging" },
+      { flag: "--ci", description: "Enable CI-friendly output and exit-code policy" },
+      { flag: "--offline", description: "Skip network-backed checks for this run" },
+      { flag: "--no-cache", description: "Disable response, semantic, and vulnerability snapshot caches" },
+      { flag: "--format <format>", description: "Report format (markdown, json, sarif)" },
+      { flag: "-o, --output <path>", description: "Output file path" },
+      { flag: "--fail-on <severity>", description: "Fail when findings meet severity (critical, high, medium, low, info)" },
+      { flag: "--max-findings <number>", description: "Fail when finding count exceeds this number" },
     ],
     examples: [
-      { command: "guardscan security", description: "Run full security scan" },
-      {
-        command: "guardscan security --offline",
-        description: "Scan without internet",
-      },
-      {
-        command: "guardscan security --ai-fix",
-        description: "Get AI-powered fix suggestions",
-      },
-      {
-        command: "guardscan security --severity critical",
-        description: "Show only critical issues",
-      },
-      {
-        command: "guardscan security --output report.md",
-        description: "Save report to file",
-      },
+      { command: "guardscan security", description: "Run the local security scan" },
+      { command: "guardscan security --offline --no-cve", description: "Fully offline scan without dependency lookups" },
+      { command: "guardscan security --ai-fix", description: "Get AI-powered fix suggestions" },
+      { command: "guardscan security --ci --format json --output guardscan.json --fail-on high", description: "CI run with JSON output" },
+      { command: "guardscan security --format sarif --output guardscan.sarif", description: "Write SARIF for code scanning tools" },
     ],
   },
   {
     name: "test",
     icon: TestTube,
-    description: "Run tests with coverage and quality analysis",
+    description: "Run tests and code quality analysis",
     usage: "guardscan test [options]",
     options: [
-      { flag: "--coverage", description: "Generate coverage report" },
-      {
-        flag: "--framework <name>",
-        description: "Specify test framework (jest, pytest, etc.)",
-      },
-      {
-        flag: "--threshold <percent>",
-        description: "Set minimum coverage threshold",
-      },
+      { flag: "--coverage", description: "Include code coverage analysis" },
+      { flag: "--metrics", description: "Analyze code metrics only" },
+      { flag: "--smells", description: "Detect code smells only" },
+      { flag: "--lint", description: "Run linters only" },
+      { flag: "--all", description: "Run all quality checks" },
     ],
     examples: [
-      { command: "guardscan test", description: "Run all tests" },
-      {
-        command: "guardscan test --coverage",
-        description: "Run with coverage report",
-      },
-      {
-        command: "guardscan test --threshold 80",
-        description: "Require 80% coverage",
-      },
+      { command: "guardscan test", description: "Run tests and quality analysis" },
+      { command: "guardscan test --coverage", description: "Include coverage analysis" },
+      { command: "guardscan test --smells", description: "Detect code smells only" },
     ],
   },
   {
     name: "sbom",
     icon: Package,
-    description: "Generate Software Bill of Materials",
+    description: "Generate Software Bill of Materials (SPDX 2.3 or CycloneDX 1.7)",
     usage: "guardscan sbom [options]",
     options: [
-      {
-        flag: "--format <type>",
-        description: "Output format (json, xml, cyclonedx)",
-      },
-      {
-        flag: "--include-dev",
-        description: "Include development dependencies",
-      },
-      { flag: "--output <file>", description: "Save SBOM to file" },
+      { flag: "-f, --format <format>", description: "SBOM format: spdx (SPDX 2.3, default) or cyclonedx (CycloneDX 1.7)" },
+      { flag: "-o, --output <path>", description: "Output file path (default: sbom-<format>.json in the repository)" },
+      { flag: "--offline", description: "Skip network-backed checks for this command" },
     ],
     examples: [
-      { command: "guardscan sbom", description: "Generate SBOM in JSON" },
-      {
-        command: "guardscan sbom --format cyclonedx",
-        description: "Generate CycloneDX format",
-      },
-      {
-        command: "guardscan sbom --include-dev",
-        description: "Include dev dependencies",
-      },
+      { command: "guardscan sbom", description: "Generate an SPDX 2.3 SBOM" },
+      { command: "guardscan sbom --format cyclonedx", description: "Generate a CycloneDX 1.7 SBOM" },
+      { command: "guardscan sbom --offline --output sbom.json", description: "Generate from the local dependency inventory" },
+    ],
+  },
+  {
+    name: "vuln",
+    icon: ShieldCheck,
+    description: "Scan exact dependency versions for known vulnerabilities using OSV (aliases: cve, audit)",
+    usage: "guardscan vuln [path] [options]",
+    options: [
+      { flag: "--ecosystem <names...>", description: "Limit scanning to npm, pip, go, ruby, cargo, or maven" },
+      { flag: "--scope <scope>", description: "Dependency scope (all or runtime)" },
+      { flag: "--offline", description: "Use a matching local vulnerability snapshot without network access" },
+      { flag: "--refresh", description: "Bypass prior coverage and atomically replace the vulnerability snapshot" },
+      { flag: "--allow-partial", description: "Allow missing, stale, or incomplete vulnerability coverage" },
+      { flag: "--concurrency <number>", description: "Maximum concurrent advisory detail requests (default: 4)" },
+      { flag: "--format <format>", description: "Output format (table, json, or sarif)" },
+      { flag: "-o, --output <path>", description: "Write output to a file" },
+      { flag: "--ci", description: "Use CI failure defaults" },
+      { flag: "--fail-on <severity>", description: "Fail at or above critical, high, medium, or low" },
+      { flag: "--max-vulnerabilities <number>", description: "Fail when the vulnerability count exceeds this value" },
+      { flag: "--no-cache", description: "Disable vulnerability snapshot reads and writes" },
+      { flag: "db update [path]", description: "Fetch OSV coverage for the current exact dependency inventory" },
+      { flag: "db status [path]", description: "Show vulnerability snapshot coverage and freshness" },
+      { flag: "db clear [path] [--repo|--all] --force", description: "Delete vulnerability coverage snapshots" },
+    ],
+    examples: [
+      { command: "guardscan config --offline=false", description: "Allow online OSV lookups (offline mode is the default)" },
+      { command: "guardscan vuln .", description: "Audit exact dependency versions against OSV" },
+      { command: "guardscan audit . --ci --format json --output vulnerabilities.json", description: "CI report (aliases: cve, audit)" },
+      { command: "guardscan vuln db update .", description: "Create or replace the offline snapshot" },
+      { command: "guardscan vuln . --offline", description: "Scan using the local snapshot only" },
+      { command: "guardscan vuln db clear --all --force", description: "Delete every vulnerability snapshot" },
+    ],
+  },
+  {
+    name: "cache",
+    icon: RefreshCw,
+    description: "Manage repository-local AI, semantic, embedding, and advisory caches",
+    usage: "guardscan cache <stats|info|clear> [options]",
+    options: [
+      { flag: "stats", description: "Show cache statistics" },
+      { flag: "info", description: "Show cache configuration" },
+      { flag: "clear --repo", description: "Clear the current repository cache (default)" },
+      { flag: "clear --all", description: "Clear every repository cache" },
+      { flag: "clear --force", description: "Skip confirmation" },
+    ],
+    examples: [
+      { command: "guardscan cache stats", description: "Show cache statistics" },
+      { command: "guardscan cache clear --repo --force", description: "Clear this repository's cache" },
+      { command: "guardscan cache clear --all --force", description: "Clear all repository caches" },
+    ],
+  },
+  {
+    name: "telemetry",
+    icon: Activity,
+    description: "Inspect, sync, or clear opt-in telemetry (disabled by default)",
+    usage: "guardscan telemetry <status|sync|clear>",
+    options: [
+      { flag: "status", description: "Show telemetry consent, suppression, endpoint, and outbox status" },
+      { flag: "sync", description: "Explicitly send the oldest pending telemetry batch to the endpoint in GUARDSCAN_TELEMETRY_URL" },
+      { flag: "clear --force", description: "Delete all locally queued telemetry events" },
+    ],
+    examples: [
+      { command: "guardscan telemetry status", description: "Inspect consent and queued events" },
+      { command: "GUARDSCAN_TELEMETRY_URL=https://telemetry.example.com guardscan telemetry sync", description: "Deliver to your own collector" },
+      { command: "guardscan telemetry clear --force", description: "Delete the local queue" },
+    ],
+  },
+  {
+    name: "capabilities",
+    icon: Gauge,
+    description: "Inspect optional runtime capabilities and safe fallback modes",
+    usage: "guardscan capabilities [--json]",
+    options: [
+      { flag: "--json", description: "Emit compact machine-readable JSON" },
+    ],
+    examples: [
+      { command: "guardscan capabilities", description: "Print capability evidence" },
+      { command: "guardscan capabilities --json", description: "Machine-readable output" },
     ],
   },
   {
     name: "reset",
     icon: RotateCcw,
-    description: "Clear local cache & config",
+    description: "Clear local context and cache",
     usage: "guardscan reset [options]",
     options: [
-      {
-        flag: "--confirm",
-        description: "Skip confirmation prompt",
-      },
-      {
-        flag: "--cache-only",
-        description: "Only clear cache, keep config",
-      },
-      {
-        flag: "--config-only",
-        description: "Only clear config, keep cache",
-      },
+      { flag: "--all", description: "Reset all local configuration and state" },
+      { flag: "--force", description: "Skip confirmation prompts" },
     ],
     examples: [
-      {
-        command: "guardscan reset",
-        description: "Clear cache and config (with confirmation)",
-      },
-      {
-        command: "guardscan reset --confirm",
-        description: "Clear without confirmation prompt",
-      },
-      {
-        command: "guardscan reset --cache-only",
-        description: "Only clear cache files",
-      },
+      { command: "guardscan reset", description: "Clear local context and cache (with confirmation)" },
+      { command: "guardscan reset --all --force", description: "Reset all local configuration and state without prompts" },
     ],
   },
   {
     name: "scan",
     icon: Search,
-    description: "Comprehensive security scan (AI-enhanced by default)",
+    description: "Comprehensive scan: runs security and quality checks in parallel. Static-safe by default (repository tests and linters are not executed)",
     usage: "guardscan scan [options]",
     options: [
-      {
-        flag: "--skip-ai",
-        description: "Disable AI analysis (AI is enabled by default)",
-      },
-      {
-        flag: "--quick",
-        description: "Fast scan mode (skip deep analysis)",
-      },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json, html)",
-      },
-      {
-        flag: "--output <file>",
-        description: "Save report to file",
-      },
-      {
-        flag: "--severity <level>",
-        description: "Filter by severity (critical, high, medium, low)",
-      },
+      { flag: "--run-project-code", description: "Run repository tests and linters (disabled by default; use only on trusted repositories)" },
+      { flag: "--isolate-project-network", description: "Run project code in an OS network sandbox (fails if unavailable)" },
+      { flag: "--skip-tests", description: "Skip test execution" },
+      { flag: "--skip-perf", description: "Skip performance testing" },
+      { flag: "--skip-mutation", description: "Skip mutation testing" },
+      { flag: "--skip-ai", description: "Skip AI code review" },
+      { flag: "--coverage", description: "Include code coverage analysis" },
+      { flag: "--licenses", description: "Include license compliance scanning" },
+      { flag: "--cve / --no-cve", description: "Include or skip dependency vulnerability scanning (on by default)" },
+      { flag: "--scope <scope>", description: "Dependency scope for CVE scanning (all or runtime)" },
+      { flag: "--allow-partial", description: "Allow incomplete scanner coverage without an operational failure" },
+      { flag: "--concurrency <number>", description: "Maximum number of scanners to run concurrently (default: 4)" },
+      { flag: "--ci", description: "Enable CI-friendly output and exit-code policy" },
+      { flag: "--offline", description: "Skip network-backed checks for this run" },
+      { flag: "--no-cache", description: "Disable response, semantic, and vulnerability snapshot caches" },
+      { flag: "--format <format>", description: "Report format (markdown, json, sarif)" },
+      { flag: "-o, --output <path>", description: "Output file path" },
+      { flag: "--fail-on <severity>", description: "Fail when findings meet severity (critical, high, medium, low, info)" },
+      { flag: "--max-findings <number>", description: "Fail when finding count exceeds this number" },
     ],
     examples: [
-      {
-        command: "guardscan scan",
-        description: "Run comprehensive scan with AI",
-      },
-      {
-        command: "guardscan scan --skip-ai",
-        description: "Run scan without AI analysis",
-      },
-      {
-        command: "guardscan scan --quick",
-        description: "Fast scan mode",
-      },
-      {
-        command: "guardscan scan --format json --output report.json",
-        description: "Save JSON report",
-      },
+      { command: "guardscan scan", description: "Static-safe scan" },
+      { command: "guardscan scan --skip-ai", description: "Skip AI code review" },
+      { command: "guardscan scan --run-project-code", description: "Also run the repository's tests and linters (trusted repos only)" },
+      { command: "guardscan scan --ci --format sarif --output guardscan.sarif", description: "CI run with SARIF output" },
     ],
   },
   {
     name: "run",
     icon: Zap,
-    description: "AI-enhanced full code review (BYOK - Bring Your Own Key)",
+    description: "Run local code review with optional AI enhancement from your configured provider. Required local scanners always run before AI enrichment",
     usage: "guardscan run [options]",
     options: [
-      {
-        flag: "--ai",
-        description: "Enable AI-powered analysis",
-      },
-      {
-        flag: "--local",
-        description: "Use local Ollama for AI analysis",
-      },
-      {
-        flag: "--provider <name>",
-        description: "AI provider (openai, claude, gemini, ollama)",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json, html)",
-      },
+      { flag: "-f, --files <patterns...>", description: "Specific files or patterns to review" },
+      { flag: "--with-ai", description: "Use AI enhancement when a provider is configured (default: on)" },
+      { flag: "--offline", description: "Block cloud providers for this run" },
+      { flag: "--cve", description: "Opt in to exact-version dependency vulnerability scanning" },
+      { flag: "--allow-partial", description: "Allow incomplete CVE coverage" },
     ],
     examples: [
-      {
-        command: "guardscan run --ai",
-        description: "Run AI-powered code review",
-      },
-      {
-        command: "guardscan run --local",
-        description: "Use local Ollama for analysis",
-      },
-      {
-        command: "guardscan run --ai --provider claude --model claude-3-opus",
-        description: "Use Claude for AI review",
-      },
+      { command: "guardscan run", description: "Local review, plus AI enrichment if a provider is configured" },
+      { command: "guardscan run --offline", description: "Local review only; cloud providers are blocked" },
+      { command: "guardscan run --files \"src/**/*.ts\"", description: "Review specific files" },
     ],
   },
   {
     name: "perf",
     icon: Gauge,
-    description: "Performance testing & load testing",
+    description: "Run performance testing (requires k6 for load tests; optional)",
     usage: "guardscan perf [options]",
     options: [
-      {
-        flag: "--load",
-        description: "Run load testing",
-      },
-      {
-        flag: "--benchmark",
-        description: "Run performance benchmarks",
-      },
-      {
-        flag: "--duration <seconds>",
-        description: "Test duration in seconds",
-      },
-      {
-        flag: "--concurrent <number>",
-        description: "Number of concurrent requests",
-      },
-      {
-        flag: "--output <file>",
-        description: "Save report to file",
-      },
+      { flag: "--load", description: "Run load test (default)" },
+      { flag: "--stress", description: "Run stress test (increasing load)" },
+      { flag: "--web <url>", description: "Run Lighthouse audit on URL" },
+      { flag: "--baseline", description: "Save results as baseline" },
+      { flag: "--compare", description: "Compare with baseline" },
+      { flag: "--duration <duration>", description: "Test duration, e.g. 30s, 1m (default: 30s)" },
+      { flag: "--vus <number>", description: "Virtual users (default: 10)" },
+      { flag: "--url <url>", description: "Target URL for load/stress test" },
     ],
     examples: [
-      { command: "guardscan perf", description: "Run performance analysis" },
-      {
-        command: "guardscan perf --load --duration 60",
-        description: "Load test for 60 seconds",
-      },
-      {
-        command: "guardscan perf --benchmark",
-        description: "Run performance benchmarks",
-      },
+      { command: "guardscan perf --url http://localhost:3000", description: "Load test a URL" },
+      { command: "guardscan perf --stress --url http://localhost:3000", description: "Stress test" },
+      { command: "guardscan perf --web https://example.com", description: "Lighthouse audit" },
     ],
   },
   {
     name: "mutation",
     icon: FlaskConical,
-    description: "Mutation testing for test quality",
+    description: "Run mutation testing to assess test quality (requires an external framework such as Stryker; optional)",
     usage: "guardscan mutation [options]",
     options: [
-      {
-        flag: "--threshold <percent>",
-        description: "Minimum mutation score threshold",
-      },
-      {
-        flag: "--framework <name>",
-        description: "Test framework (jest, pytest, etc.)",
-      },
-      {
-        flag: "--mutators <list>",
-        description: "Comma-separated list of mutators to use",
-      },
-      {
-        flag: "--output <file>",
-        description: "Save report to file",
-      },
+      { flag: "--framework <framework>", description: "Mutation framework: stryker, mutmut, pitest, auto (default: auto)" },
+      { flag: "--threshold <number>", description: "Minimum mutation score, 0-100 (default: 80)" },
+      { flag: "--files <files>", description: "Comma-separated list of files to mutate" },
+      { flag: "--test-command <command>", description: "Custom mutmut test command" },
+      { flag: "--allow-unsafe-test-command", description: "Allow mutmut to run a custom test command string from --test-command" },
+      { flag: "--timeout <ms>", description: "Timeout per test in milliseconds (default: 5000)" },
     ],
     examples: [
       { command: "guardscan mutation", description: "Run mutation testing" },
-      {
-        command: "guardscan mutation --threshold 80",
-        description: "Require 80% mutation score",
-      },
-      {
-        command: "guardscan mutation --framework jest",
-        description: "Use Jest for mutation testing",
-      },
+      { command: "guardscan mutation --threshold 80", description: "Require an 80 percent mutation score" },
+      { command: "guardscan mutation --framework stryker", description: "Use Stryker" },
     ],
   },
   {
     name: "rules",
     icon: FileText,
-    description: "Custom YAML-based rule engine",
+    description: "Run custom rule engine with YAML-based rules",
     usage: "guardscan rules [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "Path to custom rules YAML file",
-      },
-      {
-        flag: "--list",
-        description: "List all available rules",
-      },
-      {
-        flag: "--validate",
-        description: "Validate rules file syntax",
-      },
-      {
-        flag: "--enable <rule>",
-        description: "Enable specific rule",
-      },
-      {
-        flag: "--disable <rule>",
-        description: "Disable specific rule",
-      },
+      { flag: "--list", description: "List all available rules" },
+      { flag: "--run", description: "Run rules (default)" },
+      { flag: "--fix", description: "Apply auto-fixes to violations" },
+      { flag: "--rule-ids <ids>", description: "Comma-separated list of rule IDs to run" },
+      { flag: "--files <files>", description: "Comma-separated list of files to scan" },
+      { flag: "--custom-rules <dir>", description: "Directory containing custom YAML rules" },
+      { flag: "--export <rule:path>", description: "Export a rule to file (format: ruleId:outputPath)" },
     ],
     examples: [
-      {
-        command: "guardscan rules --list",
-        description: "List all available rules",
-      },
-      {
-        command: "guardscan rules --file custom-rules.yml",
-        description: "Use custom rules file",
-      },
-      {
-        command: "guardscan rules --validate --file rules.yml",
-        description: "Validate rules file",
-      },
+      { command: "guardscan rules --list", description: "List available rules" },
+      { command: "guardscan rules --custom-rules ./rules", description: "Run custom YAML rules" },
+      { command: "guardscan rules --rule-ids RULE-1,RULE-2 --fix", description: "Run selected rules and apply auto-fixes" },
     ],
   },
   {
     name: "explain",
     icon: Eye,
-    description: "Explain how code works (BYOK - Bring Your Own Key)",
-    usage: "guardscan explain <file> [options]",
+    description: "Explain code using AI (function, class, file, or theme)",
+    usage: "guardscan explain <target> [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "File path to explain",
-      },
-      {
-        flag: "--deep",
-        description: "Deep explanation with context",
-      },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json)",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "-l, --level <level>", description: "Explanation level: brief, detailed, comprehensive (default: detailed)" },
+      { flag: "-t, --type <type>", description: "Target type: function, class, file, module (default: function)" },
+      { flag: "-o, --output <path>", description: "Save explanation to file" },
     ],
     examples: [
-      {
-        command: "guardscan explain src/utils.ts",
-        description: "Explain a specific file",
-      },
-      {
-        command: "guardscan explain src/utils.ts --deep",
-        description: "Get deep explanation with context",
-      },
-      {
-        command: "guardscan explain src/utils.ts --format markdown",
-        description: "Get explanation in markdown format",
-      },
+      { command: "guardscan explain src/utils.ts --type file", description: "Explain a file" },
+      { command: "guardscan explain parseConfig --level brief", description: "Brief explanation of a function" },
+      { command: "guardscan explain AuthService --type class -o explain.md", description: "Save to a file" },
     ],
   },
   {
     name: "review",
     icon: FileCheck,
-    description: "Comprehensive AI code review (BYOK - Bring Your Own Key)",
-    usage: "guardscan review <file> [options]",
+    description: "AI-powered code review for git changes",
+    usage: "guardscan review [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "File path to review",
-      },
-      {
-        flag: "--deep",
-        description: "Deep review with detailed analysis",
-      },
-      {
-        flag: "--focus <area>",
-        description: "Focus on specific area (security, performance, quality)",
-      },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json, html)",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "--base <ref>", description: "Base git reference (default: HEAD)" },
+      { flag: "--head <ref>", description: "Head git reference for comparison" },
+      { flag: "-f, --file <path>", description: "Review specific file only" },
+      { flag: "-s, --severity <level>", description: "Minimum severity level: critical, high, medium, low, info" },
+      { flag: "-c, --category <category>", description: "Filter by category: bug, security, performance, maintainability, style, documentation, testing, accessibility, best-practice" },
+      { flag: "--report", description: "Generate full detailed report" },
+      { flag: "-o, --output <path>", description: "Save report to file" },
     ],
     examples: [
-      {
-        command: "guardscan review src/auth.ts",
-        description: "Review a specific file",
-      },
-      {
-        command: "guardscan review src/auth.ts --deep",
-        description: "Deep review with detailed analysis",
-      },
-      {
-        command: "guardscan review src/auth.ts --focus security",
-        description: "Focus on security aspects",
-      },
+      { command: "guardscan review", description: "Review uncommitted changes" },
+      { command: "guardscan review --base main --head feature", description: "Review a branch against main" },
+      { command: "guardscan review --file src/auth.ts --severity high", description: "Review one file" },
     ],
   },
   {
     name: "commit",
     icon: GitCommit,
-    description: "Generate commit messages (BYOK - Bring Your Own Key)",
+    description: "Generate AI-powered commit messages",
     usage: "guardscan commit [options]",
     options: [
-      {
-        flag: "--staged",
-        description: "Generate message for staged changes",
-      },
-      {
-        flag: "--format <type>",
-        description: "Message format (conventional, simple, detailed)",
-      },
-      {
-        flag: "--conventional",
-        description: "Use conventional commit format",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "--ai", description: "Use AI to generate commit message (default: on)" },
+      { flag: "--auto", description: "Automatically commit with generated message" },
+      { flag: "--scope <scope>", description: "Specify commit scope" },
+      { flag: "--type <type>", description: "Specify commit type (feat, fix, docs, etc.)" },
+      { flag: "--no-body", description: "Skip commit body (subject only)" },
     ],
     examples: [
-      {
-        command: "guardscan commit",
-        description: "Generate commit message for changes",
-      },
-      {
-        command: "guardscan commit --staged",
-        description: "Generate message for staged changes only",
-      },
-      {
-        command: "guardscan commit --conventional",
-        description: "Generate conventional commit message",
-      },
+      { command: "guardscan commit", description: "Generate a commit message" },
+      { command: "guardscan commit --type feat --scope auth", description: "Set type and scope" },
+      { command: "guardscan commit --auto", description: "Commit with the generated message" },
     ],
   },
   {
     name: "docs",
     icon: BookOpen,
-    description: "Auto-generate documentation (BYOK - Bring Your Own Key)",
-    usage: "guardscan docs <file> [options]",
+    description: "Generate documentation using AI",
+    usage: "guardscan docs [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "File path to document",
-      },
-      {
-        flag: "--format <type>",
-        description: "Documentation format (markdown, jsdoc, tsdoc)",
-      },
-      {
-        flag: "--output <file>",
-        description: "Output file path",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "-t, --type <type>", description: "Documentation type: readme, api, architecture, contributing (default: readme)" },
+      { flag: "-o, --output <path>", description: "Custom output path" },
+      { flag: "--diagrams", description: "Include architecture diagrams (Mermaid; default: on)" },
+      { flag: "--examples", description: "Include code examples (default: on)" },
+      { flag: "--audience <audience>", description: "Target audience: developer, user, contributor (default: user)" },
     ],
     examples: [
-      {
-        command: "guardscan docs src/api.ts",
-        description: "Generate docs for a file",
-      },
-      {
-        command: "guardscan docs src/api.ts --format jsdoc",
-        description: "Generate JSDoc comments",
-      },
-      {
-        command: "guardscan docs src/api.ts --output docs/api.md",
-        description: "Save docs to specific file",
-      },
+      { command: "guardscan docs", description: "Generate a README" },
+      { command: "guardscan docs --type api -o docs/api.md", description: "Generate API docs" },
+      { command: "guardscan docs --type architecture --audience developer", description: "Architecture overview for developers" },
     ],
   },
   {
     name: "test-gen",
     icon: Wand2,
-    description: "Generate unit tests (BYOK - Bring Your Own Key)",
-    usage: "guardscan test-gen <file> [options]",
+    description: "Generate tests using AI",
+    usage: "guardscan test-gen [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "File path to generate tests for",
-      },
-      {
-        flag: "--framework <name>",
-        description: "Test framework (jest, pytest, unittest, etc.)",
-      },
-      {
-        flag: "--coverage",
-        description: "Generate tests for uncovered code",
-      },
-      {
-        flag: "--output <file>",
-        description: "Output test file path",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "--function <name>", description: "Generate tests for a specific function" },
+      { flag: "--class <name>", description: "Generate tests for a specific class" },
+      { flag: "--file <path>", description: "Generate tests for all exports in a file" },
+      { flag: "--framework <framework>", description: "Test framework: jest, vitest, mocha, pytest, auto (default: auto)" },
+      { flag: "-o, --output <path>", description: "Custom output path for test file" },
+      { flag: "--coverage", description: "Show coverage estimation" },
     ],
     examples: [
-      {
-        command: "guardscan test-gen src/utils.ts",
-        description: "Generate tests for a file",
-      },
-      {
-        command: "guardscan test-gen src/utils.ts --framework jest",
-        description: "Generate Jest tests",
-      },
-      {
-        command: "guardscan test-gen src/utils.ts --coverage",
-        description: "Generate tests for uncovered code",
-      },
+      { command: "guardscan test-gen --file src/utils.ts", description: "Tests for all exports in a file" },
+      { command: "guardscan test-gen --function parseConfig --framework vitest", description: "Tests for one function" },
+      { command: "guardscan test-gen --class AuthService --coverage", description: "Tests for a class with coverage estimate" },
     ],
   },
   {
     name: "refactor",
     icon: Wand2,
-    description: "Get refactoring suggestions (BYOK - Bring Your Own Key)",
-    usage: "guardscan refactor <file> [options]",
+    description: "AI-powered refactoring suggestions",
+    usage: "guardscan refactor [options]",
     options: [
-      {
-        flag: "--file <path>",
-        description: "File path to refactor",
-      },
-      {
-        flag: "--apply",
-        description: "Automatically apply refactoring suggestions",
-      },
-      {
-        flag: "--suggestions",
-        description: "Show refactoring suggestions only",
-      },
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json)",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "-f, --file <path>", description: "Specific file to analyze" },
+      { flag: "--function <name>", description: "Analyze specific function" },
+      { flag: "--class <name>", description: "Analyze specific class" },
+      { flag: "--smell <type>", description: "Target specific code smell type" },
+      { flag: "--pattern <pattern>", description: "Suggest specific design pattern" },
+      { flag: "--analyze", description: "Analyze code smells only" },
+      { flag: "--apply", description: "Generate refactored code" },
+      { flag: "-i, --interactive", description: "Interactive refactoring mode" },
+      { flag: "--report", description: "Generate full refactoring report" },
+      { flag: "-o, --output <path>", description: "Save report to file" },
     ],
     examples: [
-      {
-        command: "guardscan refactor src/legacy.ts",
-        description: "Get refactoring suggestions",
-      },
-      {
-        command: "guardscan refactor src/legacy.ts --suggestions",
-        description: "Show suggestions without applying",
-      },
-      {
-        command: "guardscan refactor src/legacy.ts --apply",
-        description: "Apply refactoring suggestions automatically",
-      },
+      { command: "guardscan refactor --file src/legacy.ts --analyze", description: "Analyze code smells only" },
+      { command: "guardscan refactor --file src/legacy.ts --interactive", description: "Interactive refactoring" },
+      { command: "guardscan refactor --file src/legacy.ts --report -o refactor.md", description: "Full report" },
     ],
   },
   {
     name: "threat-model",
     icon: ShieldCheck,
-    description: "Security architecture analysis (BYOK - Bring Your Own Key)",
+    description: "AI-powered threat modeling with STRIDE analysis",
     usage: "guardscan threat-model [options]",
     options: [
-      {
-        flag: "--format <type>",
-        description: "Output format (markdown, json, html)",
-      },
-      {
-        flag: "--output <file>",
-        description: "Save threat model to file",
-      },
-      {
-        flag: "--deep",
-        description: "Deep analysis with detailed threats",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "-f, --file <path>", description: "Specific file to analyze" },
+      { flag: "-c, --category <category>", description: "Focus on a STRIDE category (spoofing, tampering, repudiation, information-disclosure, denial-of-service, elevation-of-privilege)" },
+      { flag: "--flows", description: "Include data flow mapping (default: on)" },
+      { flag: "--diagram", description: "Generate threat model diagram" },
+      { flag: "--focus <area>", description: "Focus area: authentication, data-protection, api-security, or all" },
+      { flag: "-s, --severity <level>", description: "Minimum severity level: low, medium, high, critical" },
+      { flag: "--report", description: "Generate full threat model report" },
+      { flag: "-o, --output <path>", description: "Save report to file" },
     ],
     examples: [
-      {
-        command: "guardscan threat-model",
-        description: "Generate threat model",
-      },
-      {
-        command: "guardscan threat-model --deep",
-        description: "Deep analysis with detailed threats",
-      },
-      {
-        command:
-          "guardscan threat-model --format html --output threat-model.html",
-        description: "Save threat model as HTML",
-      },
+      { command: "guardscan threat-model", description: "Model threats for the codebase" },
+      { command: "guardscan threat-model --focus authentication --diagram", description: "Authentication focus with a diagram" },
+      { command: "guardscan threat-model --report -o threat-model.md", description: "Full report" },
     ],
   },
   {
     name: "migrate",
     icon: RefreshCw,
-    description:
-      "Framework/language migration help (BYOK - Bring Your Own Key)",
+    description: "AI-powered code migration assistant",
     usage: "guardscan migrate [options]",
     options: [
-      {
-        flag: "--from <framework>",
-        description: "Source framework or language",
-      },
-      {
-        flag: "--to <framework>",
-        description: "Target framework or language",
-      },
-      {
-        flag: "--dry-run",
-        description: "Show migration plan without applying",
-      },
-      {
-        flag: "--output <file>",
-        description: "Save migration plan to file",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
+      { flag: "-t, --type <type>", description: "Migration type: framework, language, modernization, dependency" },
+      { flag: "--target <target>", description: "Migration target (e.g., react-class-to-hooks, typescript, es5-to-es6)" },
+      { flag: "--from <source>", description: "Source framework/language (e.g., react, es5)" },
+      { flag: "--to <target>", description: "Target framework/language (e.g., vue, es6)" },
+      { flag: "-f, --file <path>", description: "Specific file to migrate" },
+      { flag: "--dry-run", description: "Preview changes without applying them (default: on)" },
+      { flag: "--auto-fix", description: "Automatically apply fixes" },
+      { flag: "--backup", description: "Create backups of original files (default: on)" },
+      { flag: "--report", description: "Generate migration report" },
+      { flag: "-o, --output <path>", description: "Save report to file" },
     ],
     examples: [
-      {
-        command: "guardscan migrate --from react --to vue",
-        description: "Get migration plan from React to Vue",
-      },
-      {
-        command: "guardscan migrate --from python2 --to python3 --dry-run",
-        description: "Show Python 2 to 3 migration plan",
-      },
-      {
-        command:
-          "guardscan migrate --from express --to fastify --output migration.md",
-        description: "Save migration plan to file",
-      },
+      { command: "guardscan migrate --type framework --from react --to vue", description: "Preview a framework migration" },
+      { command: "guardscan migrate --target react-class-to-hooks --file src/App.jsx", description: "Class components to hooks" },
+      { command: "guardscan migrate --type modernization --report -o migration.md", description: "Migration report" },
     ],
   },
   {
     name: "chat",
     icon: MessageSquare,
-    description:
-      "Interactive Q&A about codebase (RAG - BYOK - Bring Your Own Key)",
+    description: "Interactive Q&A about your codebase (RAG, BYOK - Bring Your Own Key)",
     usage: "guardscan chat [options]",
     options: [
-      {
-        flag: "--context <path>",
-        description: "Codebase path or file to include in context",
-      },
-      {
-        flag: "--model <name>",
-        description: "AI model to use",
-      },
-      {
-        flag: "--session",
-        description: "Start interactive chat session",
-      },
+      { flag: "-m, --model <model>", description: "Override AI model" },
+      { flag: "-t, --temperature <temp>", description: "Temperature 0-1 (default: 0.7)" },
+      { flag: "--rebuild", description: "Rebuild embeddings index" },
+      { flag: "--embedding-provider <provider>", description: "Embedding provider: openai, gemini, ollama, claude, or lmstudio (auto-selected when omitted)" },
+      { flag: "--session <path>", description: "Load existing session from file" },
+      { flag: "--export <path>", description: "Export conversation to file" },
     ],
     examples: [
-      {
-        command: "guardscan chat",
-        description: "Start interactive chat session",
-      },
-      {
-        command: "guardscan chat --context src/",
-        description: "Chat with src/ directory context",
-      },
-      {
-        command: "guardscan chat --session",
-        description: "Start persistent chat session",
-      },
+      { command: "guardscan chat", description: "Start an interactive chat session" },
+      { command: "guardscan chat --rebuild", description: "Rebuild the embeddings index" },
+      { command: "guardscan chat --session chat.json --export chat-export.md", description: "Resume a session and export it" },
     ],
   },
 ];
 
 const configOptions = [
   {
-    key: "ai.provider",
+    key: "provider",
     type: "string",
-    default: "openai",
-    description: "Default AI provider",
-    possibleValues: ["openai", "claude", "gemini", "ollama"],
-  },
-  {
-    key: "ai.model",
-    type: "string",
-    default: "gpt-4",
-    description: "Default AI model for the chosen provider",
+    default: "none",
+    description: "AI provider used for AI features",
     possibleValues: [
-      "gpt-4",
-      "gpt-3.5-turbo",
-      "claude-3-opus",
-      "gemini-pro",
-      "codellama",
+      "openai",
+      "claude",
+      "gemini",
+      "ollama",
+      "lmstudio",
+      "openrouter",
+      "none",
     ],
   },
   {
-    key: "scan.verbose",
+    key: "apiKey",
+    type: "string",
+    default: "unset",
+    description:
+      "API key for cloud providers. Cloud credentials can instead come from environment variables; Ollama and LM Studio need no key",
+    possibleValues: ["Provider API key"],
+  },
+  {
+    key: "apiEndpoint",
+    type: "string",
+    default: "http://127.0.0.1:11434 (Ollama), http://127.0.0.1:1234 (LM Studio)",
+    description:
+      "Endpoint for Ollama or LM Studio. Offline mode requires a literal loopback IP (127.0.0.1 or ::1); LM Studio is normalized to the /v1 base path",
+    possibleValues: ["URL"],
+  },
+  {
+    key: "allowRemoteSelfHosted",
     type: "boolean",
     default: "false",
-    description: "Enable verbose output for all scans",
+    description:
+      "Allow a remote self-hosted Ollama or LM Studio endpoint. Requires online mode",
     possibleValues: ["true", "false"],
   },
   {
-    key: "scan.output_format",
-    type: "string",
-    default: "markdown",
-    description: "Default output format for reports",
-    possibleValues: ["markdown", "json", "html"],
-  },
-  {
-    key: "privacy.telemetry",
+    key: "offlineMode",
     type: "boolean",
     default: "true",
-    description: "Enable anonymous usage telemetry",
+    description:
+      "Block cloud AI, embeddings, update checks, telemetry, and advisory lookups",
     possibleValues: ["true", "false"],
   },
   {
-    key: "exclude_patterns",
-    type: "array",
-    default: '["node_modules", ".git", "dist", "build"]',
-    description: "Glob patterns to exclude from scanning",
-    possibleValues: ["Array of glob patterns"],
+    key: "telemetryEnabled",
+    type: "boolean",
+    default: "false",
+    description:
+      "Opt in to locally queued aggregate telemetry. Events are sent only by guardscan telemetry sync to GUARDSCAN_TELEMETRY_URL",
+    possibleValues: ["true", "false"],
   },
 ];
 
@@ -984,7 +726,7 @@ export default function Documentation() {
         id: "env-vars",
         title: "Environment Variables",
         content:
-          "OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY GUARDSCAN_CONFIG GUARDSCAN_TELEMETRY environment variables configuration",
+          "OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY OPENROUTER_API_KEY OLLAMA_ENDPOINT GUARDSCAN_TELEMETRY_URL GUARDSCAN_NO_TELEMETRY GUARDSCAN_OFFLINE GUARDSCAN_HOME environment variables configuration",
         category: "Configuration",
         section: "env-vars",
       },
@@ -1000,7 +742,7 @@ export default function Documentation() {
         id: "ai-overview",
         title: "AI Commands Overview",
         content:
-          "Fully AI-Dependent commands AI-Enhanced commands AI Configuration commit explain test-gen docs chat refactor threat-model migrate review run scan security config --ai --skip-ai --ai-fix",
+          "Fully AI-Dependent commands AI-Enhanced commands AI Configuration commit explain test-gen docs chat refactor threat-model migrate review run scan security config --with-ai --skip-ai --ai-fix",
         category: "Commands",
         section: "ai-commands-overview",
       },
@@ -1258,6 +1000,72 @@ export default function Documentation() {
                 codebase analysis. This documentation provides everything you
                 need to get started and master GuardScan.
               </p>
+              <p className="text-sm text-muted-foreground mb-6">
+                Documentation version:{" "}
+                <strong className="text-foreground">v1.1.0</strong>. GuardScan
+                1.1.0 is not yet published to npm; until it is, the latest
+                published version is 1.0.5 and some behavior below will differ.
+              </p>
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+                <h4 className="font-semibold text-foreground mb-2">
+                  What's new in 1.1.0
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                  <li>Node.js 22 or newer is now required.</li>
+                  <li>
+                    The hosted telemetry endpoint is retired. Telemetry is
+                    opt-in, queued locally, and sent only by{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      guardscan telemetry sync
+                    </code>{" "}
+                    to a collector you set in{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      GUARDSCAN_TELEMETRY_URL
+                    </code>
+                    .
+                  </li>
+                  <li>
+                    New{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      guardscan vuln
+                    </code>{" "}
+                    (aliases <code className="px-1 py-0.5 rounded bg-muted">cve</code>,{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">audit</code>)
+                    for OSV-backed dependency scanning with offline snapshots.
+                  </li>
+                  <li>
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      guardscan scan
+                    </code>{" "}
+                    is static-safe by default; repository tests and linters run
+                    only with{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      --run-project-code
+                    </code>
+                    .
+                  </li>
+                  <li>
+                    Scanner failures and incomplete coverage exit with code 2
+                    unless partial execution is allowed. JSON and SARIF output
+                    are supported.
+                  </li>
+                  <li>
+                    SBOM output is schema-valid SPDX 2.3 or CycloneDX 1.7.
+                  </li>
+                  <li>
+                    Offline Ollama and LM Studio endpoints must be literal
+                    loopback IPs; new{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      guardscan cache clear
+                    </code>{" "}
+                    and{" "}
+                    <code className="px-1 py-0.5 rounded bg-muted">
+                      guardscan capabilities --json
+                    </code>{" "}
+                    commands.
+                  </li>
+                </ul>
+              </div>
             </section>
 
             {/* Quick Start */}
@@ -1289,8 +1097,8 @@ guardscan --version`}
                     Requirements:
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
-                    <li>Node.js &gt;= 18.0.0</li>
-                    <li>npm or yarn</li>
+                    <li>Node.js &gt;= 22.0.0</li>
+                    <li>npm</li>
                   </ul>
                 </div>
               </div>
@@ -1314,8 +1122,9 @@ guardscan --version`}
                         </h4>
                         <CodeBlock code="guardscan init" />
                         <p className="text-sm text-muted-foreground mt-3">
-                          This creates a local configuration file and generates
-                          a client ID for optional telemetry.
+                          This creates a private local configuration file.
+                          GuardScan does not generate or transmit an
+                          installation identifier.
                         </p>
                       </div>
                     </div>
@@ -1412,7 +1221,10 @@ guardscan --version`}
                       code={`# Run comprehensive security scan
 guardscan security
 
-# Check for dependency vulnerabilities
+# Audit exact dependency versions against OSV
+guardscan vuln .
+
+# Include license compliance scanning
 guardscan security --licenses
 
 # Generate SBOM for compliance
@@ -1497,19 +1309,37 @@ guardscan chat`}
 
                   <Card className="p-6 bg-card/50 border-primary/20">
                     <h4 className="font-semibold mb-3 text-foreground">
-                      What GuardScan Sends (Optional Telemetry)
+                      Opt-In Telemetry (Off by Default)
                     </h4>
                     <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc mb-4">
-                      <li>Client ID (anonymous identifier)</li>
-                      <li>Repository ID (hashed, anonymous)</li>
-                      <li>Lines of code count</li>
-                      <li>Command usage statistics</li>
+                      <li>
+                        Disabled by default; enable with{" "}
+                        <code>guardscan config --telemetry=true</code>
+                      </li>
+                      <li>
+                        Allowlisted aggregate events only (command category,
+                        duration, line count, coarse execution mode)
+                      </li>
+                      <li>
+                        Queued locally, and sent only by{" "}
+                        <code>guardscan telemetry sync</code> to a collector you
+                        run, set in <code>GUARDSCAN_TELEMETRY_URL</code>
+                      </li>
+                      <li>
+                        GuardScan operates no hosted telemetry collector;
+                        offline mode and <code>--no-telemetry</code> suppress
+                        recording and delivery
+                      </li>
                     </ul>
                     <div className="mt-4">
                       <p className="text-sm text-muted-foreground mb-2">
-                        You can disable telemetry:
+                        Inspect, sync, or clear the local queue:
                       </p>
-                      <CodeBlock code="guardscan --no-telemetry security" />
+                      <CodeBlock
+                        code={`guardscan telemetry status
+guardscan telemetry clear --force
+guardscan --no-telemetry security`}
+                      />
                     </div>
                   </Card>
                 </div>
@@ -1531,7 +1361,10 @@ guardscan chat`}
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
                       <li>Secrets detection (20+ patterns)</li>
-                      <li>Dependency vulnerability scanning</li>
+                      <li>
+                        Dependency vulnerability scanning (OSV lookup, or a
+                        fresh offline snapshot)
+                      </li>
                       <li>Code metrics and complexity analysis</li>
                       <li>LOC counting (20+ languages)</li>
                       <li>OWASP Top 10 detection</li>
@@ -1551,8 +1384,8 @@ guardscan chat`}
                       <li>OpenAI GPT-4, GPT-3.5</li>
                       <li>Anthropic Claude (Opus, Sonnet, Haiku)</li>
                       <li>Google Gemini</li>
-                      <li>Ollama (local/offline AI)</li>
-                      <li>LM Studio (local AI)</li>
+                      <li>Ollama (local AI; keyless)</li>
+                      <li>LM Studio (local AI; keyless)</li>
                     </ul>
                   </Card>
                 </div>
@@ -1760,26 +1593,25 @@ guardscan init`}
                       </code>
                       <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-2">
-                          Code review (has{" "}
-                          <code className="px-1 py-0.5 rounded text-xs bg-muted">
-                            --ai
-                          </code>{" "}
-                          option, AI-enhanced)
+                          Local code review. Required local scanners always run
+                          first; AI enrichment is added when a provider is
+                          configured
                         </p>
                         <div className="text-xs text-muted-foreground space-y-1">
                           <div>
                             •{" "}
                             <code className="px-1 py-0.5 rounded bg-muted">
-                              --ai
+                              --with-ai
                             </code>{" "}
-                            - Enable AI-powered analysis
+                            - Use AI enhancement when a provider is configured
+                            (default)
                           </div>
                           <div>
                             •{" "}
                             <code className="px-1 py-0.5 rounded bg-muted">
-                              --local
+                              --offline
                             </code>{" "}
-                            - Use local Ollama for AI
+                            - Block cloud providers (local review only)
                           </div>
                         </div>
                       </div>
@@ -1792,11 +1624,15 @@ guardscan init`}
                       </code>
                       <div className="flex-1">
                         <p className="text-sm text-muted-foreground mb-2">
-                          Comprehensive scan (has{" "}
+                          Comprehensive, static-safe scan (has{" "}
                           <code className="px-1 py-0.5 rounded text-xs bg-muted">
                             --skip-ai
                           </code>{" "}
-                          option, includes AI by default)
+                          option; repository tests and linters need{" "}
+                          <code className="px-1 py-0.5 rounded text-xs bg-muted">
+                            --run-project-code
+                          </code>
+                          )
                         </p>
                         <div className="text-xs text-muted-foreground space-y-1">
                           <div>
@@ -1848,8 +1684,8 @@ guardscan init`}
                     guardscan config
                   </code>
                   <p className="text-sm text-muted-foreground mt-2">
-                    Configure AI provider and settings (sets up OpenAI,
-                    Anthropic, Google, Ollama)
+                    Configure AI provider and settings (OpenAI, Anthropic,
+                    Google, Ollama, LM Studio, OpenRouter)
                   </p>
                 </Card>
               </div>
@@ -2243,13 +2079,11 @@ $env:OPENAI_API_KEY="sk-your-api-key-here"`}
                       </h4>
                       <CodeBlock
                         title="Execute scan"
-                        code={`guardscan run --ai
+                        code={`# Select OpenAI (and a model) interactively
+guardscan config --provider openai
 
-# Or specify a model
-guardscan run --ai --model gpt-4
-
-# For GPT-3.5 (faster, cheaper)
-guardscan run --ai --model gpt-3.5-turbo`}
+# Run a review with AI enrichment
+guardscan run`}
                       />
                     </div>
                   </div>
@@ -2314,13 +2148,11 @@ $env:ANTHROPIC_API_KEY="sk-ant-your-api-key-here"`}
                       </h4>
                       <CodeBlock
                         title="Execute scan"
-                        code={`guardscan run --ai --provider claude
+                        code={`# Select Claude (and a model) interactively
+guardscan config --provider claude
 
-# Or specify a model
-guardscan run --ai --provider claude --model claude-3-opus
-
-# For Claude Sonnet (balanced performance)
-guardscan run --ai --provider claude --model claude-3-sonnet`}
+# Run a review with AI enrichment
+guardscan run`}
                       />
                     </div>
                   </div>
@@ -2384,13 +2216,11 @@ $env:GOOGLE_API_KEY="your-api-key-here"`}
                       </h4>
                       <CodeBlock
                         title="Execute scan"
-                        code={`guardscan run --ai --provider gemini
+                        code={`# Select Gemini (and a model) interactively
+guardscan config --provider gemini
 
-# Or specify a model
-guardscan run --ai --provider gemini --model gemini-pro
-
-# For Gemini Flash (faster response)
-guardscan run --ai --provider gemini --model gemini-flash`}
+# Run a review with AI enrichment
+guardscan run`}
                       />
                     </div>
                   </div>
@@ -2448,18 +2278,41 @@ ollama list`}
 
                     <div>
                       <h4 className="text-lg font-semibold mb-3 text-foreground">
-                        Step 3: Run Local AI Scan
+                        Step 3: Run Local AI Review
                       </h4>
                       <CodeBlock
                         title="Execute scan with local AI"
-                        code={`guardscan run --local
+                        code={`# Select Ollama (no API key needed)
+guardscan config --provider ollama
 
-# Or specify a model
-guardscan run --local --model codellama
-
-# With specific Ollama model
-guardscan run --local --model llama2:7b`}
+# Run a review with local AI
+guardscan run`}
                       />
+                    </div>
+
+                    <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
+                      <h5 className="font-semibold text-foreground mb-2">
+                        Endpoints (1.1.0)
+                      </h5>
+                      <ul className="space-y-2 text-sm text-muted-foreground ml-4 list-disc">
+                        <li>
+                          Defaults: Ollama{" "}
+                          <code>http://127.0.0.1:11434</code>, LM Studio{" "}
+                          <code>http://127.0.0.1:1234</code> (normalized to the{" "}
+                          <code>/v1</code> base path). No API key is required.
+                        </li>
+                        <li>
+                          In offline mode the endpoint must be a literal
+                          loopback IP (<code>127.0.0.1</code> or{" "}
+                          <code>::1</code>); a hostname such as{" "}
+                          <code>localhost</code> is not accepted.
+                        </li>
+                        <li>
+                          A remote self-hosted endpoint requires online mode and{" "}
+                          <code>allowRemoteSelfHosted: true</code> in{" "}
+                          <code>~/.guardscan/config.yml</code>.
+                        </li>
+                      </ul>
                     </div>
 
                     <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
@@ -2496,25 +2349,18 @@ guardscan run --local --model llama2:7b`}
                 <CodeBlock
                   title="~/.guardscan/config.yml"
                   language="yaml"
-                  code={`# AI Provider Configuration
-ai:
-  provider: openai  # openai, claude, gemini, or ollama
-  model: gpt-4      # model name
-  
-# For local AI
-local:
-  enabled: true
-  model: codellama
-  
-# Default scan options
-scan:
-  verbose: true
-  output_format: md
-  
+                  code={`# Provider and privacy configuration
+# Top-level fields (not a nested "ai:" object)
+provider: openai   # openai, claude, gemini, ollama, lmstudio, openrouter, none
+# apiKey: ...      # optional; cloud keys can instead come from environment variables
+
+# For Ollama / LM Studio
+# apiEndpoint: http://127.0.0.1:11434
+# allowRemoteSelfHosted: false   # true only for remote endpoints (online mode)
+
 # Privacy settings
-privacy:
-  telemetry: false
-  anonymous_stats: false`}
+telemetryEnabled: false   # opt-in; off by default
+offlineMode: true   # default; set false to allow network-backed features like OSV lookups`}
                 />
               </div>
             </section>
@@ -2583,8 +2429,9 @@ privacy:
                 Environment Variables
               </h2>
               <p className="text-muted-foreground mb-6">
-                GuardScan supports the following environment variables for API
-                key configuration:
+                GuardScan supports the following environment variables.
+                Cloud provider credentials can come from the environment
+                alone; Ollama and LM Studio need no key.
               </p>
               <div className="space-y-4">
                 {[
@@ -2604,14 +2451,42 @@ privacy:
                     example: "AIza...",
                   },
                   {
-                    name: "GUARDSCAN_CONFIG",
-                    description: "Path to custom configuration file",
-                    example: "~/my-config.yml",
+                    name: "OPENROUTER_API_KEY",
+                    description: "Your OpenRouter API key",
+                    example: "sk-or-...",
                   },
                   {
-                    name: "GUARDSCAN_TELEMETRY",
-                    description: "Enable/disable telemetry",
-                    example: "false",
+                    name: "OLLAMA_ENDPOINT",
+                    description:
+                      "Ollama endpoint (default http://127.0.0.1:11434)",
+                    example: "http://127.0.0.1:11434",
+                  },
+                  {
+                    name: "GUARDSCAN_TELEMETRY_URL",
+                    description:
+                      "Your own HTTPS telemetry collector; used only by guardscan telemetry sync",
+                    example: "https://telemetry.example.com",
+                  },
+                  {
+                    name: "GUARDSCAN_NO_TELEMETRY",
+                    description: "Set to true to suppress telemetry",
+                    example: "true",
+                  },
+                  {
+                    name: "GUARDSCAN_OFFLINE",
+                    description: "Set to true (or 1) to block network services",
+                    example: "true",
+                  },
+                  {
+                    name: "GUARDSCAN_NO_CACHE",
+                    description: "Set to true (or 1) to disable caches",
+                    example: "true",
+                  },
+                  {
+                    name: "GUARDSCAN_HOME",
+                    description:
+                      "Absolute, private directory for GuardScan state",
+                    example: "/home/me/.guardscan-work",
                   },
                 ].map((env) => (
                   <Card
@@ -2975,7 +2850,7 @@ docker run --rm -v /path/to/project:/workspace -w /workspace \\
                   </h4>
                   <CodeBlock
                     code={
-                      '# Pass environment variables\ndocker run --rm \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  -e OPENAI_API_KEY="sk-your-key-here" \\\n  node:lts-alpine sh -c \\\n  "apk add --no-cache python3 make g++ git && \\\n   npm install -g guardscan && \\\n   guardscan run --ai"'
+                      '# Pass environment variables\ndocker run --rm \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  -e OPENAI_API_KEY="sk-your-key-here" \\\n  node:lts-alpine sh -c \\\n  "apk add --no-cache python3 make g++ git && \\\n   npm install -g guardscan && \\\n   guardscan run"'
                     }
                   />
                 </div>
@@ -2985,7 +2860,7 @@ docker run --rm -v /path/to/project:/workspace -w /workspace \\
                   </h4>
                   <CodeBlock
                     code={
-                      "# Use .env file\ndocker run --rm \\\n  --env-file .env \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  node:lts-alpine guardscan run --ai"
+                      "# Use .env file\ndocker run --rm \\\n  --env-file .env \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  node:lts-alpine guardscan run"
                     }
                   />
                 </div>

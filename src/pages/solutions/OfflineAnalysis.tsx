@@ -446,7 +446,7 @@ export default function OfflineAnalysis() {
                   </h3>
                   <pre className="text-terminal-green font-mono text-sm overflow-x-auto">
                     {`$ guardscan security
-🛡️  GuardScan v1.0.0 (Offline Mode)
+🛡️  GuardScan v1.1.0 (Offline Mode)
 
 ✓ Network: Disconnected
 ✓ Privacy: 100% Local Processing
