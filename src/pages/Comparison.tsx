@@ -15,25 +15,25 @@ const competitors = [
   {
     name: "SonarQube",
     logo: "🔍",
-    pricing: "$150/month (Team) - $30K+/year (Enterprise)",
+    pricing: "Commercial plans (see vendor)",
     link: "/comparison/sonarqube-alternative",
   },
   {
     name: "CodeClimate",
     logo: "☁️",
-    pricing: "$249/month (Team) - Custom pricing",
+    pricing: "Commercial plans (see vendor)",
     link: "/comparison/codeclimate-alternative",
   },
   {
     name: "GitHub Copilot",
     logo: "🤖",
-    pricing: "$10-19/user/month",
+    pricing: "Subscription (see vendor)",
     link: "",
   },
   {
     name: "Snyk",
     logo: "🔐",
-    pricing: "$98/month (Team) - Custom pricing",
+    pricing: "Commercial plans (see vendor)",
     link: "/comparison/snyk-alternative",
   },
 ];
@@ -319,7 +319,7 @@ export default function Comparison() {
                 </p>
                 {competitor.isGuardScan && (
                   <div className="mt-4 pt-4 border-t border-border/50 text-sm text-center text-muted-foreground">
-                    Example: 10K LOC = $0.50
+                    Static analysis is free; AI review cost depends on your provider
                   </div>
                 )}
                 {competitor.link && (

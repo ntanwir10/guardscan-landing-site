@@ -107,7 +107,7 @@ export default function HowItWorksPage() {
         title="How It Works - GuardScan Setup Guide"
         description="Learn how to install and use GuardScan for privacy-first code security scanning. Get started in under 2 minutes with our simple CLI workflow."
         canonical="https://guardscancli.vercel.app/how-it-works"
-        keywords="guardscan tutorial, code security setup, SAST tool installation, security scanning guide, code review workflow"
+        keywords="guardscan init, guardscan run, code security setup, SAST tool installation, security scanning guide, code review workflow"
         structuredData={howToSchema}
       />
       <Navigation />

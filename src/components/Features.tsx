@@ -1,4 +1,4 @@
-import { Lock, Wifi, DollarSign, Puzzle, Shield, Code2 } from "lucide-react";
+import { Lock, Wifi, DollarSign, Puzzle, Shield, Code2, Bug, GitBranch, Gauge } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
@@ -29,14 +29,32 @@ const features = [
   {
     icon: Shield,
     title: "Enterprise Security",
-    description: "OWASP Top 10 coverage, secrets detection, dependency scanning, and IaC security checks built-in.",
+    description: "OWASP-oriented checks, secrets detection, dependency scanning, and IaC security checks built in.",
     color: "text-primary",
   },
   {
     icon: Code2,
     title: "Developer First",
-    description: "Beautiful Markdown reports, CLI-native workflow, and seamless integration with your existing tools.",
+    description: "Markdown, JSON, or SARIF reports, a CLI-native workflow, and integration with your existing tools.",
     color: "text-accent",
+  },
+  {
+    icon: Bug,
+    title: "Dependency Vulnerabilities",
+    description: "guardscan vuln checks exact dependency versions against OSV across npm, pip, Go, Ruby, Cargo, and Maven. Use --offline with a local snapshot.",
+    color: "text-terminal-cyan",
+  },
+  {
+    icon: GitBranch,
+    title: "CI-Ready Output",
+    description: "SARIF reports for code scanning, --ci mode, and --fail-on to gate builds by severity. Requires Node.js 22+.",
+    color: "text-secondary",
+  },
+  {
+    icon: Gauge,
+    title: "AI Cost Controls",
+    description: "Pick models with guardscan models, route tasks with routing, cap spend with budget, and review metrics and cache stats.",
+    color: "text-primary",
   },
 ];
 

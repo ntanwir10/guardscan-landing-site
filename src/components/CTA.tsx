@@ -1,6 +1,7 @@
 import { Terminal, Github, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InlineCode } from "@/components/InlineCode";
+import { LIVE_INSTALL_CHANNELS } from "@/lib/install-channels";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export const CTA = () => {
@@ -53,12 +54,18 @@ export const CTA = () => {
               </Button>
             </div>
 
-            {/* Quick install reminder */}
-            <div className="pt-6 text-sm text-muted-foreground">
-              <InlineCode
-                value="npm install -g guardscan"
-                className="bg-code-bg border border-border/50 text-terminal-green"
-              />
+            {/* Install channels (only live ones render) */}
+            <div className="pt-6 text-sm text-muted-foreground space-y-2">
+              <p>Requires Node.js 22+. Install with your package manager:</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {LIVE_INSTALL_CHANNELS.map((c) => (
+                  <InlineCode
+                    key={c.id}
+                    value={c.command}
+                    className="bg-code-bg border border-border/50 text-terminal-green"
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Subtle support link */}

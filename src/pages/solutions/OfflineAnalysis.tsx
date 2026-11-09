@@ -39,7 +39,7 @@ export default function OfflineAnalysis() {
       },
       {
         name: "Optional: Set Up Offline AI",
-        text: "Install Ollama for AI code review: curl -fsSL https://ollama.ai/install.sh | sh",
+        text: "Install Ollama for AI code review: curl -fsSL https://ollama.com/install.sh | sh",
         url: "https://guardscancli.vercel.app/solutions/offline-analysis",
       },
       {
@@ -64,7 +64,7 @@ export default function OfflineAnalysis() {
     {
       question: "Is offline scanning suitable for enterprise/government use?",
       answer:
-        "Yes, GuardScan is perfect for air-gapped environments, classified systems, and regulated industries. It meets requirements for HIPAA, GDPR, and other compliance frameworks that prohibit code uploads.",
+        "Yes, GuardScan is perfect for air-gapped environments, classified systems, and regulated industries. Because source code is never uploaded, it fits policies that restrict where code may be processed (data residency). GuardScan itself is not a compliance certification.",
     },
     {
       question: "How do I update GuardScan in an air-gapped environment?",
@@ -191,7 +191,7 @@ export default function OfflineAnalysis() {
                       Healthcare Organizations
                     </h3>
                     <p className="text-muted-foreground mb-3">
-                      HIPAA compliance requires strict data control and privacy
+                      Strict data-control policies often forbid sending code to third parties
                     </p>
                     <ul className="space-y-2 text-sm text-muted-foreground">
                       <li>• Electronic health records (EHR)</li>
@@ -489,17 +489,17 @@ export default function OfflineAnalysis() {
                           Install Ollama
                         </h3>
                         <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                          curl -fsSL https://ollama.ai/install.sh | sh
+                          curl -fsSL https://ollama.com/install.sh | sh
                         </code>
                         <p className="text-muted-foreground mt-2 text-sm">
                           Or download from{" "}
                           <a
-                            href="https://ollama.ai"
+                            href="https://ollama.com"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline"
                           >
-                            ollama.ai
+                            ollama.com
                           </a>{" "}
                           on a connected machine, then transfer
                         </p>
@@ -654,8 +654,8 @@ export default function OfflineAnalysis() {
                         <td className="p-4 text-center font-semibold text-primary">
                           Free
                         </td>
-                        <td className="p-4 text-center">$150-$30K+/mo</td>
-                        <td className="p-4 text-center">$25-$500+/mo</td>
+                        <td className="p-4 text-center">Paid editions</td>
+                        <td className="p-4 text-center">Paid plans</td>
                       </tr>
                     </tbody>
                   </table>
@@ -725,7 +725,7 @@ export default function OfflineAnalysis() {
                             Step 1: Install Ollama (While Online)
                           </p>
                           <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                            curl -fsSL https://ollama.ai/install.sh | sh
+                            curl -fsSL https://ollama.com/install.sh | sh
                           </code>
                         </div>
                         <div>
@@ -837,16 +837,16 @@ export default function OfflineAnalysis() {
                   <Card className="p-6">
                     <Shield className="w-8 h-8 text-primary mb-3" />
                     <h3 className="text-xl font-bold mb-2">
-                      Regulatory Compliance
+                      Data Residency
                     </h3>
                     <p className="text-muted-foreground mb-3">
-                      Meet strict data residency and privacy requirements
+                      Keep code inside your own boundary
                     </p>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ HIPAA compliant</li>
-                      <li>✓ GDPR friendly</li>
-                      <li>✓ SOC2 compatible</li>
-                      <li>✓ PCI-DSS ready</li>
+                      <li>✓ Source code stays on your machine</li>
+                      <li>✓ Works in air-gapped networks</li>
+                      <li>✓ Local AI via Ollama or LM Studio</li>
+                      <li>✓ No GuardScan-hosted services</li>
                     </ul>
                   </Card>
 
@@ -927,11 +927,11 @@ export default function OfflineAnalysis() {
                     </h3>
                     <p className="text-muted-foreground">
                       Yes, GuardScan is perfect for air-gapped environments,
-                      classified systems, and regulated industries. It meets
-                      requirements for HIPAA, GDPR, SOC2, and other compliance
-                      frameworks that prohibit code uploads. Many government and
-                      defense contractors use GuardScan specifically for its
-                      offline capabilities.
+                      classified systems, and regulated industries. Because
+                      source code is never uploaded, it fits policies that
+                      restrict where code may be processed (data residency).
+                      GuardScan is not itself a compliance certification, so
+                      check your own requirements.
                     </p>
                   </Card>
 

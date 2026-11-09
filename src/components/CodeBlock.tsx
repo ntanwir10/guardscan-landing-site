@@ -176,7 +176,8 @@ export function CodeBlock({ code, language = "bash", title }: CodeBlockProps) {
           variant="ghost"
           size="sm"
           onClick={copyToClipboard}
-          className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-muted/80 hover:bg-muted"
+          aria-label={copied ? "Copied to clipboard" : "Copy code to clipboard"}
+          className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity z-10 bg-muted/80 hover:bg-muted"
         >
           {copied ? (
             <>

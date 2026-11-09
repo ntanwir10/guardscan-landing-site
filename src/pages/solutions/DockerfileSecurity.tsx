@@ -492,8 +492,8 @@ export default function DockerfileSecurity() {
                         <td className="p-4 text-center font-semibold text-primary">
                           Free
                         </td>
-                        <td className="p-4 text-center">$5-9/month</td>
-                        <td className="p-4 text-center">$25+/month</td>
+                        <td className="p-4 text-center">Paid tiers</td>
+                        <td className="p-4 text-center">Paid tiers</td>
                       </tr>
                       <tr className="border-b border-border/50">
                         <td className="p-4">Privacy (Local Scanning)</td>
@@ -707,8 +707,8 @@ export default function DockerfileSecurity() {
                     </h3>
                     <p className="text-muted-foreground">
                       GuardScan is free and runs locally (no code uploads),
-                      while Docker Scout ($5-9/month) and Snyk Container
-                      ($25+/month) require cloud connectivity. GuardScan focuses
+                      while Docker Scout and Snyk Container
+                      require cloud connectivity and paid plans for full use. GuardScan focuses
                       on Dockerfile best practices and security patterns,
                       providing immediate feedback without external
                       dependencies.

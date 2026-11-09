@@ -36,11 +36,6 @@ export const generateSoftwareApplicationSchema = () => ({
     price: "0",
     priceCurrency: "USD",
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "5.0",
-    ratingCount: "1",
-  },
   description:
     "AI code review that never sees your code. GuardScan runs locally with offline security scanning, multi-AI support, 100% free and open source.",
   softwareVersion: "1.1.0",

@@ -180,10 +180,10 @@ export default function Features() {
                 <CheckCircle className="w-5 h-5 text-accent mt-1 flex-shrink-0" />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">
-                    Compliance Checks
+                    License Review
                   </h3>
                   <p className="text-muted-foreground">
-                    GDPR, HIPAA, PCI-DSS compliance scanning
+                    Dependency license checks (--licenses) for your own policy review
                   </p>
                 </div>
               </div>
@@ -482,23 +482,25 @@ export default function Features() {
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">OpenAI</h3>
               <p className="text-muted-foreground text-sm">
-                GPT-4, GPT-4 Turbo, GPT-3.5
+                gpt-5.1, gpt-4o, gpt-4.1-mini
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Anthropic Claude</h3>
               <p className="text-muted-foreground text-sm">
-                Claude 3 Opus, Sonnet, Haiku
+                claude-sonnet-4.5
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Google Gemini</h3>
-              <p className="text-muted-foreground text-sm">Gemini Pro</p>
+              <p className="text-muted-foreground text-sm">
+                gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash
+              </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Ollama</h3>
               <p className="text-muted-foreground text-sm">
-                Local, privacy-focused - llama2, codellama, mistral
+                Local, privacy-focused - codellama, llama2, mistral
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">

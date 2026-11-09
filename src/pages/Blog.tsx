@@ -109,7 +109,7 @@ export default function Blog() {
             community.
           </p>
           <a
-            href="mailto:blog@guardscan.dev"
+            href="https://github.com/ntanwir10/GuardScan/discussions"
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-semibold transition-colors"
           >
             Submit a Guest Post
