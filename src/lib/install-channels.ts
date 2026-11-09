@@ -12,7 +12,7 @@ export const INSTALL_CHANNELS: InstallChannel[] = [
   { id: "yarn", label: "Yarn", command: "yarn global add guardscan", live: true },
   { id: "bun", label: "Bun", command: "bun add -g guardscan", live: true },
   { id: "brew", label: "Homebrew", command: "brew install ntanwir10/tap/guardscan", live: false },
-  { id: "scoop", label: "Scoop", command: "scoop install guardscan", live: false },
+  { id: "scoop", label: "Scoop", command: "scoop bucket add guardscan https://github.com/ntanwir10/homebrew-tap && scoop install guardscan", live: false },
   { id: "winget", label: "WinGet", command: "winget install NaumanTanwir.GuardScan", live: false },
   { id: "choco", label: "Chocolatey", command: "choco install guardscan", live: false },
   { id: "pipx", label: "pipx", command: "pipx install guardscan-cli", live: false },

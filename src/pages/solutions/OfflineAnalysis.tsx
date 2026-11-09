@@ -556,7 +556,7 @@ export default function OfflineAnalysis() {
                           Run AI Review Offline
                         </h3>
                         <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                          guardscan scan --ai-review
+                          guardscan run --offline
                         </code>
                         <p className="text-muted-foreground mt-2 text-sm">
                           ✓ Works with zero internet
@@ -757,7 +757,7 @@ export default function OfflineAnalysis() {
                             Step 5: Disconnect & Run AI Review (Offline)
                           </p>
                           <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                            guardscan scan --ai-review
+                            guardscan run --offline
                           </code>
                         </div>
                         <div className="p-4 bg-accent/10 rounded-lg">

@@ -644,10 +644,11 @@ export default function DockerfileSecurity() {
                     💡 Pro Tip: Add Pre-Commit Hooks
                   </h3>
                   <p className="text-muted-foreground mb-3">
-                    Automatically scan your Dockerfile before every commit:
+                    Scan before every commit by adding this line to{" "}
+                    <code>.git/hooks/pre-commit</code> (and making it executable):
                   </p>
                   <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                    guardscan install-hooks
+                    guardscan security --offline --no-cve --ci
                   </code>
                 </div>
               </div>
