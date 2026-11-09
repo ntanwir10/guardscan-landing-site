@@ -24,7 +24,7 @@ export interface BlogArticle {
 export const blogArticles: Record<string, BlogArticle> = {
   "privacy-first-code-review": {
     slug: "privacy-first-code-review",
-    title: "Why Privacy-First Code Review Matters in 2025",
+    title: "Why Privacy-First Code Review Matters in 2026",
     description:
       "Explore how traditional code review tools compromise your intellectual property and why local-first analysis is the future of secure development.",
     category: "Privacy",
@@ -137,125 +137,118 @@ cat guardscan-report.md`,
 
   "secrets-detection-deep-dive": {
     slug: "secrets-detection-deep-dive",
-    title:
-      "Secrets Detection: How to Find API Keys, Tokens & Passwords in Your Codebase",
-    description:
-      "Learn advanced techniques for detecting hardcoded secrets, API keys, and credentials in your source code before they reach production.",
+    title: "Secrets Detection: How to Find API Keys, Tokens & Passwords in Your Codebase",
+    description: "Learn how secrets scanners find hardcoded API keys, tokens and credentials, and how to run and gate on those checks with guardscan security.",
     category: "Security",
-    date: "2025-01-10",
-    readTime: "12 min read",
+    date: "2026-11-09",
+    readTime: "8 min read",
     image: "🔑",
-    excerpt:
-      "Hardcoded secrets are one of the most common security vulnerabilities. Discover how GuardScan's pattern-based and entropy-based detection catches secrets that other tools miss.",
-    keywords: [
-      "secrets detection",
-      "API keys",
-      "security scanning",
-      "credential management",
-      "SAST",
-    ],
+    excerpt: "Hardcoded secrets are one of the most common security problems. Learn how pattern and entropy-based detection works, and how to run built-in secrets checks with GuardScan locally and in CI.",
+    keywords: ["secrets detection","API keys","security scanning","credential management","SAST"],
     author: {
       name: "GuardScan Team",
       role: "Security Engineers",
     },
-    content: `# Secrets Detection: Finding API Keys, Tokens & Passwords
+    content: `# Secrets Detection: How to Find API Keys, Tokens & Passwords in Your Codebase
 
-Hardcoded secrets are responsible for countless security breaches. A single exposed API key can lead to unauthorized access, data breaches, financial losses, and compliance violations.
+Hardcoded credentials are one of the most common ways a small mistake becomes a serious incident. A key committed once can live in git history, forks, CI logs and build artifacts long after the line is deleted. This guide explains how secrets detection works and how to run it with GuardScan.
 
-## Types of Secrets to Detect
+## How secrets scanners find credentials
 
-### API Keys & Tokens
-- AWS access keys
-- Google Cloud credentials
-- GitHub personal access tokens
-- Stripe API keys
-- OAuth tokens
+Most scanners combine a few techniques:
 
-### Database Credentials
-- Connection strings with passwords
-- Database URLs
-- Redis authentication tokens
+- **Pattern matching:** many providers issue keys with recognizable prefixes or shapes (for example private key headers, or tokens that start with a vendor prefix). Patterns catch these with few false positives.
+- **Entropy analysis:** randomly generated strings have high entropy. A long, random-looking value assigned to a variable called \`secret\` or \`token\` is suspicious even when no pattern matches.
+- **Context:** variable names, config keys and file types (\`.env\`, \`config.json\`, CI files) raise or lower confidence.
+- **History scanning:** dedicated tools can also walk git history, which matters because deleting a secret from the working tree does not remove it from past commits.
 
-### Encryption Keys
-- JWT signing secrets
-- Encryption keys
-- Private keys
+No scanner finds everything, and all of them produce some false positives. Treat results as a triage list, not a verdict.
 
-## Detection Techniques
+## Running secrets checks with GuardScan
 
-GuardScan uses multiple detection methods to find secrets in your codebase.
-
-### Pattern-Based Detection
-
-Regex patterns identify common secret formats like AWS keys, GitHub tokens, and API keys.
-
-### Entropy-Based Detection
-
-High entropy strings often indicate secrets. GuardScan calculates entropy to detect random-looking strings that might be credentials.
-
-### Context-Aware Detection
-
-Variable names and surrounding context help identify suspicious values even when they don't match known patterns.
-
-## Best Practices
-
-### Use Environment Variables
-
-Store secrets in environment variables, never in code:
+GuardScan does not have a separate secrets subcommand. Secrets checks are built-in checks that run as part of the local security scan:
 
 \`\`\`bash
-# .env (never commit this file!)
-DATABASE_URL=postgresql://user:pass@localhost/db
-API_KEY=abc123xyz
-JWT_SECRET=your-secret-key
+npm install -g guardscan   # requires Node 22+
+
+# Scan the current repository
+guardscan security
+
+# Scan specific files or patterns
+guardscan security -f "src/**/*.ts" "config/*.json"
+
+# Write a machine-readable report
+guardscan security --format json -o guardscan-report.json
 \`\`\`
 
-### Use Secret Management Services
+The summary at the end of a run reports findings by severity, scan coverage and whether the configured policy passed. If you only need part of the repository checked, use \`-f\` to restrict the file set.
 
-- **AWS Secrets Manager**: Rotate secrets automatically
-- **HashiCorp Vault**: Centralized secret storage
-- **Azure Key Vault**: Cloud-native secrets
-- **Doppler**: Developer-friendly secrets management
-
-### Implement Pre-Commit Hooks
+The heuristic checks run on your machine. Network-backed features (dependency vulnerability lookups, cloud AI) are optional, and \`--offline\` skips them for the run:
 
 \`\`\`bash
-# Install GuardScan pre-commit hook
-guardscan install-hooks
-
-# Now secrets are detected before commit
-git commit -m "Add feature"
-# → GuardScan: Found 2 potential secrets, commit blocked!
+guardscan security --offline
 \`\`\`
 
-## Scanning with GuardScan
+## Failing builds on findings
+
+In CI you usually want a non-zero exit code when findings meet a severity threshold:
 
 \`\`\`bash
-# Scan for secrets only
-guardscan secrets scan
-
-# Scan with high sensitivity
-guardscan secrets scan --sensitivity high
-
-# Generate detailed report
-guardscan secrets scan --output secrets-report.json
+guardscan security --ci --fail-on high
 \`\`\`
+
+\`--fail-on\` accepts \`critical\`, \`high\`, \`medium\`, \`low\` or \`info\`. You can also cap the total count with \`--max-findings <number>\`.
+
+## What a good fix looks like
+
+Rotating the key is the fix. Removing it from the code is only the cleanup.
+
+1. **Revoke and rotate** the credential at the provider first. Assume it is compromised.
+2. **Move it out of source:** read it from an environment variable or a secrets manager.
+3. **Prevent a repeat:** add \`.env\` to \`.gitignore\`, ship a \`.env.example\` with placeholder values, and scan in CI.
+4. **Decide about history:** if the repository was ever public or widely shared, rotation matters more than rewriting history.
+
+\`\`\`javascript
+// Bad: credential in source
+const apiKey = "sk_live_example_do_not_use";
+
+// Better: injected at runtime
+const apiKey = process.env.API_KEY;
+if (!apiKey) throw new Error("API_KEY is not set");
+\`\`\`
+
+If you want help drafting a fix, \`guardscan security --ai-fix\` generates AI-assisted suggestions using your configured provider, and \`--interactive\` lets you review each one before applying it. Use \`--offline\` or a local provider if you do not want code sent to a cloud model.
+
+## Handling false positives
+
+Test fixtures, documentation examples and hashes all look like secrets to a scanner. Keep examples obviously fake, keep fixtures in clearly named directories, and review findings rather than blanket-suppressing a rule. Re-run the scan after changes and compare severities rather than raw counts.
+
+## Pair it with other tools
+
+Different scanners have different strengths. Many teams run GuardScan alongside a dedicated history scanner such as Gitleaks:
+
+\`\`\`bash
+gitleaks detect --source . 
+\`\`\`
+
+Running two tools costs little and reduces the chance that one blind spot becomes an incident.
+
+## Checklist
+
+- Run \`guardscan security\` before opening a pull request
+- Run \`guardscan security --ci --fail-on high\` in CI
+- Scan git history with a dedicated tool when you adopt scanning on an existing repository
+- Rotate any credential that was ever committed
+- Keep secrets in a manager or environment variables, never in source
 
 ## Conclusion
 
-Secrets detection should be part of your development workflow, not an afterthought. GuardScan makes it easy to catch secrets before they reach production.`,
+Secrets detection works best as a habit: scan locally, scan in CI, rotate quickly, and keep credentials out of the repository by design. GuardScan gives you the local scan and CI gate in one command.`,
     codeExamples: [
       {
         language: "bash",
-        title: "Scan for Secrets",
-        code: `# Full secrets scan
-guardscan secrets scan
-
-# High sensitivity mode
-guardscan secrets scan --sensitivity high
-
-# Export findings
-guardscan secrets scan --format json > secrets.json`,
+        title: "Scan for secrets locally and in CI",
+        code: "npm install -g guardscan\n\n# Local scan (secrets checks are built in)\nguardscan security\n\n# CI gate\nguardscan security --ci --fail-on high --format sarif -o guardscan.sarif",
       },
     ],
     relatedArticles: [
@@ -268,95 +261,127 @@ guardscan secrets scan --format json > secrets.json`,
   "ai-code-review-best-practices": {
     slug: "ai-code-review-best-practices",
     title: "AI-Powered Code Review: Best Practices for Maximum Security",
-    description:
-      "Maximize the effectiveness of AI code review tools while maintaining privacy and security. Learn when to use AI, which models to choose, and how to integrate AI feedback into your workflow.",
+    description: "Get more from AI code review while protecting your source code: choose providers deliberately, review diffs, keep deterministic scans in the loop, and validate every finding.",
     category: "AI",
-    date: "2025-01-05",
-    readTime: "10 min read",
+    date: "2026-11-09",
+    readTime: "8 min read",
     image: "🤖",
-    excerpt:
-      "AI can dramatically improve code review quality, but only when used correctly. Learn how to leverage GPT-4, Claude, Gemini, or local models for security analysis without compromising privacy.",
-    keywords: [
-      "AI code review",
-      "GPT-4",
-      "Claude",
-      "Ollama",
-      "machine learning",
-      "security",
-    ],
+    excerpt: "AI can improve code review, but only when it is configured with care. Learn how to choose between hosted models and local ones, limit what leaves your machine, and combine AI review with deterministic scanning.",
+    keywords: ["AI code review","OpenAI","Claude","Gemini","Ollama","security"],
     author: {
       name: "GuardScan Team",
       role: "AI Engineers",
     },
-    content: `# AI-Powered Code Review: Best Practices
+    content: `# AI-Powered Code Review: Best Practices for Maximum Security
 
-AI-powered code review has revolutionized how we detect security vulnerabilities. But not all AI reviews are created equal. Here's how to do it right.
+AI review can catch logic bugs, risky patterns and missing checks that rule-based scanners miss. It can also hallucinate, miss obvious issues, and, if configured carelessly, send your source code to a third party. This guide covers how to get the benefit while keeping control.
 
-## Choosing the Right AI Provider
+## Use AI as a second reviewer, not the only one
 
-### Cloud AI Providers
+AI review complements deterministic checks. Run both:
 
-**OpenAI GPT-4**: Best for complex security analysis with excellent reasoning
-**Anthropic Claude**: Best for context-heavy analysis with large context windows
-**Google Gemini**: Best for multi-file analysis, fast and cost-effective
+1. **Deterministic scanning first.** \`guardscan security\` runs built-in heuristic checks (secrets, injection patterns, Dockerfile and IaC issues and more) and can include dependency vulnerability lookups.
+2. **AI review second,** for context-heavy questions: is this authorization check actually enforced, does this change leak data, is this error path safe?
+3. **A human last.** Treat every AI finding as a lead to verify, not a ruling.
 
-### Local AI (Privacy-First)
+## Pick a provider deliberately
 
-**Ollama**: Best for complete privacy - 100% offline, unlimited scans, free
-
-## When to Use AI Review
-
-✅ **Good Use Cases**:
-- Complex security vulnerabilities
-- Logic errors in authentication
-- Race conditions and timing attacks
-- Business logic flaws
-- Contextual security issues
-
-❌ **Don't Use AI For**:
-- Simple syntax errors (use a linter)
-- Known CVEs (use dependency scanning)
-- Formatting issues (use Prettier/ESLint)
-
-## Privacy Considerations
-
-GuardScan + Ollama = 100% private AI review:
+GuardScan lets you choose where AI requests go:
 
 \`\`\`bash
-# Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
+# See current configuration
+guardscan config --show
 
-# Pull a code-optimized model
-ollama pull codellama:13b
+# Choose a provider: openai, claude, gemini, ollama, lmstudio, openrouter, none
+guardscan config -p claude -k <your-api-key>
 
-# Configure GuardScan
-guardscan config set ai.provider ollama
-guardscan config set ai.model codellama:13b
+# Local provider, no code leaves your machine
+guardscan config -p ollama
 
-# Run private AI review
-guardscan scan --ai-review
+# Turn AI off entirely
+guardscan config -p none
 \`\`\`
+
+Models in the GuardScan registry include:
+
+| Provider | Models |
+|----------|--------|
+| OpenAI | gpt-5.1, gpt-4o, gpt-4.1-mini |
+| Google | gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash |
+| Anthropic | claude-sonnet-4.5 |
+| Ollama (local) | codellama, llama2, mistral |
+
+Run \`guardscan models list\` to see what your installed version supports. Larger hosted models generally reason better about complex code; local models trade some quality for privacy and zero per-request cost. Check your provider's current pricing yourself, since it changes.
+
+## Decide what may leave your machine
+
+Before enabling a cloud provider, answer three questions:
+
+- Is the code covered by a contract, regulation or customer agreement that restricts third-party processing?
+- Does the provider's data-retention and training policy match your requirements?
+- Could the files contain secrets? Scan for secrets and rotate them before sending anything to a cloud model.
+
+For sensitive repositories, use a local provider or block cloud use per run:
+
+\`\`\`bash
+guardscan run --offline
+guardscan security --offline
+\`\`\`
+
+\`--offline\` blocks cloud providers and GuardScan network services for that command.
+
+## Review changes, not whole repositories
+
+AI review is most useful and cheapest on a diff:
+
+\`\`\`bash
+# Review uncommitted changes
+guardscan review
+
+# Compare two refs
+guardscan review --base main --head HEAD
+
+# One file, high severity and above, saved to a report
+guardscan review -f src/auth/login.ts -s high -o review.md
+\`\`\`
+
+You can also filter by category with \`-c\`, for example \`security\` or \`bug\`. Smaller inputs give the model more focus and cost less.
+
+## Control spend and visibility
+
+If you use a paid provider, set limits and watch usage:
+
+\`\`\`bash
+guardscan budget status
+guardscan metrics show
+guardscan cache stats
+\`\`\`
+
+Responses are cached per repository, so repeating a review on unchanged code does not repeat the request. Use \`--no-cache\` when you need a fresh answer, and \`guardscan cache clear\` to remove cached source-derived data.
+
+## Validate before you act
+
+- Reproduce the issue or read the code path yourself.
+- Ask for the fix as a small diff and review it like any other pull request.
+- Re-run the deterministic scan after applying changes.
+- Be wary of fixes that add dependencies or disable checks.
+
+\`guardscan security --ai-fix\` generates suggestions, and \`--interactive\` lets you approve each one before it is applied.
+
+## Put it in your workflow
+
+- **Before commit:** \`guardscan security\` and \`guardscan review\`
+- **In pull requests:** a CI job with \`guardscan security --ci --fail-on high\`, run offline when you do not want AI or network access in CI
+- **Periodically:** a broader \`guardscan scan\` that runs security and quality checks in parallel
 
 ## Conclusion
 
-AI-powered code review is a powerful tool when used correctly. Combine it with traditional static analysis, use appropriate privacy controls, and always validate findings.`,
+AI review works best when it is one layer among several: deterministic scanning for coverage, AI for context, humans for judgment, and a provider choice that matches how sensitive your code is.`,
     codeExamples: [
       {
         language: "bash",
-        title: "Local AI Setup",
-        code: `# Install Ollama for privacy
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# Download code-optimized model
-ollama pull codellama:13b
-
-# Configure GuardScan
-guardscan config set ai.enabled true
-guardscan config set ai.provider ollama
-guardscan config set ai.model codellama:13b
-
-# Run private AI review
-guardscan scan --ai-review`,
+        title: "Local AI review setup",
+        code: "# Install Ollama (see ollama.com), then pull a model\nollama pull codellama\n\n# Point GuardScan at the local provider\nguardscan config -p ollama\n\n# Review your changes\nguardscan review",
       },
     ],
     relatedArticles: [
@@ -369,102 +394,159 @@ guardscan scan --ai-review`,
   "guardscan-quickstart": {
     slug: "guardscan-quickstart",
     title: "GuardScan QuickStart: Scan Your First Project in 5 Minutes",
-    description:
-      "Get started with GuardScan in minutes. This hands-on tutorial walks you through installation, configuration, and your first security scan.",
+    description: "A hands-on walkthrough: install GuardScan with npm, run your first security scan, check dependencies, save reports and add it to CI.",
     category: "Tutorial",
-    date: "2024-12-28",
+    date: "2026-11-09",
     readTime: "6 min read",
     image: "🚀",
-    excerpt:
-      "New to GuardScan? This quickstart guide gets you from zero to scanning in 5 minutes. Learn the essential commands and see real results immediately.",
-    keywords: [
-      "tutorial",
-      "quickstart",
-      "getting started",
-      "CLI",
-      "installation",
-    ],
+    excerpt: "Go from install to a first scan, a SARIF report and a CI gate in a few minutes, using the commands GuardScan actually ships.",
+    keywords: ["GuardScan","quickstart","security scanning","CLI tutorial","code security"],
     author: {
       name: "GuardScan Team",
       role: "Developer Relations",
     },
-    content: `# GuardScan QuickStart Guide
+    content: `# GuardScan QuickStart: Scan Your First Project in 5 Minutes
 
-Get your codebase scanned for security vulnerabilities in 5 minutes.
+This walkthrough takes you from installation to a first security scan and a CI-ready report.
 
-## Prerequisites
+## Requirements
 
-- Node.js 22+ installed
-- A JavaScript/TypeScript project
-- Terminal access
+- Node.js 22 or newer
+- A git repository (any language) to scan
+- Optional: an AI provider key, or a local Ollama install, for AI features
 
-## Step 1: Install GuardScan
+## Step 1: Install
 
 \`\`\`bash
-# Install globally via npm
 npm install -g guardscan
-
-# Verify installation
 guardscan --version
 \`\`\`
 
-## Step 2: Initialize GuardScan
+GuardScan is installed through npm. Source and issues live at https://github.com/ntanwir10/GuardScan.
+
+## Step 2: Initialize
+
+From the root of your project:
 
 \`\`\`bash
-cd /path/to/your/project
+cd your-project
 guardscan init
 \`\`\`
 
-This creates a \`guardscan.config.yml\` file with default settings.
+This sets up GuardScan's local configuration. Nothing is uploaded.
 
-## Step 3: Run Your First Scan
+## Step 3: Run your first scan
 
 \`\`\`bash
-# Full security scan
-guardscan scan
-
-# Scan specific types
-guardscan secrets scan
-guardscan dependencies scan
+guardscan security
 \`\`\`
 
-## Step 4: Review the Report
+\`guardscan security\` runs local heuristic security checks across your repository. The checks are built in and include secret detection, common code-injection patterns, and Dockerfile and infrastructure-as-code issues. They are not separate commands, so one run covers them all.
 
-Open \`guardscan-report.md\` to see security issues, secrets, and vulnerabilities.
+At the end of the run you get a summary by severity, a coverage line that tells you whether every scanner ran to completion, and a policy line that tells you whether the run passed. If a report file is written, its path is printed on a \`Report saved:\` line.
 
-## CI/CD Integration
+To scan only some files:
 
-### GitHub Actions
+\`\`\`bash
+guardscan security -f "src/**/*.ts"
+\`\`\`
+
+## Step 4: Check dependencies
+
+Dependency vulnerability scanning looks up exact versions in OSV, so it needs network access:
+
+\`\`\`bash
+guardscan vuln
+\`\`\`
+
+\`guardscan vuln\` accepts a path and \`--ecosystem\` to limit scanning to npm, pip, go, ruby, cargo or maven. Add \`--scope runtime\` to ignore development dependencies. You can also include it in a security run with \`guardscan security --cve\`.
+
+## Step 5: Go broader with scan
+
+\`guardscan scan\` runs security and quality checks in parallel:
+
+\`\`\`bash
+guardscan scan
+
+# Skip the slower parts
+guardscan scan --skip-tests --skip-perf --skip-mutation --skip-ai
+\`\`\`
+
+Scan does not execute your repository's tests or linters unless you opt in with \`--run-project-code\`.
+
+## Step 6: Save a report
+
+\`\`\`bash
+guardscan security --format markdown -o guardscan-report.md
+guardscan security --format json -o guardscan-report.json
+guardscan security --format sarif -o guardscan.sarif
+\`\`\`
+
+Supported formats are \`markdown\`, \`json\` and \`sarif\`. SARIF can be uploaded to GitHub code scanning.
+
+## Step 7 (optional): Add AI
+
+AI features are opt-in and use a provider you choose:
+
+\`\`\`bash
+# Hosted provider
+guardscan config -p claude -k <your-api-key>
+
+# Or a local provider
+guardscan config -p ollama
+
+# Review your changes
+guardscan review
+\`\`\`
+
+Use \`-p none\` to turn AI off. Add \`--offline\` to any command to block cloud providers and network services for that run. See the Ollama guide for a fully local setup.
+
+## Step 8: Add it to CI
 
 \`\`\`yaml
-name: Security Scan
+name: Security
 on: [push, pull_request]
 
 jobs:
-  security:
+  guardscan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: npm install -g guardscan
-      - run: guardscan scan
+      - run: guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: guardscan.sarif
 \`\`\`
 
-## Conclusion
+\`--ci\` enables CI-friendly output and exit codes, and \`--fail-on high\` fails the job on high or critical findings.
 
-You're now ready to scan your projects with GuardScan! Run regular scans to catch security issues early.`,
+## Useful commands
+
+\`\`\`bash
+guardscan status         # provider and configuration
+guardscan config --show  # current settings
+guardscan sbom -f cyclonedx -o sbom.json
+guardscan --help         # every command
+\`\`\`
+
+## Next steps
+
+- Read the CI/CD integration guide to gate pull requests
+- Set up a local model with Ollama for private AI review
+- Run \`guardscan security --help\` and \`guardscan scan --help\` to see every flag`,
     codeExamples: [
       {
         language: "bash",
-        title: "Install and Scan",
-        code: `# Install globally
-npm install -g guardscan
-
-# Initialize in project
-cd your-project
-guardscan init
-
-# Run first scan
-guardscan scan`,
+        title: "Install and scan",
+        code: "# Install globally (Node 22+)\nnpm install -g guardscan\n\n# Initialize in your project\ncd your-project\nguardscan init\n\n# Run your first security scan\nguardscan security\n\n# Save a report\nguardscan security --format markdown -o guardscan-report.md",
       },
     ],
     relatedArticles: [
@@ -584,246 +666,126 @@ jobs:
 
   "owasp-top-10-guide": {
     slug: "owasp-top-10-guide",
-    title: "Complete Guide to OWASP Top 10 Vulnerabilities",
-    description:
-      "A comprehensive breakdown of the OWASP Top 10 security risks and how to detect them automatically in your codebase.",
+    title: "Complete Guide to the OWASP Top 10",
+    description: "A practical walk through the recurring OWASP Top 10 risk categories, with code examples and the parts a static scanner like GuardScan can help catch.",
     category: "Security",
-    date: "2025-01-10",
-    readTime: "12 min read",
+    date: "2026-11-09",
+    readTime: "10 min read",
     image: "🛡️",
-    excerpt:
-      "SQL injection, XSS, and broken authentication are just the tip of the iceberg. This guide walks through each OWASP Top 10 vulnerability with real-world code examples and automated detection strategies using GuardScan.",
-    keywords: [
-      "OWASP",
-      "security vulnerabilities",
-      "SQL injection",
-      "XSS",
-      "authentication",
-      "OWASP Top 10",
-    ],
+    excerpt: "SQL injection, broken access control and misconfiguration remain common. This guide walks through the OWASP Top 10 themes with code examples and shows which parts built-in GuardScan checks can help with.",
+    keywords: ["OWASP","security vulnerabilities","SQL injection","XSS","authentication","OWASP Top 10"],
     author: {
       name: "GuardScan Security Team",
       role: "Security Researchers",
     },
-    content: `# Complete Guide to OWASP Top 10 Vulnerabilities
+    content: `# Complete Guide to the OWASP Top 10
 
-The OWASP Top 10 is the industry-standard awareness document for developers and application security. It represents a broad consensus about the most critical security risks to web applications.
+The OWASP Top 10 is an awareness document that ranks the most critical web application security risks. It is revised every few years, so check owasp.org for the current edition. Category names and ordering change between editions, but the underlying problems are stable. This guide covers the recurring themes, with examples and ways to catch them early.
 
-## Understanding the OWASP Top 10
+GuardScan does not have an OWASP mode or an OWASP-specific command. Its built-in checks (run by \`guardscan security\` and \`guardscan scan\`) overlap with several of these categories, and a static scanner can only find part of any list like this. Design review, testing and runtime controls still matter.
 
-The Open Web Application Security Project (OWASP) Top 10 list is updated every few years to reflect the changing threat landscape. Here's the current Top 10:
+## Broken access control
 
-### 1. Broken Access Control
+Users act outside their intended permissions: reading other users' records, calling admin endpoints, changing an ID in a URL.
 
-Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure, modification, or destruction of data.
+\`\`\`javascript
+// Vulnerable: any logged-in user can read any invoice
+app.get("/invoices/:id", auth, async (req, res) => {
+  res.json(await db.invoices.findById(req.params.id));
+});
 
-**Common Issues:**
-- Missing authorization checks
-- Insecure direct object references (IDOR)
-- Path traversal vulnerabilities
-- Force browsing to authenticated pages
+// Better: scope the query to the caller
+app.get("/invoices/:id", auth, async (req, res) => {
+  const invoice = await db.invoices.findOne({
+    id: req.params.id,
+    ownerId: req.user.id,
+  });
+  if (!invoice) return res.sendStatus(404);
+  res.json(invoice);
+});
+\`\`\`
 
-**Detection Strategy:**
-GuardScan analyzes your code for missing authorization middleware, unvalidated user input in file paths, and exposed administrative functions.
+Enforce authorization on the server for every request, deny by default, and test it. Scanners find missing middleware only in simple cases; use review and integration tests for the rest.
 
-### 2. Cryptographic Failures
+## Cryptographic failures
 
-Previously known as "Sensitive Data Exposure," this focuses on failures related to cryptography which often lead to sensitive data exposure or system compromise.
+Sensitive data is stored or sent without adequate protection: weak hashes for passwords, hardcoded keys, plaintext transport.
 
-**Common Issues:**
-- Plaintext transmission of sensitive data
-- Use of weak cryptographic algorithms (MD5, SHA1)
-- Hardcoded encryption keys
-- Missing SSL/TLS enforcement
+- Hash passwords with a purpose-built algorithm such as Argon2, scrypt or bcrypt, never a fast hash
+- Use TLS everywhere
+- Keep keys out of source (see the secrets detection guide)
 
-**Detection Strategy:**
-GuardScan identifies weak encryption algorithms, plaintext credential storage, and missing HTTPS enforcement in your configuration files.
+## Injection
 
-### 3. Injection
+Untrusted input is interpreted as code or commands: SQL, NoSQL, OS commands, template engines.
 
-Injection flaws occur when untrusted data is sent to an interpreter as part of a command or query. SQL, NoSQL, OS, and LDAP injection are common.
+\`\`\`javascript
+// Vulnerable
+db.query("SELECT * FROM users WHERE name = '" + name + "'");
 
-**Common Issues:**
-- SQL injection through string concatenation
-- Command injection via system calls
-- LDAP injection
-- Expression language injection
+// Safe: parameterized
+db.query("SELECT * FROM users WHERE name = ?", [name]);
+\`\`\`
 
-**Detection Strategy:**
-GuardScan scans for dangerous functions like \`exec()\`, \`eval()\`, and unsanitized database queries, checking for proper parameterization and input validation.
+Use parameterized queries, avoid shelling out with user input, and validate input at trust boundaries. Pattern-based scanners are good at flagging string-built queries and risky sinks such as \`eval\` or \`exec\` calls.
 
-### 4. Insecure Design
+## Insecure design
 
-A broad category representing different weaknesses, expressed as "missing or ineffective control design." Insecure design is not the same as insecure implementation.
+Flaws that no amount of correct coding fixes, such as missing rate limits on a login flow or business logic that trusts the client. Threat modeling helps. \`guardscan threat-model\` produces AI-assisted STRIDE analysis from your codebase; treat the result as a starting point for a human discussion.
 
-**Common Issues:**
-- Missing rate limiting
-- Lack of security checks in business logic
-- Insufficient threat modeling
-- Missing security requirements
+## Security misconfiguration
 
-**Detection Strategy:**
-GuardScan evaluates your application architecture for common design flaws like missing rate limiting, weak session management, and inadequate input validation layers.
+Debug mode in production, default credentials, permissive CORS, public storage buckets, containers running as root. Built-in Dockerfile and infrastructure-as-code checks in \`guardscan security\` look for common misconfigurations. See the Dockerfile checklist for container specifics.
 
-### 5. Security Misconfiguration
+## Vulnerable and outdated components
 
-Security misconfiguration is the most commonly seen issue, often resulting from insecure default configurations, incomplete setups, or verbose error messages.
+Known-vulnerable dependencies are one of the easiest risks to find automatically:
 
-**Common Issues:**
-- Default credentials still enabled
-- Unnecessary features enabled
-- Missing security headers
-- Verbose error messages revealing system information
+\`\`\`bash
+guardscan vuln
+guardscan vuln --ecosystem npm --scope runtime --fail-on high
+guardscan sbom -f cyclonedx -o sbom.json
+\`\`\`
 
-**Detection Strategy:**
-GuardScan checks configuration files for insecure settings, analyzes Docker configurations, and verifies security headers are properly set.
+\`guardscan vuln\` checks exact dependency versions against OSV, and \`guardscan sbom\` produces an SPDX or CycloneDX inventory. Pair them with automated dependency updates.
 
-### 6. Vulnerable and Outdated Components
+## Identification and authentication failures
 
-You are likely vulnerable if you don't know the versions of all components you use and if the software is vulnerable, unsupported, or out of date.
+Weak password policies, missing multi-factor authentication, session identifiers in URLs, tokens that never expire. Use a vetted identity provider or library, rotate session identifiers on login, and set expirations. Scanners can flag hardcoded credentials and some weak patterns, but cannot judge your overall design.
 
-**Common Issues:**
-- Using libraries with known vulnerabilities
-- Outdated framework versions
-- Unnecessary dependencies
-- Lack of dependency scanning
+## Software and data integrity failures
 
-**Detection Strategy:**
-GuardScan analyzes your \`package.json\`, \`requirements.txt\`, and other dependency files, cross-referencing them with vulnerability databases like CVE and GitHub Security Advisories.
+Unsigned updates, untrusted deserialization, CI pipelines that run unreviewed code. Pin dependencies with lockfiles, verify artifacts, avoid deserializing untrusted data, and restrict who can change pipeline definitions.
 
-### 7. Identification and Authentication Failures
+## Security logging and monitoring failures
 
-Previously known as "Broken Authentication," confirmation of the user's identity, authentication, and session management is critical to protect against authentication-related attacks.
+Without logs and alerts you will not notice an attack. Log authentication events, access-control failures and input-validation failures, protect logs from tampering, and never log secrets or full payment data.
 
-**Common Issues:**
-- Weak password requirements
-- Credential stuffing vulnerabilities
-- Missing multi-factor authentication
-- Predictable session identifiers
-- Session fixation attacks
+## Server-side request forgery
 
-**Detection Strategy:**
-GuardScan reviews authentication flows for common weaknesses, checks for weak password policies in code, and identifies missing session security measures.
+The server fetches a URL supplied by a user and can be pointed at internal services or cloud metadata endpoints. Validate and allowlist destinations, block private address ranges, and do not return raw responses to the caller.
 
-### 8. Software and Data Integrity Failures
+## Running GuardScan against these risks
 
-This relates to code and infrastructure that doesn't protect against integrity violations. An example is using plugins from untrusted sources or insecure CI/CD pipelines.
+\`\`\`bash
+# Local checks: secrets, injection patterns, Dockerfile and IaC issues
+guardscan security
 
-**Common Issues:**
-- Unsigned or unverified updates
-- Insecure deserialization
-- CI/CD pipelines without integrity verification
-- Dependencies from untrusted sources
+# Add dependency vulnerabilities
+guardscan security --cve
 
-**Detection Strategy:**
-GuardScan checks for insecure deserialization patterns, evaluates dependency sources, and reviews CI/CD configurations for security best practices.
-
-### 9. Security Logging and Monitoring Failures
-
-Insufficient logging and monitoring, coupled with missing or ineffective integration with incident response, allows attackers to persist in systems.
-
-**Common Issues:**
-- Missing audit logs for critical operations
-- Insufficient error logging
-- Logs not monitored for suspicious activity
-- Sensitive data in logs
-
-**Detection Strategy:**
-GuardScan identifies missing logging for security-critical operations, checks for excessive logging that might include sensitive data, and verifies proper error handling.
-
-### 10. Server-Side Request Forgery (SSRF)
-
-SSRF flaws occur when a web application fetches a remote resource without validating the user-supplied URL. It allows an attacker to coerce the application to send crafted requests to an unexpected destination.
-
-**Common Issues:**
-- Unvalidated URL inputs
-- Allowing access to internal services
-- Missing network-level protections
-- Inadequate input sanitization
-
-**Detection Strategy:**
-GuardScan identifies code patterns where user input is used in HTTP requests, checks for proper URL validation, and flags potential SSRF vulnerabilities.
-
-## Automated Detection with GuardScan
-
-GuardScan provides comprehensive coverage of the OWASP Top 10:
-
-- **Pattern Recognition:** Identifies dangerous code patterns for each vulnerability class
-- **Dependency Analysis:** Scans for known vulnerabilities in your dependencies
-- **Configuration Review:** Analyzes Docker, CI/CD, and application configs for misconfigurations
-- **AI-Powered Analysis:** Uses AI to understand context and reduce false positives
-
-## Best Practices for Prevention
-
-**For Development Teams:**
-- Implement security testing in your CI/CD pipeline
-- Use static analysis tools like GuardScan regularly
-- Keep dependencies up to date
-- Follow secure coding guidelines
-- Conduct regular security training
-
-**For Security Teams:**
-- Establish secure development standards
-- Perform regular penetration testing
-- Monitor applications for suspicious activity
-- Maintain an incident response plan
-- Keep security tools and signatures updated
-
-## Real-World Impact
-
-OWASP Top 10 vulnerabilities are responsible for the majority of successful attacks:
-
-- **Data Breaches:** 80%+ involve OWASP Top 10 vulnerabilities
-- **Financial Loss:** Average cost of a breach is $4.24 million
-- **Reputation Damage:** Long-term loss of customer trust
-- **Compliance Violations:** GDPR, PCI-DSS, HIPAA fines
+# CI gate with a SARIF report
+guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
+\`\`\`
 
 ## Conclusion
 
-Understanding the OWASP Top 10 is essential for building secure applications. Using automated tools like GuardScan helps you:
-
-- Detect vulnerabilities early in the development cycle
-- Maintain consistent security standards across your codebase
-- Reduce the cost of fixing security issues
-- Comply with security standards and regulations
-
-Start protecting your applications from the OWASP Top 10 today with GuardScan's automated security analysis.`,
+Use the Top 10 as a checklist for design reviews and tests, and use automated scanning to catch the portions of it that tools can see. Do not treat a clean scan as evidence that you are covered.`,
     codeExamples: [
       {
-        language: "javascript",
-        title: "SQL Injection Vulnerability (Bad)",
-        code: `// Vulnerable to SQL injection
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const query = \`SELECT * FROM users WHERE username = '\${username}' AND password = '\${password}'\`;
-  db.query(query, (err, result) => {
-    // Authentication logic
-  });
-});`,
-      },
-      {
-        language: "javascript",
-        title: "SQL Injection Prevention (Good)",
-        code: `// Protected with parameterized queries
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
-  db.query(query, [username, password], (err, result) => {
-    // Authentication logic
-  });
-});`,
-      },
-      {
         language: "bash",
-        title: "Run OWASP Top 10 Scan",
-        code: `# Scan for OWASP Top 10 vulnerabilities
-guardscan scan --owasp
-
-# Generate detailed report
-guardscan scan --owasp --format html > owasp-report.html
-
-# CI/CD integration
-guardscan scan --owasp --fail-on high`,
+        title: "Run GuardScan's built-in checks",
+        code: "# Built-in local checks\nguardscan security\n\n# Include dependency vulnerability scanning\nguardscan security --cve\n\n# CI gate with SARIF output\nguardscan security --ci --fail-on high --format sarif -o guardscan.sarif",
       },
     ],
     relatedArticles: [
@@ -835,307 +797,183 @@ guardscan scan --owasp --fail-on high`,
 
   "dockerfile-security-checklist": {
     slug: "dockerfile-security-checklist",
-    title:
-      "Dockerfile Security: 15 Essential Checks Every Developer Should Run",
-    description:
-      "A practical checklist for securing Docker containers, from base image selection to USER instruction best practices.",
+    title: "Dockerfile Security: 15 Essential Checks Every Developer Should Run",
+    description: "A practical checklist for securing Docker images, from base image choice and non-root users to secrets handling, image scanning and CI checks.",
     category: "DevOps",
-    date: "2024-12-20",
+    date: "2026-11-09",
     readTime: "7 min read",
     image: "🐳",
-    excerpt:
-      "Insecure Dockerfiles are a common attack vector. This checklist covers base image security, multi-stage builds, secret management, USER instructions, and vulnerability scanning to keep your containers secure.",
-    keywords: [
-      "Docker",
-      "container security",
-      "Dockerfile",
-      "DevOps",
-      "container best practices",
-    ],
+    excerpt: "Insecure Dockerfiles are a common weak point. This checklist covers base images, multi-stage builds, secret handling, USER instructions and image scanning, and shows where GuardScan's built-in checks fit.",
+    keywords: ["Docker","container security","Dockerfile","DevOps","container best practices"],
     author: {
       name: "GuardScan DevOps Team",
       role: "Container Security Specialists",
     },
     content: `# Dockerfile Security: 15 Essential Checks Every Developer Should Run
 
-Docker containers are everywhere, but insecure Dockerfiles can expose your applications to serious vulnerabilities. This guide covers 15 essential security checks every developer should implement.
+A Dockerfile decides what ships in your image: which packages, which user, which secrets. Most container incidents trace back to a handful of avoidable mistakes. Use this checklist when you write or review a Dockerfile.
 
-## Why Dockerfile Security Matters
+GuardScan's built-in checks, run as part of \`guardscan security\` and \`guardscan scan\`, look at Dockerfiles alongside your source. There is no separate Docker subcommand, and no scanner replaces a review, so the sections below also name dedicated tools.
 
-A vulnerable container can:
-- Expose sensitive data and credentials
-- Provide attackers with escalated privileges
-- Become a pivot point for attacking other systems
-- Harbor outdated software with known vulnerabilities
+## 1. Use a trusted, minimal base image
 
-## 15 Essential Security Checks
+Prefer official or verified images, and prefer small ones (slim, distroless or Alpine variants) to shrink the attack surface.
 
-### 1. Use Official Base Images
+\`\`\`dockerfile
+FROM node:22-slim
+\`\`\`
 
-Always start with official, verified base images from trusted sources.
+## 2. Pin versions, and consider digests
 
-**Why it matters:**
-Unofficial images may contain malware, backdoors, or outdated packages.
+\`latest\` changes without notice and makes builds unreproducible. Pin a version tag. For stricter control, pin the image digest.
 
-**Best Practice:**
-Use minimal base images like \`alpine\`, \`distroless\`, or official language images.
+\`\`\`dockerfile
+FROM node:22.12-slim
+# or: FROM node@sha256:<digest>
+\`\`\`
 
-### 2. Specify Exact Image Versions
+## 3. Do not run as root
 
-Never use \`:latest\` tags in production.
+By default containers run as root. Create an unprivileged user and switch to it.
 
-**Why it matters:**
-Latest tags can introduce breaking changes and unpatched vulnerabilities.
+\`\`\`dockerfile
+RUN groupadd -r app && useradd -r -g app app
+USER app
+\`\`\`
 
-**Best Practice:**
-Pin to specific versions with SHA256 digests for reproducible builds.
+## 4. Use multi-stage builds
 
-### 3. Run as Non-Root User
+Compilers, build tools and dev dependencies do not belong in the final image.
 
-Never run containers as root unless absolutely necessary.
+\`\`\`dockerfile
+FROM node:22 AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-**Why it matters:**
-Root access in a container can lead to host system compromise.
+FROM node:22-slim
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+USER node
+CMD ["node", "dist/index.js"]
+\`\`\`
 
-**Best Practice:**
-Create and switch to a non-privileged user using the \`USER\` instruction.
+## 5. Never bake secrets into the image
 
-### 4. Use Multi-Stage Builds
+Anything in \`ENV\`, \`ARG\`, \`COPY\` or a \`RUN\` command is stored in image layers and can be extracted. Pass runtime secrets through your orchestrator's secret mechanism. For build-time secrets, use BuildKit secret mounts:
 
-Separate build dependencies from runtime dependencies.
+\`\`\`dockerfile
+RUN --mount=type=secret,id=npm_token \\
+    NPM_TOKEN=$(cat /run/secrets/npm_token) npm ci
+\`\`\`
 
-**Why it matters:**
-Build tools and dependencies increase attack surface and image size.
+\`guardscan security\` includes secrets checks that can flag credentials in Dockerfiles and build context files.
 
-**Best Practice:**
-Use multi-stage builds to include only necessary runtime components.
+## 6. Use a .dockerignore
 
-### 5. Minimize Layer Count
+Keep \`.git\`, \`.env\`, local keys and build output out of the build context.
 
-Combine commands where possible to reduce layers.
+\`\`\`text
+.git
+.env
+*.pem
+node_modules
+\`\`\`
 
-**Why it matters:**
-Each layer can introduce vulnerabilities and increases image size.
+## 7. Install only what you need
 
-**Best Practice:**
-Chain related commands with \`&&\` operators.
+Skip recommended packages and clean package caches in the same layer.
 
-### 6. Never Store Secrets in Images
+\`\`\`dockerfile
+RUN apt-get update \\
+ && apt-get install -y --no-install-recommends ca-certificates \\
+ && apt-get clean
+\`\`\`
 
-Avoid hardcoding credentials, API keys, or tokens.
+## 8. Prefer COPY to ADD
 
-**Why it matters:**
-Secrets in images can be extracted from any layer, even deleted ones.
+\`ADD\` can fetch remote URLs and auto-extract archives. Use \`COPY\` unless you need those behaviors.
 
-**Best Practice:**
-Use Docker secrets, environment variables, or external secret management.
+## 9. Verify downloads
 
-### 7. Scan for Vulnerabilities
+If you must download a binary, verify a checksum or signature. Piping a script from the internet straight into a shell trusts that server on every build.
 
-Regularly scan images for known CVEs.
+## 10. Do not use privileged capabilities
 
-**Why it matters:**
-Dependencies often contain security vulnerabilities.
+At run time avoid \`--privileged\`, avoid mounting the Docker socket, and drop capabilities you do not need.
 
-**Best Practice:**
-Integrate vulnerability scanning into your CI/CD pipeline.
+\`\`\`bash
+docker run --cap-drop=ALL --read-only --security-opt no-new-privileges my-image
+\`\`\`
 
-### 8. Limit Network Exposure
+## 11. Make the filesystem read-only where possible
 
-Only expose necessary ports.
+Run with a read-only root filesystem and mount writable volumes only where the app needs them.
 
-**Why it matters:**
-Unnecessary exposed ports increase attack surface.
+## 12. Add a health check
 
-**Best Practice:**
-Use \`EXPOSE\` only for required ports and implement network policies.
+A \`HEALTHCHECK\` lets orchestrators detect a hung process. Use a tool that exists in the image.
 
-### 9. Use .dockerignore
+## 13. Do not expose unnecessary ports
 
-Prevent sensitive files from being included in the build context.
+\`EXPOSE\` documents intent, but only publish ports you actually need.
 
-**Why it matters:**
-Accidentally including .git, .env files can expose secrets.
+## 14. Scan images for known vulnerabilities
 
-**Best Practice:**
-Maintain a comprehensive .dockerignore file.
+Base images and OS packages accumulate CVEs. Scan built images in CI with a dedicated image scanner such as Trivy:
 
-### 10. Validate File Integrity
+\`\`\`bash
+trivy image my-image:latest
+\`\`\`
 
-Verify downloaded files with checksums.
+## 15. Rebuild regularly and lint the Dockerfile
 
-**Why it matters:**
-Man-in-the-middle attacks can inject malicious code.
+Rebuild images on a schedule so base-image fixes reach you, and lint the Dockerfile itself:
 
-**Best Practice:**
-Always verify SHA256 checksums for downloaded artifacts.
+\`\`\`bash
+hadolint Dockerfile
+trivy config .
+\`\`\`
 
-### 11. Remove Unnecessary Packages
+## Running GuardScan on a project that ships Dockerfiles
 
-Install only required packages and remove package managers.
+\`\`\`bash
+# Built-in checks across code, secrets, Dockerfiles and IaC
+guardscan security
 
-**Why it matters:**
-Extra packages increase attack surface and image size.
+# Save a report
+guardscan security --format markdown -o security-report.md
 
-**Best Practice:**
-Use \`--no-install-recommends\` and clean up after installations.
+# Gate CI
+guardscan security --ci --fail-on high
+\`\`\`
 
-### 12. Set Proper File Permissions
+## Quick reference
 
-Ensure files have minimum required permissions.
-
-**Why it matters:**
-Overly permissive files can be exploited.
-
-**Best Practice:**
-Use \`chmod\` to set appropriate permissions, especially for scripts.
-
-### 13. Use HEALTHCHECK
-
-Implement health checks for container monitoring.
-
-**Why it matters:**
-Helps detect compromised or malfunctioning containers.
-
-**Best Practice:**
-Add \`HEALTHCHECK\` instruction with appropriate intervals.
-
-### 14. Sign and Verify Images
-
-Use Docker Content Trust for image signing.
-
-**Why it matters:**
-Ensures image authenticity and integrity.
-
-**Best Practice:**
-Enable DCT in production environments.
-
-### 15. Keep Images Updated
-
-Regularly rebuild images with latest security patches.
-
-**Why it matters:**
-Old images accumulate vulnerabilities over time.
-
-**Best Practice:**
-Automate image rebuilds and implement dependency updates.
-
-## Automated Dockerfile Security with GuardScan
-
-GuardScan automatically checks all 15 of these security practices and more:
-
-- **Static Analysis:** Scans Dockerfiles for security anti-patterns
-- **Base Image Analysis:** Verifies image sources and versions
-- **Secret Detection:** Finds hardcoded credentials in Dockerfiles
-- **Vulnerability Scanning:** Checks for CVEs in dependencies
-- **Best Practice Validation:** Ensures compliance with Docker security guidelines
-
-## Common Dockerfile Vulnerabilities
-
-### Privilege Escalation
-
-Running as root allows attackers to escape containers and compromise the host.
-
-### Exposed Secrets
-
-Hardcoded credentials in any layer can be extracted by attackers.
-
-### Outdated Dependencies
-
-Vulnerable packages provide easy entry points for attackers.
-
-### Excessive Permissions
-
-World-writable files and directories can be exploited.
-
-## Docker Security Best Practices Summary
-
-**DO:**
-- Use official minimal base images
-- Run as non-root user
-- Implement multi-stage builds
-- Scan for vulnerabilities regularly
-- Use secrets management
-- Keep images updated
-
-**DON'T:**
-- Use \`:latest\` tags in production
-- Run containers as root
-- Store secrets in images
-- Include build tools in final image
-- Ignore security warnings
-- Use untrusted base images
-
-## Implementing in CI/CD
-
-Integrate Dockerfile security scanning into your pipeline:
-
-1. **Pre-commit hooks:** Catch issues before they're committed
-2. **CI pipeline:** Automated scanning on every build
-3. **Registry scanning:** Continuous monitoring of stored images
-4. **Runtime monitoring:** Detect anomalies in production
+| Area | What to check |
+|------|---------------|
+| Base image | Trusted, minimal, pinned |
+| User | Non-root |
+| Secrets | None in layers or build args |
+| Build | Multi-stage, with a .dockerignore |
+| Run time | Dropped capabilities, read-only filesystem |
+| Supply chain | Image scanning and scheduled rebuilds |
 
 ## Conclusion
 
-Dockerfile security is critical for protecting your containerized applications. By following these 15 essential checks and using automated tools like GuardScan, you can:
-
-- Reduce attack surface significantly
-- Prevent credential leaks
-- Ensure compliance with security standards
-- Build more reliable container images
-
-Start securing your Dockerfiles today with GuardScan's comprehensive container security analysis.`,
+Most of this list takes minutes to apply and removes the most common container weaknesses. Automate what tools can check, review the rest, and keep images rebuilt.`,
     codeExamples: [
       {
         language: "dockerfile",
-        title: "Insecure Dockerfile (Bad)",
-        code: `FROM ubuntu:latest
-RUN apt-get update && apt-get install -y python3
-COPY . /app
-WORKDIR /app
-ENV API_KEY=sk-1234567890abcdef
-RUN pip install -r requirements.txt
-CMD ["python3", "app.py"]`,
-      },
-      {
-        language: "dockerfile",
-        title: "Secure Dockerfile (Good)",
-        code: `FROM python:3.11-alpine@sha256:abc123...
-WORKDIR /app
-
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Install dependencies in separate layer
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
-COPY --chown=appuser:appgroup . .
-
-# Switch to non-root user
-USER appuser
-
-# Set proper permissions
-RUN chmod 644 app.py
-
-HEALTHCHECK --interval=30s --timeout=3s \\
-  CMD python3 -c "import requests; requests.get('http://localhost:8000/health')"
-
-EXPOSE 8000
-CMD ["python3", "app.py"]`,
+        title: "A hardened Node.js Dockerfile",
+        code: "FROM node:22 AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM node:22-slim\nWORKDIR /app\nCOPY --from=build /app/dist ./dist\nUSER node\nCMD [\"node\", \"dist/index.js\"]",
       },
       {
         language: "bash",
-        title: "Scan Dockerfile with GuardScan",
-        code: `# Scan Dockerfile for security issues
-guardscan docker scan
-
-# Scan specific Dockerfile
-guardscan docker scan -f ./path/to/Dockerfile
-
-# Generate report with remediation
-guardscan docker scan --format html > docker-security-report.html`,
+        title: "Check a project with Dockerfiles",
+        code: "# GuardScan built-in checks (code, secrets, Dockerfiles, IaC)\nguardscan security\n\n# Dedicated Dockerfile and image tools\nhadolint Dockerfile\ntrivy image my-image:latest",
       },
     ],
     relatedArticles: [
@@ -1147,428 +985,136 @@ guardscan docker scan --format html > docker-security-report.html`,
 
   "local-ai-ollama-setup": {
     slug: "local-ai-ollama-setup",
-    title: "Running AI Code Review Completely Offline with Ollama",
-    description:
-      "Configure GuardScan to use local AI models with Ollama for 100% offline, privacy-preserving code analysis.",
+    title: "Running AI Code Review Locally with Ollama",
+    description: "Configure GuardScan to use local models through Ollama so AI-assisted code review stays on your own machine.",
     category: "Privacy",
-    date: "2024-12-10",
-    readTime: "11 min read",
+    date: "2026-11-09",
+    readTime: "8 min read",
     image: "🏠",
-    excerpt:
-      "Take full control of your AI code review with Ollama. Learn how to run models like Llama 3, CodeLlama, and Mistral locally for completely private, offline security analysis.",
-    keywords: [
-      "Ollama",
-      "local AI",
-      "privacy",
-      "offline code review",
-      "Llama",
-      "self-hosted AI",
-    ],
+    excerpt: "Take control of where your code goes. Learn how to install Ollama, pull models like CodeLlama and Mistral, and use them as GuardScan's AI provider for private, local code review.",
+    keywords: ["Ollama","local AI","privacy","offline code review","CodeLlama","self-hosted AI"],
     author: {
       name: "GuardScan AI Team",
       role: "AI Infrastructure Engineers",
     },
-    content: `# Running AI Code Review Completely Offline with Ollama
+    content: `# Running AI Code Review Locally with Ollama
 
-Privacy-conscious developers need AI code review that doesn't send code to external APIs. With Ollama and GuardScan, you can run powerful AI models completely offline on your own hardware.
+Cloud models are convenient, but some code cannot be sent to a third party. Ollama runs open models on your own machine, and GuardScan can use it as its AI provider so reviews stay local. This guide covers setup end to end.
 
-## Why Local AI Models?
+## What stays local
 
-**Privacy Benefits:**
-- Code never leaves your infrastructure
-- No data retention by third-party providers
-- Complete control over your intellectual property
-- Compliance with strict data regulations
+With the \`ollama\` provider, AI requests go to the Ollama server on your machine instead of a hosted API. GuardScan's built-in security checks already run locally. Together, that gives you AI-assisted review without sending source code to a cloud model.
 
-**Operational Benefits:**
-- No API costs or rate limits
-- Works without internet connectivity
-- Faster response times for local queries
-- Customizable models for your specific needs
+Two notes on scope:
 
-## Prerequisites
+- "Local" depends on your Ollama setup. If you point Ollama at a remote host, requests go there.
+- Some GuardScan features use the network by design, such as dependency vulnerability lookups (\`--cve\`). \`--offline\` skips network-backed checks for a run.
 
-Before starting, ensure you have:
-- macOS, Linux, or Windows with WSL2
-- At least 8GB RAM (16GB+ recommended)
-- 10GB+ free disk space
-- Docker (optional, for containerized deployment)
+## Requirements
 
-## Installing Ollama
+- Node.js 22+ for GuardScan
+- Ollama installed
+- Enough RAM or GPU memory for the model you choose. Smaller models run on a laptop; larger ones need more memory and are slower on CPU.
 
-### macOS
-
-Download and install from the official Ollama website:
+## Step 1: Install Ollama
 
 \`\`\`bash
+# macOS (Homebrew)
+brew install ollama
+
+# Linux
 curl -fsSL https://ollama.com/install.sh | sh
 \`\`\`
 
-### Linux
+On Windows and macOS you can also download the installer from https://ollama.com.
+
+## Step 2: Start the server and pull a model
 
 \`\`\`bash
-curl -fsSL https://ollama.com/install.sh | sh
-\`\`\`
-
-### Windows (WSL2)
-
-Install WSL2 first, then follow Linux instructions.
-
-### Verify Installation
-
-\`\`\`bash
-ollama --version
-\`\`\`
-
-## Recommended Models for Code Review
-
-### 1. CodeLlama 34B (Best Balance)
-
-Specifically trained for code understanding and generation.
-
-**Pros:**
-- Excellent code comprehension
-- Good security pattern recognition
-- Reasonable resource requirements
-
-**Cons:**
-- Requires 16GB+ RAM
-- Slower than smaller models
-
-### 2. Llama 3 8B (Fast and Efficient)
-
-General-purpose model with good code capabilities.
-
-**Pros:**
-- Fast inference times
-- Lower resource requirements
-- Good general reasoning
-
-**Cons:**
-- Less specialized for code
-- May miss nuanced security issues
-
-### 3. Mistral 7B (Privacy + Speed)
-
-Excellent performance for its size.
-
-**Pros:**
-- Fast and efficient
-- Good code understanding
-- Runs on 8GB RAM
-
-**Cons:**
-- Smaller context window
-- Less detailed explanations
-
-### 4. Deepseek Coder 33B (Most Accurate)
-
-State-of-the-art coding model.
-
-**Pros:**
-- Best code analysis accuracy
-- Excellent security detection
-- Detailed explanations
-
-**Cons:**
-- High resource requirements
-- Slower inference
-
-## Pulling Models
-
-Download your chosen model:
-
-\`\`\`bash
-# CodeLlama 34B (recommended for security)
-ollama pull codellama:34b
-
-# Llama 3 8B (good balance)
-ollama pull llama3:8b
-
-# Mistral 7B (fast)
-ollama pull mistral:7b
-
-# Deepseek Coder (most accurate)
-ollama pull deepseek-coder:33b
-\`\`\`
-
-## Configuring GuardScan with Ollama
-
-### 1. Initialize GuardScan
-
-If you haven't already initialized GuardScan:
-
-\`\`\`bash
-guardscan init
-\`\`\`
-
-### 2. Configure Ollama Provider
-
-Edit your \`.guardscan.yml\` configuration:
-
-\`\`\`yaml
-ai:
-  provider: ollama
-  model: codellama:34b
-  endpoint: http://127.0.0.1:11434
-  temperature: 0.2
-  maxTokens: 4096
-\`\`\`
-
-### 3. Test Configuration
-
-Verify Ollama is running and configured correctly:
-
-\`\`\`bash
-ollama list
-guardscan test-ai
-\`\`\`
-
-## Optimizing Local AI Performance
-
-### 1. GPU Acceleration
-
-If you have an NVIDIA GPU, Ollama automatically uses it. Verify with:
-
-\`\`\`bash
-ollama run codellama:34b "print GPU info"
-\`\`\`
-
-### 2. Memory Management
-
-Adjust model settings for your available RAM:
-
-\`\`\`yaml
-ai:
-  contextWindow: 4096  # Reduce if running out of memory
-  numGpu: 1            # Number of GPU layers to offload
-  numThread: 8         # CPU threads to use
-\`\`\`
-
-### 3. Batch Processing
-
-For large codebases, enable batch processing:
-
-\`\`\`yaml
-scanning:
-  batchSize: 10
-  concurrent: 2
-  cacheResults: true
-\`\`\`
-
-## Running Your First Offline Scan
-
-### Basic Scan
-
-\`\`\`bash
-guardscan scan
-\`\`\`
-
-### AI-Enhanced Scan
-
-\`\`\`bash
-guardscan scan --ai-review
-\`\`\`
-
-### Full Security Audit
-
-\`\`\`bash
-guardscan scan --ai-review --deep --format html
-\`\`\`
-
-## Advanced Configuration
-
-### Multiple Model Strategy
-
-Use different models for different tasks:
-
-\`\`\`yaml
-ai:
-  models:
-    fast:
-      provider: ollama
-      model: mistral:7b
-      tasks: [linting, formatting]
-    
-    accurate:
-      provider: ollama
-      model: codellama:34b
-      tasks: [security, architecture]
-    
-    specialized:
-      provider: ollama
-      model: deepseek-coder:33b
-      tasks: [vulnerability-detection]
-\`\`\`
-
-### Custom Prompts
-
-Fine-tune AI behavior for your needs:
-
-\`\`\`yaml
-ai:
-  prompts:
-    security: |
-      You are a security expert reviewing code.
-      Focus on OWASP Top 10 vulnerabilities.
-      Be concise but thorough.
-      Flag any potential security issues.
-\`\`\`
-
-### Temperature Tuning
-
-Adjust creativity vs. consistency:
-
-\`\`\`yaml
-ai:
-  temperature: 0.1  # More consistent (security)
-  # OR
-  temperature: 0.7  # More creative (refactoring)
-\`\`\`
-
-## Comparing Local vs Cloud AI
-
-| Feature | Local (Ollama) | Cloud (GPT-4) |
-|---------|---------------|---------------|
-| **Privacy** | 100% Private | Data sent to API |
-| **Cost** | Free after setup | $0.03-$0.12 per request |
-| **Speed** | Fast (local) | Network dependent |
-| **Accuracy** | Very Good | Excellent |
-| **Setup** | Some effort | Minimal |
-| **Offline** | ✓ Yes | ✗ No |
-
-## Troubleshooting
-
-### Ollama Not Starting
-
-\`\`\`bash
-# Check if Ollama is running
-ps aux | grep ollama
-
-# Restart Ollama
-killall ollama
 ollama serve
 \`\`\`
 
-### Out of Memory Errors
-
-Reduce context window or switch to smaller model:
-
-\`\`\`yaml
-ai:
-  model: llama3:8b  # Smaller model
-  contextWindow: 2048  # Smaller context
-\`\`\`
-
-### Slow Performance
-
-Enable GPU acceleration:
+In another terminal:
 
 \`\`\`bash
-# Install CUDA drivers (NVIDIA)
-# Then verify GPU usage:
-nvidia-smi
+# Models GuardScan's registry lists for Ollama
+ollama pull codellama
+ollama pull mistral
+ollama pull llama2
 
-# Ollama will automatically use GPU
+# Confirm what is installed
+ollama list
 \`\`\`
 
-## Docker Deployment
+\`codellama\` is trained for code and is a good starting point for review. \`mistral\` is a smaller general model that is quicker on modest hardware. Try both on your own code, because quality varies by language and task.
 
-Run Ollama in a container:
-
-\`\`\`dockerfile
-FROM ollama/ollama:latest
-
-# Pre-pull models
-RUN ollama pull codellama:34b
-
-EXPOSE 11434
-CMD ["ollama", "serve"]
-\`\`\`
-
-Deploy:
+## Step 3: Point GuardScan at Ollama
 
 \`\`\`bash
-docker build -t local-ai .
-docker run -d -p 11434:11434 --gpus all local-ai
+npm install -g guardscan
+guardscan init
+guardscan config -p ollama
+guardscan config --show
+guardscan status
 \`\`\`
 
-## Best Practices
+\`guardscan models list\` shows the models GuardScan knows about, and \`guardscan models recommend\` suggests one for your provider.
 
-**DO:**
-- Start with smaller models and scale up
-- Cache AI results to avoid redundant analysis
-- Use GPU acceleration when available
-- Monitor resource usage
-- Keep models updated
+## Step 4: Run reviews
 
-**DON'T:**
-- Run large models without adequate RAM
-- Use high temperatures for security analysis
-- Skip testing configurations
-- Ignore performance metrics
-- Forget to update Ollama
+\`\`\`bash
+# Local review of the repository, AI-enhanced by Ollama
+guardscan run
 
-## Real-World Performance
+# Review git changes with AI
+guardscan review
 
-Benchmarks on MacBook Pro M2 with 16GB RAM:
+# Security scan with AI fix suggestions
+guardscan security --ai-fix
+\`\`\`
 
-| Model | Speed | Accuracy | RAM Usage |
-|-------|-------|----------|-----------|
-| Mistral 7B | 50 tokens/s | Good | 6GB |
-| Llama 3 8B | 45 tokens/s | Very Good | 8GB |
-| CodeLlama 34B | 15 tokens/s | Excellent | 14GB |
-| Deepseek 33B | 12 tokens/s | Best | 16GB |
+To guarantee that no cloud provider is used for a run, add \`--offline\`. This blocks cloud providers, so combine it with a local provider such as Ollama or with \`-p none\`.
+
+## Using an offline machine
+
+For an air-gapped or restricted machine:
+
+1. On a connected machine, install GuardScan and pull the Ollama models.
+2. Copy the installers and model files over using your normal transfer process.
+3. Run GuardScan with \`--offline\`.
+
+Features that need the network, such as fresh vulnerability data, will be skipped or use a previously saved local snapshot (see \`guardscan vuln --help\` and \`guardscan vuln db\`).
+
+## Tips for better results
+
+- Review small diffs. Local models have limited context, so \`guardscan review --base main\` on a focused change beats a whole-repository prompt.
+- Use the model for explanations and suggestions, and the deterministic scan for coverage.
+- Keep Ollama and your models updated, and re-test when you change models.
+- Verify every finding. Smaller models are more likely to miss issues or invent them.
+
+## Troubleshooting
+
+**GuardScan cannot reach Ollama.** Make sure \`ollama serve\` is running (the desktop app starts it for you) and check \`guardscan status\`.
+
+**Model not found.** Run \`ollama list\` and pull the model with \`ollama pull <name>\`.
+
+**Slow responses.** Use a smaller model, review fewer files per run, or run Ollama on a machine with a GPU.
+
+**Out of memory.** Pick a smaller model or close other applications.
 
 ## Conclusion
 
-Running AI code review locally with Ollama provides:
-- **Complete privacy** - Your code never leaves your infrastructure
-- **Cost savings** - No API fees or usage limits
-- **Offline capability** - Works without internet
-- **Customization** - Fine-tune models for your needs
-
-Start using local AI with GuardScan today for privacy-first code security analysis.`,
+Ollama gives you AI-assisted review with no per-request fees and no hosted API in the loop. Pair it with GuardScan's built-in checks, keep diffs small, and verify what the model tells you.`,
     codeExamples: [
       {
         language: "bash",
-        title: "Install and Setup Ollama",
-        code: `# Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull recommended model
-ollama pull codellama:34b
-
-# Test model
-ollama run codellama:34b "Explain SQL injection"`,
-      },
-      {
-        language: "yaml",
-        title: "GuardScan Ollama Configuration",
-        code: `# .guardscan.yml
-ai:
-  provider: ollama
-  model: codellama:34b
-  endpoint: http://127.0.0.1:11434
-  temperature: 0.2
-  maxTokens: 4096
-  
-scanning:
-  aiReview: true
-  cacheResults: true
-  batchSize: 10`,
+        title: "Set up Ollama with GuardScan",
+        code: "# Install Ollama (Linux; macOS: brew install ollama)\ncurl -fsSL https://ollama.com/install.sh | sh\n\n# Pull a model\nollama pull codellama\n\n# Configure GuardScan\nnpm install -g guardscan\nguardscan config -p ollama\n\n# Review your changes\nguardscan review",
       },
       {
         language: "bash",
-        title: "Run Offline AI Code Review",
-        code: `# Start Ollama service
-ollama serve &
-
-# Run GuardScan with local AI
-guardscan scan --ai-review
-
-# Generate detailed report
-guardscan scan --ai-review --format html > security-report.html`,
+        title: "Run reviews without cloud access",
+        code: "# Start Ollama\nollama serve &\n\n# Local review (blocks cloud providers)\nguardscan run --offline\n\n# Security scan, saved as a report\nguardscan security --offline --format markdown -o security-report.md",
       },
     ],
     relatedArticles: [
@@ -1580,7 +1126,7 @@ guardscan scan --ai-review --format html > security-report.html`,
 
   "best-sast-tools-2025": {
     slug: "best-sast-tools-2025",
-    title: "Best SAST Tools in 2025: Complete Comparison",
+    title: "Best SAST Tools in 2026: Complete Comparison",
     description:
       "Compare the best static application security testing (SAST) tools in 2025. In-depth analysis of SonarQube, Snyk, Checkmarx, Veracode, and GuardScan.",
     category: "Security",
@@ -1604,7 +1150,7 @@ guardscan scan --ai-review --format html > security-report.html`,
       name: "GuardScan Security Team",
       role: "Security Researchers",
     },
-    content: `# Best SAST Tools in 2025: Complete Comparison
+    content: `# Best SAST Tools in 2026: Complete Comparison
 
 Static Application Security Testing (SAST) tools are essential for catching security vulnerabilities before code reaches production. But with so many options available, which tool is right for your team?
 
@@ -1832,13 +1378,14 @@ Use Ollama for AI-powered code review without internet:
 
 \`\`\`bash
 # Install Ollama
-curl -fsSL https://ollama.ai/install.sh | sh
+curl -fsSL https://ollama.com/install.sh | sh
 
 # Download model
 ollama pull codellama:13b
 
-# Run offline AI review
-guardscan scan --ai-review
+# Use Ollama as the provider and review your changes
+guardscan config -p ollama
+guardscan review
 \`\`\`
 
 ## Best Practices
@@ -1934,14 +1481,11 @@ GuardScan provides comprehensive secrets detection for 20+ credential types:
 # Install GuardScan
 npm install -g guardscan
 
-# Quick secrets scan
-guardscan security --focus secrets
+# Scan the repository (secrets checks are built in)
+guardscan security
 
-# High sensitivity mode (more thorough, may have false positives)
-guardscan security --sensitivity high
-
-# Scan specific directory
-guardscan security --path ./src --focus secrets
+# Scan specific files or directories
+guardscan security -f "src/**"
 
 # Export results
 guardscan security --format json > secrets-report.json
@@ -2134,8 +1678,8 @@ STRIPE_SECRET_KEY=sk_test_your_key_here
 # Install GuardScan globally
 npm install -g guardscan
 
-# Set up pre-commit hook
-guardscan install-hooks
+# Set up a pre-commit hook: add "guardscan security --ci --fail-on high"
+# to .git/hooks/pre-commit (or your hook manager)
 
 # Now every commit is automatically scanned
 git add .
@@ -2149,7 +1693,7 @@ git commit -m "Add feature"
 #!/bin/bash
 
 echo "Running security scan..."
-guardscan security --focus secrets --fail-on high
+guardscan security --fail-on high
 
 if [ $? -ne 0 ]; then
   echo "❌ Security scan found secrets. Commit blocked!"
@@ -2284,7 +1828,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Full history
-      - run: guardscan security --focus secrets --fail-on high
+      - run: guardscan security --fail-on high
 \`\`\`
 
 **3. Team Training**
@@ -2362,8 +1906,8 @@ Start today with GuardScan - it's free, runs locally, and takes 2 minutes to set
 
 \`\`\`bash
 npm install -g guardscan
-guardscan security --focus secrets
-guardscan install-hooks
+guardscan security
+# Pre-commit hook: run "guardscan security --ci --fail-on high" from .git/hooks/pre-commit
 \`\`\`
 
 Your future self (and your security team) will thank you.`,
@@ -2712,8 +2256,8 @@ Instrumentation not suitable for production environments.
 # Local development
 guardscan security
 
-# Pre-commit hook
-guardscan install-hooks
+# Pre-commit hook: add "guardscan security --ci --fail-on high"
+# to .git/hooks/pre-commit
 
 # Developer gets immediate feedback
 \`\`\`
@@ -2777,7 +2321,7 @@ docker run -t owasp/zap2docker-stable zap-baseline.py \
 \`\`\`bash
 # Development
 npm install -g guardscan
-guardscan install-hooks
+# Pre-commit hook: run "guardscan security --ci --fail-on high" from .git/hooks/pre-commit
 
 # CI/CD
 guardscan security --fail-on high
@@ -2881,8 +2425,8 @@ npm install -g guardscan
 # 2. Scan your codebase
 guardscan security
 
-# 3. Set up pre-commit hooks
-guardscan install-hooks
+# 3. Set up a pre-commit hook
+# Run "guardscan security --ci --fail-on high" from .git/hooks/pre-commit
 
 # 4. Add to CI/CD
 # (See GitHub Actions example above)
@@ -3454,890 +2998,192 @@ The best security tool is the one you'll use consistently. GuardScan makes secur
   "cicd-security-integration": {
     slug: "cicd-security-integration",
     title: "CI/CD Security: Integrating Code Scanning into Your Pipeline",
-    description:
-      "Complete guide to integrating security scanning into CI/CD pipelines. Covers GitHub Actions, GitLab CI, Jenkins, and CircleCI.",
+    description: "Add GuardScan to GitHub Actions, GitLab CI, Jenkins and CircleCI: fail on severity, upload SARIF, scan dependencies and roll out a gate gradually.",
     category: "DevOps",
-    date: "2025-01-17",
-    readTime: "14 min read",
+    date: "2026-11-09",
+    readTime: "8 min read",
     image: "⚙️",
-    excerpt:
-      "Security scanning should be automated, not manual. Learn how to integrate GuardScan and other security tools into your CI/CD pipeline for continuous security testing.",
-    keywords: [
-      "CI/CD security",
-      "automated security testing",
-      "DevSecOps",
-      "pipeline security",
-      "continuous security",
-      "security automation",
-    ],
+    excerpt: "Security scanning should run on every change. Learn how to wire guardscan security into your CI/CD pipeline with severity gates, SARIF reports and offline mode.",
+    keywords: ["CI/CD security","automated security testing","DevSecOps","pipeline security","GitHub Actions","security automation"],
     author: {
       name: "GuardScan DevOps Team",
       role: "DevSecOps Engineers",
     },
     content: `# CI/CD Security: Integrating Code Scanning into Your Pipeline
 
-Manual security testing is slow, inconsistent, and doesn't scale with modern development velocity. This comprehensive guide shows you how to automate security scanning in your CI/CD pipeline for continuous protection across GitHub Actions, GitLab CI, Jenkins, and CircleCI.
+Manual security checks are easy to skip. A pipeline job runs on every change, applies the same policy to everyone, and blocks risky code before it merges. This guide shows how to add GuardScan to GitHub Actions, GitLab CI, Jenkins and CircleCI, and how to tune the gate so it helps rather than annoys.
 
-## Why Automate Security Scanning?
+## The core command
 
-### The Problem with Manual Security Testing
+Every example below runs the same thing:
 
-**Manual testing issues:**
-- Inconsistent coverage
-- Human error
-- Slow feedback (days/weeks)
-- Doesn't scale with team size
-- Often skipped under pressure
-- Expensive security consultants
-- Testing happens too late
-
-**The cost of late detection:**
-- Production bugs: 100x more expensive to fix
-- Security incidents: Average $4.24M per breach
-- Reputation damage: Immeasurable
-- Emergency hotfixes: Disrupt development
-
-### Benefits of Automated Security Scanning
-
-**Immediate Benefits:**
-- ✅ Catch vulnerabilities before production
-- ✅ Consistent security standards
-- ✅ Fast feedback (minutes, not days)
-- ✅ No manual effort required
-- ✅ Scales with team growth
-- ✅ Audit trail for compliance
-
-**Long-term Benefits:**
-- ✅ Reduced security debt
-- ✅ Lower remediation costs
-- ✅ Improved security culture
-- ✅ Compliance automation
-- ✅ Developer security education
-- ✅ Measurable security metrics
-
-## The Shift-Left Security Approach
-
-Move security testing earlier in the development lifecycle:
-
-**Traditional Approach (Shift-Right):**
-\`\`\`
-Code → Build → Deploy → Test (Manual) → Production → Security Incident
-Cost: Very High | Time: Weeks | Risk: Extreme
-\`\`\`
-
-**Modern Approach (Shift-Left):**
-\`\`\`
-Pre-Commit → PR → Build → Deploy → Production
-    ↓         ↓      ↓        ↓         ↓
-  Local     CI/CD  SAST    DAST    Monitor
-   Scan     Scan          
-Cost: Very Low | Time: Minutes | Risk: Minimal
-\`\`\`
-
-## Security Scanning Stages
-
-### Stage 1: Pre-Commit (Developer Machine)
-
-**Goal:** Catch obvious issues before they're committed
-
-**What to scan:**
-- Secrets detection (API keys, passwords)
-- Basic code patterns
-- Formatting/linting
-
-**Tools:** GuardScan pre-commit hooks
-
-**Setup:**
 \`\`\`bash
-# Install GuardScan
 npm install -g guardscan
-
-# Set up pre-commit hook
-guardscan install-hooks
-
-# Now automatic on every commit
-git commit -m "Add feature"
-# → GuardScan runs automatically
-# → Blocks commit if secrets found
+guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
 \`\`\`
 
-**Benefits:**
-- Immediate feedback (<5 seconds)
-- No CI/CD resources used
-- Private (runs locally)
-- Zero false escapes
+- \`--ci\` turns on CI-friendly output and exit-code policy
+- \`--fail-on high\` fails the job when findings are high severity or above (\`critical\`, \`high\`, \`medium\`, \`low\` and \`info\` are accepted)
+- \`--format sarif -o guardscan.sarif\` writes a SARIF report that code-scanning tools can ingest. \`markdown\` and \`json\` are also supported
 
-### Stage 2: Pull Request (CI Pipeline)
+GuardScan requires Node.js 22 or newer. The summary at the end of a run reports findings by severity, coverage and whether the policy passed.
 
-**Goal:** Comprehensive security scan before code review
+## GitHub Actions
 
-**What to scan:**
-- Full SAST analysis
-- Dependency vulnerabilities
-- OWASP Top 10 checks
-- Code coverage
-- Compliance checks
-
-**Tools:** GuardScan in CI, linters, formatters
-
-**Typical duration:** 2-5 minutes
-
-### Stage 3: Main Branch (After Merge)
-
-**Goal:** Validation and comprehensive scanning
-
-**What to scan:**
-- Complete security suite
-- Container scanning
-- IaC security (Terraform, Kubernetes)
-- Compliance validation
-- Security metrics
-
-**Typical duration:** 5-15 minutes
-
-### Stage 4: Pre-Deployment (Staging)
-
-**Goal:** Runtime and configuration testing
-
-**What to scan:**
-- Dynamic application testing (DAST)
-- Penetration testing
-- Integration security
-- Configuration validation
-
-**Tools:** OWASP ZAP, custom scripts
-
-## Platform-Specific Integration
-
-### GitHub Actions
-
-**Basic Setup:**
 \`\`\`yaml
-name: Security Scan
+name: Security
 on:
   push:
-    branches: [main, develop]
-  pull_request:
     branches: [main]
-
-jobs:
-  security:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Install GuardScan
-        run: npm install -g guardscan
-
-      - name: Run Security Scan
-        run: guardscan security
-
-      - name: Upload Security Report
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: security-report
-          path: guardscan-report.md
-\`\`\`
-
-**Advanced Setup with Failure Thresholds:**
-\`\`\`yaml
-name: Advanced Security Pipeline
-on:
   pull_request:
-    branches: [main, develop]
 
 jobs:
-  quick-scan:
-    name: Quick Security Check
+  guardscan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install GuardScan
-        run: npm install -g guardscan
-      
-      - name: Quick Secrets Scan
-        run: guardscan security --focus secrets --fail-on critical
-        
-  full-scan:
-    name: Complete Security Analysis
-    runs-on: ubuntu-latest
-    needs: quick-scan
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install GuardScan
-        run: npm install -g guardscan
-      
-      - name: Full Security Scan
-        id: scan
-        run: |
-          guardscan security --format json > security-report.json
-          guardscan security --fail-on high
-      
-      - name: Parse Results
-        if: always()
-        run: |
-          CRITICAL=$(jq '[.findings[] | select(.severity=="critical")] | length' security-report.json)
-          HIGH=$(jq '[.findings[] | select(.severity=="high")] | length' security-report.json)
-          echo "Critical: $CRITICAL, High: $HIGH"
-          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
-          echo "high=$HIGH" >> $GITHUB_OUTPUT
-      
-      - name: Comment on PR
-        if: failure()
-        uses: actions/github-script@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '🚨 Security scan found critical vulnerabilities. Review the security report artifact for details.'
-            })
-      
-      - name: Upload Report
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: security-report
-          path: |
-            security-report.json
-            guardscan-report.md
-          retention-days: 30
-\`\`\`
-
-**Matrix Strategy (Multiple Languages):**
-\`\`\`yaml
-jobs:
-  security:
-    strategy:
-      matrix:
-        path: ['frontend', 'backend', 'mobile']
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+          node-version: 22
       - run: npm install -g guardscan
-      - run: guardscan security --path \${{ matrix.path }}
+      - run: guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: guardscan.sarif
 \`\`\`
 
-### GitLab CI/CD
+\`if: always()\` uploads the report even when the gate fails, so findings show up in the Security tab. Uploading SARIF to code scanning requires that feature to be available for your repository.
 
-**Basic .gitlab-ci.yml:**
+## GitLab CI
+
 \`\`\`yaml
-stages:
-  - security
-  - test
-  - deploy
-
-security_scan:
-  stage: security
-  image: node:20
-  
+guardscan:
+  image: node:22
+  stage: test
   script:
     - npm install -g guardscan
-    - guardscan security --fail-on high
-  
+    - guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
   artifacts:
     when: always
     paths:
-      - guardscan-report.md
-    reports:
-      junit: guardscan-results.xml
-    expire_in: 30 days
-  
-  only:
-    - merge_requests
-    - main
-    - develop
+      - guardscan.sarif
 \`\`\`
 
-**Advanced with Caching:**
-\`\`\`yaml
-security_scan:
-  stage: security
-  image: node:20
-  
-  cache:
-    key: guardscan-$CI_COMMIT_REF_SLUG
-    paths:
-      - node_modules/
-      - .guardscan/
-  
-  before_script:
-    - npm install -g guardscan
-  
-  script:
-    - guardscan security --format json > security-report.json
-    - |
-      CRITICAL=$(jq '[.findings[] | select(.severity=="critical")] | length' security-report.json)
-      if [ $CRITICAL -gt 0 ]; then
-        echo "Found $CRITICAL critical vulnerabilities"
-        exit 1
-      fi
-  
-  artifacts:
-    when: always
-    paths:
-      - security-report.json
-      - guardscan-report.md
-\`\`\`
+## Jenkins
 
-### Jenkins
-
-**Declarative Pipeline:**
 \`\`\`groovy
 pipeline {
-    agent any
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        
-        stage('Install GuardScan') {
-            steps {
-                sh 'npm install -g guardscan'
-            }
-        }
-        
-        stage('Security Scan') {
-            steps {
-                script {
-                    sh 'guardscan security --format json > security-report.json'
-                }
-            }
-        }
-        
-        stage('Evaluate Results') {
-            steps {
-                script {
-                    def report = readJSON file: 'security-report.json'
-                    def critical = report.findings.count { it.severity == 'critical' }
-                    def high = report.findings.count { it.severity == 'high' }
-                    
-                    echo "Critical: \${critical}, High: \${high}"
-                    
-                    if (critical > 0) {
-                        error("Found \${critical} critical vulnerabilities")
-                    }
-                    
-                    if (high > 3) {
-                        unstable("Found \${high} high-severity vulnerabilities")
-                    }
-                }
-            }
-        }
+  agent { docker { image 'node:22' } }
+  stages {
+    stage('Security') {
+      steps {
+        sh 'npm install -g guardscan'
+        sh 'guardscan security --ci --fail-on high --format sarif -o guardscan.sarif'
+      }
     }
-    
-    post {
-        always {
-            archiveArtifacts artifacts: 'security-report.json,guardscan-report.md'
-            
-            publishHTML([
-                allowMissing: false,
-                alwaysLinkToLastBuild: true,
-                keepAll: true,
-                reportDir: '.',
-                reportFiles: 'guardscan-report.md',
-                reportName: 'Security Report'
-            ])
-        }
-        
-        failure {
-            emailext(
-                subject: "Security Scan Failed: \${env.JOB_NAME} - \${env.BUILD_NUMBER}",
-                body: "Check the security report for details.",
-                to: "\${env.SECURITY_TEAM_EMAIL}"
-            )
-        }
+  }
+  post {
+    always {
+      archiveArtifacts artifacts: 'guardscan.sarif', allowEmptyArchive: true
     }
+  }
 }
 \`\`\`
 
-### CircleCI
+This assumes the Docker Pipeline plugin. Alternatively, use any agent with Node.js 22 installed.
 
-**config.yml:**
+## CircleCI
+
 \`\`\`yaml
 version: 2.1
-
 jobs:
-  security_scan:
+  guardscan:
     docker:
-      - image: cimg/node:20.0
-    
+      - image: cimg/node:22.12
     steps:
       - checkout
-      
-      - restore_cache:
-          keys:
-            - guardscan-v1-{{ checksum "package-lock.json" }}
-      
-      - run:
-          name: Install GuardScan
-          command: npm install -g guardscan
-      
-      - save_cache:
-          key: guardscan-v1-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
-      
-      - run:
-          name: Run Security Scan
-          command: |
-            guardscan security --format json > security-report.json
-            guardscan security --fail-on high
-      
-      - store_artifacts:
-          path: security-report.json
-          destination: security-report
-      
-      - store_artifacts:
-          path: guardscan-report.md
-          destination: security-report-md
-      
-      - store_test_results:
-          path: guardscan-results.xml
-
-workflows:
-  version: 2
-  test_and_scan:
-    jobs:
-      - security_scan:
-          filters:
-            branches:
-              only:
-                - main
-                - develop
-\`\`\`
-
-## Best Practices
-
-### 1. Fast Feedback Loop
-
-**Do:**
-- Run quick scans (<2 min) on every commit
-- Full scans on pull requests
-- Comprehensive scans on main branch only
-
-**Don't:**
-- Run 20-minute scans on every commit
-- Block developers with slow pipelines
-
-**Example Strategy:**
-\`\`\`yaml
-# Fast on every push
-quick_scan:
-  - guardscan security --focus secrets
-
-# Full scan on PR
-full_scan:
-  - guardscan security
-  
-# Comprehensive on main
-complete_scan:
-  - guardscan security
-  - container scan
-  - IaC scan
-\`\`\`
-
-### 2. Meaningful Thresholds
-
-**Configure failure thresholds:**
-\`\`\`yaml
-security_thresholds:
-  critical: 0     # Block: Any critical issue
-  high: 3         # Block: More than 3 high severity
-  medium: 10      # Block: More than 10 medium
-  low: 999        # Allow: Don't block on low severity
-\`\`\`
-
-**GuardScan CLI:**
-\`\`\`bash
-# Block only on critical
-guardscan security --fail-on critical
-
-# Block on high and above
-guardscan security --fail-on high
-
-# Block on medium and above
-guardscan security --fail-on medium
-\`\`\`
-
-### 3. Clear Communication
-
-**Comment on Pull Requests:**
-\`\`\`yaml
-- name: Comment on PR with Results
-  if: failure()
-  uses: actions/github-script@v6
-  with:
-    script: |
-      const report = require('./security-report.json');
-      const critical = report.findings.filter(f => f.severity === 'critical').length;
-      const high = report.findings.filter(f => f.severity === 'high').length;
-      
-      const body = \`## 🚨 Security Scan Results
-      
-      **Critical:** \${critical}
-      **High:** \${high}
-      
-      Please review the security report artifact for full details.
-      
-      ### Quick Fixes:
-      - Remove any hardcoded secrets
-      - Update vulnerable dependencies
-      - Review OWASP Top 10 violations
-      \`;
-      
-      github.rest.issues.createComment({
-        issue_number: context.issue.number,
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        body: body
-      });
-\`\`\`
-
-### 4. Separate Security Jobs
-
-**Benefits of separation:**
-- Parallel execution (faster)
-- Clearer failure reasons
-- Independent retrying
-- Better metrics
-
-**Example:**
-\`\`\`yaml
-jobs:
-  secrets-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - run: guardscan security --focus secrets
-  
-  dependency-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - run: guardscan security --focus dependencies
-  
-  code-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - run: guardscan security --focus code
-\`\`\`
-
-### 5. Caching for Speed
-
-**GitHub Actions:**
-\`\`\`yaml
-- name: Cache GuardScan
-  uses: actions/cache@v3
-  with:
-    path: |
-      ~/.guardscan
-      ~/.npm
-    key: \${{ runner.os }}-guardscan-\${{ hashFiles('**/package-lock.json') }}
-    restore-keys: |
-      \${{ runner.os }}-guardscan-
-\`\`\`
-
-**GitLab CI:**
-\`\`\`yaml
-cache:
-  key: $CI_COMMIT_REF_SLUG
-  paths:
-    - .guardscan/
-    - node_modules/
-\`\`\`
-
-### 6. Security Baseline
-
-**Track improvements over time:**
-\`\`\`bash
-# First scan - establish baseline
-guardscan security > baseline-report.json
-
-# Future scans - compare to baseline
-guardscan security --compare baseline-report.json
-\`\`\`
-
-## Handling Scan Results
-
-### Option 1: Fail the Build (Recommended)
-
-**Best for:** Critical security issues
-
-\`\`\`bash
-# Block on any critical vulnerability
-guardscan security --fail-on critical
-
-# Exit code 1 if found
-\`\`\`
-
-### Option 2: Warning Only
-
-**Best for:** Gradual rollout or tech debt
-
-\`\`\`bash
-# Scan but don't fail
-guardscan security || echo "Security issues found, review recommended"
-\`\`\`
-
-### Option 3: Create Issues Automatically
-
-**Best for:** Tracking and prioritization
-
-\`\`\`yaml
-- name: Create GitHub Issues for Findings
-  run: |
-    guardscan security --format json | \
-    jq -r '.findings[] | select(.severity=="critical") | 
-      "**Title:** Security: " + .title + "\\n\\n**Description:**\\n" + .description + "\\n\\n**Severity:** " + .severity' | \
-    while IFS= read -r issue; do
-      gh issue create \
-        --title "$(echo "$issue" | grep 'Title:' | cut -d' ' -f3-)" \
-        --body "$issue" \
-        --label "security,critical"
-    done
-\`\`\`
-
-### Option 4: Send to Security Dashboard
-
-**Best for:** Enterprise monitoring
-
-\`\`\`yaml
-- name: Send Metrics to Dashboard
-  run: |
-    curl -X POST https://security-dashboard.company.com/api/scans \
-      -H "Content-Type: application/json" \
-      -d @security-report.json
-\`\`\`
-
-## Monitoring and Metrics
-
-### Key Metrics to Track
-
-**Scan Metrics:**
-- Scan duration
-- Success/failure rate
-- Coverage percentage
-
-**Vulnerability Metrics:**
-- Critical/high/medium/low counts
-- Time to remediation
-- Vulnerability trends
-
-**Team Metrics:**
-- False positive rate
-- Developer feedback
-- Adoption rate
-
-**Example Dashboard:**
-\`\`\`javascript
-{
-  "total_scans": 1547,
-  "vulnerabilities_found": 234,
-  "vulnerabilities_fixed": 198,
-  "average_fix_time": "2.3 days",
-  "critical_open": 0,
-  "high_open": 3,
-  "scan_duration_avg": "2.1 minutes"
-}
-\`\`\`
-
-## Common Pitfalls to Avoid
-
-### ❌ Don't Do This:
-
-**1. Blocking All Builds for Low-Severity Issues**
-\`\`\`bash
-# BAD: Blocks on every tiny issue
-guardscan security --fail-on low
-\`\`\`
-
-**2. No Thresholds**
-\`\`\`bash
-# BAD: All or nothing
-guardscan security  # Always fails or always passes
-\`\`\`
-
-**3. Ignoring Results**
-\`\`\`bash
-# BAD: Scanning without action
-guardscan security || true  # Ignores failures
-\`\`\`
-
-**4. Skipping Hotfixes**
-\`\`\`yaml
-# BAD: No security on urgent fixes
-if: github.ref != 'hotfix/*'
-\`\`\`
-
-**5. Outdated Tools**
-Never update security scanner → miss new vulnerability patterns
-
-### ✅ Do This Instead:
-
-**1. Reasonable Thresholds**
-\`\`\`bash
-# GOOD: Block on critical/high only
-guardscan security --fail-on high
-\`\`\`
-
-**2. Clear Error Messages**
-\`\`\`yaml
-- name: Security Scan
-  run: guardscan security --fail-on high
-  continue-on-error: false
-  
-- name: Explain Failure
-  if: failure()
-  run: |
-    echo "::error::Security scan failed. Review the security report for details."
-    echo "::error::Fix critical/high vulnerabilities before merging."
-\`\`\`
-
-**3. Track and Remediate**
-\`\`\`yaml
-- name: Create Tracking Issues
-  if: failure()
-  run: create-security-issues.sh
-\`\`\`
-
-**4. Scan Everything**
-\`\`\`yaml
-# GOOD: All branches scanned
-on: [push, pull_request]
-\`\`\`
-
-**5. Keep Tools Updated**
-\`\`\`yaml
-# Auto-update weekly
-- run: npm install -g guardscan@latest
-\`\`\`
-
-## Complete Example Pipeline
-
-**Production-Ready GitHub Actions:**
-\`\`\`yaml
-name: Complete Security Pipeline
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: '0 0 * * 0'  # Weekly full scan
-
-jobs:
-  quick-scan:
-    name: Quick Security Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Install GuardScan
-        run: npm install -g guardscan
-      
-      - name: Secrets Scan (Fast)
-        run: guardscan security --focus secrets --fail-on critical
-  
-  full-scan:
-    name: Full Security Analysis
-    runs-on: ubuntu-latest
-    needs: quick-scan
-    if: github.event_name == 'pull_request'
-    timeout-minutes: 10
-    
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: Cache Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.guardscan
-          key: \${{ runner.os }}-guardscan-\${{ hashFiles('**/package-lock.json') }}
-      
-      - name: Install GuardScan
-        run: npm install -g guardscan
-      
-      - name: Full Security Scan
-        run: |
-          guardscan security --format json > security-report.json
-          guardscan security --fail-on high
-      
-      - name: Upload Reports
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: security-reports
-          path: |
-            security-report.json
-            guardscan-report.md
-          retention-days: 90
-      
-      - name: Comment on PR
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '🚨 Security scan found vulnerabilities. Review the security report artifact.'
-            })
-  
-  compliance:
-    name: Compliance Check
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - uses: actions/checkout@v3
       - run: npm install -g guardscan
-      - run: guardscan security --compliance soc2
-      - run: guardscan security --compliance pci-dss
+      - run: guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
+      - store_artifacts:
+          path: guardscan.sarif
+workflows:
+  security:
+    jobs:
+      - guardscan
 \`\`\`
+
+## Add dependency vulnerability checks
+
+Dependency scanning looks up exact versions in OSV, so the runner needs network access:
+
+\`\`\`bash
+# Included in the security run
+guardscan security --ci --cve --scope runtime --fail-on high
+
+# Or as its own step
+guardscan vuln --ci --fail-on high
+\`\`\`
+
+\`--scope runtime\` ignores development dependencies. If a run cannot reach the advisory data, GuardScan reports incomplete coverage rather than silently passing. Use \`--allow-partial\` only if you consciously accept that trade-off.
+
+## Keeping CI offline
+
+If your runners must not reach cloud services, add \`--offline\`. It skips network-backed checks, including dependency lookups, so coverage differs from an online run. \`guardscan vuln --offline\` can use a previously saved local snapshot.
+
+\`\`\`bash
+guardscan security --ci --offline --fail-on high
+\`\`\`
+
+## Tune the gate
+
+Rolling out a gate on an existing codebase can block everyone on day one. A gradual approach works better:
+
+1. **Observe:** run the job without \`--fail-on\` and read the summary.
+2. **Gate on the worst:** start with \`--fail-on critical\`, fix what it finds, then move to \`high\`.
+3. **Cap the total:** \`--max-findings <number>\` fails the job if the count exceeds a ceiling you lower over time.
+4. **Keep it fast:** scan changed files with \`-f\` for pull requests and run the full scan on the main branch.
+
+## Reports and SBOMs
+
+\`\`\`bash
+guardscan security --format markdown -o security-report.md
+guardscan sbom -f cyclonedx -o sbom.json
+\`\`\`
+
+Store reports as build artifacts, and generate an SBOM (SPDX or CycloneDX) on release builds.
+
+## Combine tools
+
+No single scanner covers everything. Common companions:
+
+\`\`\`bash
+semgrep scan --config auto      # code patterns
+gitleaks detect --source .      # secrets in git history
+trivy image my-image:latest     # container images
+\`\`\`
+
+## Common mistakes
+
+- **Never failing the build.** A scan that cannot block is only a report.
+- **Blocking everything at once.** Start at \`critical\`, then tighten.
+- **Ignoring incomplete coverage.** A pass with missing coverage is not a clean bill of health.
+- **Leaking secrets to forks.** Do not give pull requests from forks access to secrets or write tokens.
+- **Skipping upgrades.** Pin a GuardScan version if you need reproducible runs, and update it deliberately.
 
 ## Conclusion
 
-Automated security scanning in your CI/CD pipeline:
-1. ✅ Catches vulnerabilities before production
-2. ✅ Provides consistent security standards
-3. ✅ Reduces manual security burden
-4. ✅ Speeds up development (not slows it down)
-5. ✅ Reduces remediation costs by 100x
-
-**Getting Started (5 minutes):**
-
-\`\`\`bash
-# 1. Install GuardScan
-npm install -g guardscan
-
-# 2. Test locally
-guardscan security
-
-# 3. Add to CI/CD
-# Copy the GitHub Actions example above to .github/workflows/security.yml
-
-# 4. Commit and push
-git add .github/workflows/security.yml
-git commit -m "Add security scanning"
-git push
-\`\`\`
-
-Start securing your pipeline today - your future self will thank you.`,
-    codeExamples: [],
+Start with one job, one command and a gate on critical findings. Add SARIF upload, dependency checks and stricter thresholds as the team gets used to the results.`,
+    codeExamples: [
+      {
+        language: "yaml",
+        title: "GitHub Actions workflow",
+        code: "name: Security\non:\n  push:\n    branches: [main]\n  pull_request:\n\njobs:\n  guardscan:\n    runs-on: ubuntu-latest\n    permissions:\n      contents: read\n      security-events: write\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 22\n      - run: npm install -g guardscan\n      - run: guardscan security --ci --fail-on high --format sarif -o guardscan.sarif\n      - uses: github/codeql-action/upload-sarif@v3\n        if: always()\n        with:\n          sarif_file: guardscan.sarif",
+      },
+    ],
     relatedArticles: [
       "ci-cd-integration",
       "github-security-scanning",
@@ -4347,700 +3193,142 @@ Start securing your pipeline today - your future self will thank you.`,
 
   "open-source-sast-tools": {
     slug: "open-source-sast-tools",
-    title: "Open Source SAST Tools: Complete Guide for 2025",
-    description:
-      "Comprehensive guide to the best free and open-source static application security testing (SAST) tools for every language and use case.",
+    title: "Open Source SAST Tools: Complete Guide",
+    description: "A practical overview of free and open-source static application security testing (SAST) tools, what each is good for, and how to combine them in CI.",
     category: "Security",
-    date: "2025-01-15",
-    readTime: "15 min read",
+    date: "2026-11-09",
+    readTime: "8 min read",
     image: "🆓",
-    excerpt:
-      "Don't overpay for security scanning. This comprehensive guide covers the best free and open-source SAST tools, from GuardScan to Semgrep, with real-world comparisons.",
-    keywords: [
-      "open source SAST",
-      "free security tools",
-      "open source security scanning",
-      "free SAST tools",
-      "security testing tools",
-    ],
+    excerpt: "You can start security scanning without a commercial license. This guide covers open-source SAST tools, from GuardScan and Semgrep to language-specific analyzers, and how to evaluate them on your own code.",
+    keywords: ["open source SAST","free security tools","open source security scanning","free SAST tools","security testing tools"],
     author: {
       name: "GuardScan Team",
       role: "Open Source Advocates",
     },
-    content: `# Open Source SAST Tools: Complete Guide for 2025
+    content: `# Open Source SAST Tools: Complete Guide
 
-Commercial SAST tools can cost $10K-100K+/year, but you don't need to spend a fortune for effective security scanning. This comprehensive guide covers the best free and open-source static application security testing (SAST) tools, helping you choose the right stack for your needs.
+Static application security testing (SAST) analyzes source code for vulnerabilities without running it. You do not need a commercial license to start: there are mature free and open-source tools for most languages. This guide surveys the main options, what each is good at, and how to combine them.
 
-## Why Choose Open Source SAST?
+Feature sets and licenses change, so confirm details on each project's site before you standardize.
 
-### Benefits of Open Source Security Tools
+## Why open source?
 
-**Cost Savings:**
-- Zero licensing fees
-- No per-user charges
-- No vendor lock-in
-- Free forever
+- **Transparency:** you can read the rules and the engine
+- **No per-seat licensing** for the core tools
+- **Easy to try:** install, run, compare results on your own code
+- **CI-friendly:** most are command-line tools with machine-readable output
 
-**Privacy & Control:**
-- Run on your infrastructure
-- No code uploaded to third parties
-- Complete data ownership
-- Audit the source code yourself
+Open source does not mean zero cost. You still spend time on setup, tuning, triage and upkeep, and some projects have paid tiers for extra features.
 
-**Community & Transparency:**
-- Open development process
-- Community-driven improvements
-- Rapid bug fixes
-- Transparent security
+## What to look for
 
-**Flexibility:**
-- Customize rules
-- Integrate anywhere
-- Self-host if needed
-- Extend functionality
+- **Languages and frameworks** you actually use
+- **Rule quality:** false-positive rate matters more than raw rule count
+- **Output formats:** SARIF makes results easy to publish in code-scanning dashboards
+- **Speed:** slow scans get skipped
+- **Customization:** can you write rules for your own patterns?
+- **Privacy:** does analysis happen locally?
 
-### Challenges
+## Multi-language tools
 
-**Trade-offs to consider:**
-- Less polished user interfaces
-- Community support (not enterprise SLA)
-- More setup required
-- Self-hosting infrastructure needed (some tools)
+### GuardScan
 
-**Bottom line:** For most teams, these trade-offs are worth the cost savings.
+A command-line tool that combines local heuristic security checks (secrets, injection patterns, Dockerfile and IaC issues and more), dependency vulnerability lookups through OSV, SBOM generation and optional AI review. Source is at https://github.com/ntanwir10/GuardScan.
 
-## Top Open Source SAST Tools
-
-### 1. GuardScan ⭐ Best for Privacy & Ease of Use
-
-**What makes it special:**
-- 100% local execution (no code uploads)
-- Works completely offline
-- Multi-AI provider support (GPT-4, Claude, Ollama)
-- 2-minute setup
-
-**Pricing:** FREE forever (MIT license)
-
-**Languages Supported:**
-JavaScript, TypeScript, Python, Java, Go, Ruby, PHP, C#, and more
-
-**Key Features:**
-- Secrets detection (20+ credential types)
-- OWASP Top 10 coverage
-- AI-powered code review (optional)
-- Dockerfile security scanning
-- Fast (<2 minutes for most projects)
-- Pre-commit hooks
-- CI/CD integration
-
-**Installation:**
 \`\`\`bash
-# Install globally
 npm install -g guardscan
-
-# Initialize in project
-cd your-project
-guardscan init
-
-# Run security scan
 guardscan security
-
-# Install pre-commit hooks
-guardscan install-hooks
+guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
 \`\`\`
 
-**Pros:**
-- ✅ Complete privacy (local-only)
-- ✅ Zero cost
-- ✅ Very fast
-- ✅ Easy setup (2 minutes)
-- ✅ Works offline
-- ✅ Multi-AI support
-- ✅ No server required
+Its AI features are opt-in and work with hosted providers or a local one such as Ollama. Its checks are heuristic, so use it alongside deeper, language-specific analyzers rather than instead of them.
 
-**Cons:**
-- ⚠️ Newer tool (smaller community)
-- ⚠️ No web dashboard (CLI only)
-- ⚠️ Limited historical tracking
+### Semgrep
 
-**Best for:** Startups, privacy-conscious teams, fast feedback, offline environments
-
-**Getting Started:**
-\`\`\`bash
-npx guardscan security
-\`\`\`
-
-### 2. Semgrep - Best for Custom Rules
-
-**What makes it special:**
-Fast pattern-based scanning with easy custom rule creation
-
-**Pricing:** 
-- Open source: FREE
-- Cloud (Team): $20/developer/month
-- Enterprise: Custom pricing
-
-**Languages:** 20+ including Go, Java, JavaScript, Python, Ruby, C#, PHP, Terraform
-
-**Key Features:**
-- Fast pattern matching
-- Custom rule creation (YAML)
-- 2,000+ built-in rules
-- IDE integration
-- CI/CD integration
-- Cloud dashboard (paid)
-
-**Installation:**
-\`\`\`bash
-# Via pip
-pip install semgrep
-
-# Via Homebrew
-brew install semgrep
-
-# Run scan
-semgrep --config=auto .
-
-# Custom rules
-semgrep --config=p/security-audit .
-\`\`\`
-
-**Custom Rule Example:**
-\`\`\`yaml
-rules:
-  - id: dangerous-eval
-    patterns:
-      - pattern: eval(...)
-    message: Dangerous use of eval()
-    severity: WARNING
-    languages: [javascript]
-\`\`\`
-
-**Pros:**
-- ✅ Very fast
-- ✅ Easy custom rules
-- ✅ Great documentation
-- ✅ Active community
-- ✅ Wide language support
-
-**Cons:**
-- ⚠️ Cloud service for advanced features
-- ⚠️ Free tier has limitations
-- ⚠️ Requires internet for cloud features
-
-**Best for:** Teams wanting custom rules, polyglot projects, fast scans
-
-### 3. SonarQube Community Edition - Best for Code Quality + Security
-
-**What makes it special:**
-Combines code quality metrics with security scanning
-
-**Editions:**
-- Community: FREE
-- Developer: $150/month
-- Enterprise: $30,000+/year
-
-**Languages:** 27+ including Java, C#, JavaScript, Python, PHP, Go
-
-**Key Features:**
-- Code quality metrics
-- Security hotspots
-- Technical debt tracking
-- Quality gates
-- Historical trends
-- Team dashboards
-- Pull request decoration
-
-**Installation:**
-\`\`\`bash
-# Docker (easiest)
-docker run -d -p 9000:9000 sonarqube:community
-
-# Or download
-wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.0.0.zip
-
-# Scan project
-sonar-scanner \
-  -Dsonar.projectKey=my-project \
-  -Dsonar.sources=. \
-  -Dsonar.host.url=http://localhost:9000
-\`\`\`
-
-**Pros:**
-- ✅ Comprehensive analysis
-- ✅ Code quality + security
-- ✅ Good UI/dashboards
-- ✅ Quality gates
-- ✅ Mature ecosystem
-- ✅ Historical tracking
-
-**Cons:**
-- ❌ Requires server infrastructure
-- ❌ Heavy resource usage (2GB+ RAM)
-- ❌ Complex setup
-- ❌ Community edition has limitations
-
-**Best for:** Teams wanting quality gates, enterprises, comprehensive analysis
-
-### 4. Bandit - Best for Python
-
-**Python-specific security scanner**
-
-**Installation:**
-\`\`\`bash
-pip install bandit
-
-# Scan project
-bandit -r your_project/
-
-# With config file
-bandit -r . -c .bandit.yml
-\`\`\`
-
-**What it detects:**
-- SQL injection
-- Shell injection
-- Hardcoded passwords
-- Insecure cryptography
-- XML vulnerabilities
-- Assert usage
-- Unsafe YAML loading
-
-**Pros:**
-- ✅ Python-specific (fewer false positives)
-- ✅ Fast
-- ✅ Easy to use
-- ✅ Customizable
-- ✅ CI/CD integration
-
-**Cons:**
-- ⚠️ Python only
-
-**Best for:** Python projects exclusively
-
-### 5. Brakeman - Best for Ruby on Rails
-
-**Rails-specific security scanner**
-
-**Installation:**
-\`\`\`bash
-gem install brakeman
-
-# Scan Rails app
-brakeman --path /path/to/rails/app
-
-# Output to JSON
-brakeman -o report.json
-\`\`\`
-
-**What it detects:**
-- SQL injection
-- XSS vulnerabilities
-- CSRF issues
-- Mass assignment
-- Unsafe redirects
-- File access
-- Command injection
-
-**Pros:**
-- ✅ Rails-specific accuracy
-- ✅ Very fast
-- ✅ No configuration needed
-- ✅ Confidence ratings
-
-**Cons:**
-- ⚠️ Rails only
-
-**Best for:** Ruby on Rails applications
-
-### 6. ESLint Security Plugins - Best for JavaScript
-
-**Security-focused linting for JavaScript/TypeScript**
-
-**Installation:**
-\`\`\`bash
-npm install --save-dev eslint-plugin-security eslint-plugin-no-unsanitized
-
-# .eslintrc.json
-{
-  "plugins": ["security", "no-unsanitized"],
-  "extends": ["plugin:security/recommended"]
-}
-
-# Run
-eslint .
-\`\`\`
-
-**What it detects:**
-- XSS vulnerabilities
-- Regex DoS
-- Unsafe eval usage
-- Insecure random numbers
-- Prototype pollution
-
-**Pros:**
-- ✅ Integrates with existing ESLint
-- ✅ Real-time IDE feedback
-- ✅ Fast
-- ✅ Pre-commit integration
-
-**Cons:**
-- ⚠️ Limited to JavaScript/TypeScript
-- ⚠️ Pattern-based (may miss complex issues)
-
-**Best for:** JavaScript/TypeScript projects with existing ESLint
-
-### 7. gosec - Best for Go
-
-**Go-specific security checker**
-
-**Installation:**
-\`\`\`bash
-go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-# Scan project
-gosec ./...
-
-# JSON output
-gosec -fmt json -out results.json ./...
-\`\`\`
-
-**What it detects:**
-- SQL injection
-- Command injection
-- File inclusions
-- Weak crypto
-- Hardcoded credentials
-- Integer overflow
-
-**Pros:**
-- ✅ Go-specific (accurate)
-- ✅ Fast
-- ✅ Easy integration
-- ✅ Low false positives
-
-**Cons:**
-- ⚠️ Go only
-
-**Best for:** Go projects
-
-### 8. SpotBugs + Find Security Bugs - Best for Java
-
-**Java bytecode analyzer**
-
-**Installation:**
-\`\`\`bash
-# Maven
-<plugin>
-  <groupId>com.github.spotbugs</groupId>
-  <artifactId>spotbugs-maven-plugin</artifactId>
-  <version>4.8.0.0</version>
-</plugin>
-
-# Run
-mvn spotbugs:check
-\`\`\`
-
-**What it detects:**
-- SQL injection
-- XSS
-- Path traversal
-- XXE
-- Insecure crypto
-- LDAP injection
-
-**Pros:**
-- ✅ Mature (successor to FindBugs)
-- ✅ Analyzes bytecode
-- ✅ Maven/Gradle integration
-
-**Cons:**
-- ⚠️ Java only
-- ⚠️ Can be slow on large projects
-
-**Best for:** Java/Kotlin projects
-
-## Feature Comparison Matrix
-
-| Tool | Languages | Setup | Speed | Offline | Server | Cost |
-|------|-----------|-------|-------|---------|--------|------|
-| **GuardScan** | 7+ | ⚡ Easy | ⚡ Fast | ✅ Yes | ❌ No | Free |
-| **Semgrep** | 20+ | ⚡ Easy | ⚡⚡ Very Fast | Partial | ❌ No | Free/Paid |
-| **SonarQube CE** | 27+ | ⚠️ Hard | Medium | ✅ Yes | ✅ Required | Free |
-| **Bandit** | Python | ⚡ Easy | ⚡ Fast | ✅ Yes | ❌ No | Free |
-| **Brakeman** | Ruby | ⚡ Easy | ⚡ Fast | ✅ Yes | ❌ No | Free |
-| **ESLint Security** | JS/TS | ⚡ Easy | ⚡ Fast | ✅ Yes | ❌ No | Free |
-| **gosec** | Go | ⚡ Easy | ⚡ Fast | ✅ Yes | ❌ No | Free |
-| **SpotBugs** | Java | Medium | Slow | ✅ Yes | ❌ No | Free |
-
-## Recommended Tool Stacks
-
-### Stack 1: Startup/Small Team (Budget: $0)
-
-**Primary SAST:** GuardScan
-**Language-Specific:** Add as needed (Bandit for Python, gosec for Go, etc.)
-**CI/CD:** GuardScan in GitHub Actions
+A pattern-based engine with a large community rule set and a readable rule syntax for writing your own. A good fit when you want custom rules.
 
 \`\`\`bash
-# Development
-npm install -g guardscan
-guardscan install-hooks
-
-# CI/CD
-guardscan security --fail-on high
+semgrep scan --config auto
 \`\`\`
 
-**Total Cost:** $0
-**Setup Time:** 10 minutes
-**Coverage:** Excellent
+Check Semgrep's licensing for the rule sets you use, since some are under different terms than the engine.
 
-### Stack 2: Multi-Language Project
+### CodeQL
 
-**General SAST:** GuardScan + Semgrep
-**Python:** Bandit
-**Ruby:** Brakeman
-**Go:** gosec
-**JavaScript:** ESLint Security
+GitHub's semantic code analysis engine, which treats code as data you can query. It is free for public repositories on GitHub; check GitHub's license terms before using it on private code.
+
+### SonarQube Community Edition
+
+Combines code-quality and security rules in a self-hosted server with dashboards and quality gates. The Community Edition covers a subset of the features of paid editions, so compare editions against your needs.
+
+## Language-specific tools
+
+| Language | Tools |
+|----------|-------|
+| JavaScript / TypeScript | ESLint with eslint-plugin-security, Semgrep |
+| Python | Bandit |
+| Go | gosec |
+| Ruby | Brakeman |
+| Java | SpotBugs with the Find Security Bugs plugin |
 
 \`\`\`bash
-# Install all
-npm install -g guardscan
-pip install semgrep bandit
-gem install brakeman
-go install github.com/securego/gosec/v2/cmd/gosec@latest
-
-# Run all
-guardscan security
-semgrep --config=auto .
-bandit -r python_src/
-brakeman rails_app/
-gosec ./go_src/...
-\`\`\`
-
-**Total Cost:** $0
-**Setup Time:** 30 minutes
-**Coverage:** Comprehensive
-
-### Stack 3: Enterprise with Infrastructure
-
-**Primary:** GuardScan (local dev)
-**Secondary:** SonarQube CE (quality gates)
-**Specific:** Semgrep (custom rules)
-**Language:** Tool per language
-
-**Setup:**
-1. GuardScan for all developers (local)
-2. SonarQube server for CI/CD pipeline
-3. Language-specific tools in parallel
-4. Semgrep for custom security patterns
-
-**Total Cost:** $0 (infrastructure costs only)
-**Setup Time:** 1-2 days
-**Coverage:** Enterprise-grade
-
-## Integration Examples
-
-### Multi-Tool GitHub Actions
-
-\`\`\`yaml
-name: Multi-Tool Security Scan
-
-jobs:
-  guardscan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: npm install -g guardscan
-      - run: guardscan security --fail-on high
-
-  semgrep:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: pip install semgrep
-      - run: semgrep --config=auto . --json > semgrep.json
-
-  python-security:
-    if: hashFiles('**/*.py') != ''
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: pip install bandit
-      - run: bandit -r . -f json -o bandit.json
-
-  go-security:
-    if: hashFiles('**/*.go') != ''
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
-      - run: go install github.com/securego/gosec/v2/cmd/gosec@latest
-      - run: gosec -fmt json -out gosec.json ./...
-\`\`\`
-
-### Pre-commit Hook (All Tools)
-
-\`\`\`bash
-#!/bin/bash
-# .git/hooks/pre-commit
-
-echo "Running security checks..."
-
-# GuardScan (primary)
-guardscan security --focus secrets --fail-on critical || exit 1
-
-# Language-specific
-if [ -d "python_src" ]; then
-  bandit -r python_src/ -ll || exit 1
-fi
-
-if [ -d "go_src" ]; then
-  gosec ./go_src/... || exit 1
-fi
-
-echo "✅ All security checks passed"
-\`\`\`
-
-## Best Practices
-
-### 1. Layer Multiple Tools
-
-Don't rely on one tool:
-\`\`\`bash
-# General security
-guardscan security
-
-# Custom patterns
-semgrep --config=custom-rules.yml .
-
-# Language-specific deep analysis
-bandit -r . # Python
-gosec ./... # Go
-\`\`\`
-
-**Why:** Different tools have different strengths and blind spots.
-
-### 2. Start Simple, Add Complexity
-
-**Week 1:** GuardScan only
-**Week 2-3:** Add language-specific tools
-**Month 2:** Add Semgrep with custom rules
-**Month 3:** Add SonarQube if needed
-
-### 3. Automate Everything
-
-\`\`\`yaml
-# CI/CD pipeline
-- Pre-commit: GuardScan (secrets)
-- PR: GuardScan + Semgrep (full scan)
-- Main: All tools (comprehensive)
-- Nightly: SonarQube (deep analysis)
-\`\`\`
-
-### 4. Tune and Customize
-
-\`\`\`yaml
-# .guardscan.yml
-ignore_patterns:
-  - "test/**"
-  - "vendor/**"
-
-severity_threshold: "high"
-
-custom_rules:
-  - pattern: "password.*=.*".*"
-    severity: "critical"
-\`\`\`
-
-### 5. Track Metrics
-
-Monitor over time:
-- Vulnerabilities found
-- False positive rate
-- Time to remediation
-- Coverage percentage
-- Tool performance
-
-## Commercial vs Open Source
-
-### When Open Source is Better:
-
-- ✅ Budget constraints ($0 budget)
-- ✅ Privacy requirements (regulated industry)
-- ✅ Customization needs (custom rules)
-- ✅ Simple projects (don't need all features)
-- ✅ Learning/experimentation
-
-### When Commercial Makes Sense:
-
-- ❌ Need 24/7 enterprise support
-- ❌ Want fully managed service
-- ❌ Require advanced compliance features
-- ❌ Large teams (100+ developers)
-- ❌ Complex integrations needed
-
-**Reality:** Most teams can use open source successfully.
-
-## Getting Started Checklist
-
-- [ ] Choose primary SAST tool (**GuardScan recommended**)
-- [ ] Install and test locally
-- [ ] Add language-specific tools for your stack
-- [ ] Set up CI/CD integration
-- [ ] Configure pre-commit hooks
-- [ ] Establish severity thresholds
-- [ ] Document process for team
-- [ ] Schedule regular scans
-- [ ] Track security metrics
-
-## Quick Start Commands
-
-\`\`\`bash
-# 1. Install GuardScan (primary tool)
-npm install -g guardscan
-
-# 2. Run first scan
-cd your-project
-guardscan security
-
-# 3. Set up pre-commit hook
-guardscan install-hooks
-
-# 4. Add language-specific tools
-pip install bandit          # Python
-gem install brakeman        # Ruby
-go install gosec@latest     # Go
-npm install eslint-plugin-security  # JavaScript
-
-# 5. Run all tools
-guardscan security
 bandit -r .
-brakeman
 gosec ./...
+brakeman
 \`\`\`
+
+Language-specific tools understand idioms and frameworks that generic engines may miss, so pair one with a multi-language scanner.
+
+## Adjacent categories
+
+SAST is one layer. Complete coverage also needs:
+
+- **Secrets scanning:** Gitleaks (\`gitleaks detect --source .\`) for credentials in code and history
+- **Dependency scanning:** \`guardscan vuln\`, OSV-Scanner, or your package manager's audit command
+- **Container and IaC scanning:** Trivy (\`trivy fs .\`, \`trivy image <name>\`, \`trivy config .\`), Hadolint for Dockerfiles, Checkov for infrastructure as code
+- **Dynamic testing (DAST):** tools that attack a running application, which static analysis cannot replace
+
+## A starter stack
+
+1. A multi-language scanner such as GuardScan or Semgrep in CI on every pull request
+2. One language-specific analyzer for your main language
+3. A secrets scanner covering git history
+4. Dependency and container scanning on build
+5. Optionally, SonarQube Community Edition or CodeQL for dashboards and deeper analysis
+
+\`\`\`yaml
+# GitHub Actions: one job, SARIF to code scanning
+- uses: actions/setup-node@v4
+  with:
+    node-version: 22
+- run: npm install -g guardscan
+- run: guardscan security --ci --fail-on high --format sarif -o guardscan.sarif
+- uses: github/codeql-action/upload-sarif@v3
+  if: always()
+  with:
+    sarif_file: guardscan.sarif
+\`\`\`
+
+## How to evaluate on your own code
+
+Vendor comparisons and benchmark tables rarely match your codebase. Instead:
+
+1. Pick a representative repository
+2. Run two or three candidates and export SARIF or JSON
+3. Triage a sample of findings from each and record true and false positives
+4. Compare run time, setup effort and how readable the results are
+5. Choose what your team will actually keep running
+
+## Tuning tips
+
+- Start with high-severity rules and expand
+- Fix or suppress findings with a recorded reason, not silently
+- Set a gate with \`--fail-on\` (or the tool's equivalent) once the baseline is clean
+- Review rule updates when you upgrade a tool
 
 ## Conclusion
 
-Open source SAST tools provide enterprise-grade security without the enterprise price tag. For most teams, the recommended stack is:
-
-**Recommended Stack:**
-1. **GuardScan** - Primary SAST (all languages)
-2. **Semgrep** - Custom rules and patterns
-3. **Language-specific tools** - Deep language analysis
-4. **SonarQube CE** - Optional, for quality gates
-
-**Total Cost:** $0
-**Setup Time:** 1 hour
-**Coverage:** 80-90% of what commercial tools provide
-
-Start with GuardScan today - it's free, fast, and respects your privacy:
-
-\`\`\`bash
-npm install -g guardscan
-guardscan security
-\`\`\`
-
-Your code (and budget) will thank you.`,
+Open-source SAST tools cover a lot of ground. Choose a small stack that matches your languages, measure it on your own code, automate it in CI, and keep a human in the loop for triage.`,
     codeExamples: [],
     relatedArticles: [
       "best-sast-tools-2025",
