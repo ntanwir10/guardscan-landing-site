@@ -1,69 +1,37 @@
-# Welcome to your GuardScan project
+# GuardScan marketing & docs site
 
-## Project info
+Source for <https://guardscancli.vercel.app>, the site for [GuardScan](https://github.com/ntanwir10/GuardScan), a privacy-first AI code review and security scanning CLI.
 
-This repository contains the source for **GuardScan**, a privacy-first AI code review CLI.
+Stack: Vite, React, TypeScript, React Router, Tailwind CSS, shadcn/ui.
 
-## How can I work with this code?
+## Run locally
 
-There are several ways of editing your application.
+Requires Node.js 22 (the same version GuardScan itself requires).
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+npm ci
+npm run dev        # http://localhost:8080 (see vite.config.ts)
 ```
 
-**Edit a file directly in GitHub**
+## Build and check
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-You can deploy GuardScan like any other Vite-powered React application. A common workflow is:
-
-1. Build the production assets:
-
-```sh
-npm run build
+```bash
+npm run build      # production build into dist/
+npm run preview    # serve dist/ locally
+npm run lint
 ```
 
-2. Serve the contents of the generated `dist` directory using your preferred hosting provider (for example, Netlify, Vercel, Cloudflare Pages, or any static file host).
+## Deploy
 
-Refer to your hosting provider's documentation for details on deploying a static site built with Vite.
+Vercel project `guardscan-landing-site` deploys `main` to production automatically. Pull requests get SSO-protected preview deployments, so merging to `main` is what publishes the site. `vercel.json` rewrites every path to `index.html` so client-side routes work on refresh.
+
+## Where content comes from
+
+- Pages and components: `src/pages/` and `src/components/`. The CLI reference is `src/pages/Documentation.tsx`.
+- Blog posts: `src/data/blogArticles.ts` (one entry per slug; the sitemap in `public/sitemap.xml` must be updated by hand when posts are added or their dates change).
+- Install channels: `src/lib/install-channels.ts`. Only entries with `live: true` render; flip a channel to `true` only after it is actually published.
+- SEO and structured data: `src/components/SEO.tsx`, `src/lib/seo-schemas.ts`, `public/sitemap.xml`, `public/robots.txt`, `public/site.webmanifest`.
+
+## Keeping the site accurate
+
+The source of truth for commands, flags, and supported models is the GuardScan repository (`cli/src/commands/*.ts`, `cli/src/providers/model-registry.ts`) and the published CLI's `--help` output. Check any `guardscan ...` command against `guardscan <command> --help` before adding it, and do not add pricing for third-party products or compliance claims.

@@ -21,17 +21,17 @@ const faqs: Array<{ question: string; answer: ReactNode }> = [
   {
     question: "Which AI providers are supported?",
     answer:
-      "GuardScan supports 6+ AI providers: OpenAI (GPT-4, GPT-3.5-turbo), Anthropic (Claude 3 Opus/Sonnet/Haiku), Google (Gemini Pro), Ollama (local AI with llama2, codellama, mistral), LM Studio (local model server), and OpenRouter (multi-model aggregator). You can switch between providers anytime without vendor lock-in. For complete privacy, use Ollama or LM Studio to run AI models locally.",
+      "GuardScan supports 6+ AI providers: OpenAI (gpt-5.1, gpt-4o, gpt-4.1-mini), Anthropic (claude-sonnet-4.5), Google (gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash), Ollama (local AI with codellama, llama2, mistral), LM Studio (local model server), and OpenRouter (multi-model aggregator). You can switch between providers anytime without vendor lock-in. For complete privacy, use Ollama or LM Studio to run AI models locally.",
   },
   {
     question: "How much does GuardScan cost?",
     answer:
-      "GuardScan is 100% free and open source. However, if you want to use AI-enhanced code review, you need to provide your API key to the AI provider. The cost of AI-enhanced code review is depends on the AI provider you are using. For example: OpenAI GPT-4 = $0.03 per 1M tokens, Anthropic Claude = $0.0015 per 1M tokens, Google Gemini = $0.0015 per 1M tokens, Ollama = $0.0001 per 1M tokens, LM Studio = $0.0001 per 1M tokens, OpenRouter = $0.0001 per 1M tokens.",
+      "GuardScan is 100% free and open source. However, if you want to use AI-enhanced code review, you need to provide your API key to the AI provider. The cost of AI-enhanced review depends on the provider you use, and local providers (Ollama, LM Studio) are free. Set spending limits with `guardscan budget set` and inspect usage with `guardscan metrics show`.",
   },
   {
     question: "Is GuardScan suitable for enterprise use?",
     answer:
-      "Absolutely! GuardScan is designed for enterprises with strict security policies. It works in air-gapped environments, never uploads source code, supports on-premise AI models (Ollama), and provides comprehensive OWASP Top 10 coverage, IaC scanning, and Dockerfile security. We offer volume discounts for large teams. Contact us for enterprise licensing and dedicated support.",
+      "Absolutely! GuardScan is designed for enterprises with strict security policies. It works in air-gapped environments, never uploads source code, supports on-premise AI models (Ollama), and provides comprehensive OWASP Top 10 coverage, IaC scanning, and Dockerfile security. GuardScan is MIT-licensed open source; there are no paid tiers.",
   },
   {
     question: "What languages and frameworks are supported?",

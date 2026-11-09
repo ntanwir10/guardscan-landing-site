@@ -71,11 +71,14 @@ export default function BlogArticle() {
         <title>{article.title} | GuardScan Blog</title>
         <meta name="description" content={article.description} />
         <meta name="keywords" content={article.keywords.join(", ")} />
+        <link rel="canonical" href={`https://guardscancli.vercel.app/blog/${article.slug}`} />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={article.title} />
         <meta property="og:description" content={article.description} />
+        <meta property="og:url" content={`https://guardscancli.vercel.app/blog/${article.slug}`} />
+        <meta property="og:image" content="https://guardscancli.vercel.app/opengraph-image.png" />
         <meta property="article:published_time" content={article.date} />
         <meta property="article:author" content={article.author.name} />
         <meta property="article:section" content={article.category} />
@@ -87,6 +90,7 @@ export default function BlogArticle() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={article.title} />
         <meta name="twitter:description" content={article.description} />
+        <meta name="twitter:image" content="https://guardscancli.vercel.app/opengraph-image.png" />
 
         {/* Structured Data */}
         <script type="application/ld+json">
@@ -263,7 +267,7 @@ export default function BlogArticle() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="https://github.com/guardscan/guardscan"
+                  href="https://github.com/ntanwir10/GuardScan"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-semibold transition-colors"

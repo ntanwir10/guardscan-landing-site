@@ -6,6 +6,7 @@ import {
   Package,
   Coffee,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export const Footer = () => {
@@ -31,21 +32,21 @@ export const Footer = () => {
             <h3 className="font-semibold mb-4">Product</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a
-                  href="/features"
+                <Link
+                  to="/features"
                   className="hover:text-primary transition-colors"
                 >
                   Features
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="/docs"
+                <Link
+                  to="/docs"
                   className="hover:text-primary transition-colors"
                 >
                   Documentation
-                </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -85,12 +86,12 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="/blog"
+                <Link
+                  to="/blog"
                   className="hover:text-primary transition-colors"
                 >
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
                 <a

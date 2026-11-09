@@ -30,7 +30,7 @@ export default function CodeClimateAlternative() {
       question:
         "What's the main difference between GuardScan and Code Climate?",
       answer:
-        "GuardScan runs 100% locally with complete privacy and works offline, while Code Climate requires cloud-based analysis with code uploads. GuardScan is free and open-source, while Code Climate starts at $249/month for teams.",
+        "GuardScan runs 100% locally with complete privacy and works offline, while Code Climate requires cloud-based analysis with code uploads. GuardScan is free and open-source, while Code Climate is a paid commercial product.",
     },
     {
       question:
@@ -41,7 +41,7 @@ export default function CodeClimateAlternative() {
     {
       question: "Is GuardScan truly free compared to Code Climate?",
       answer:
-        "Yes, GuardScan is 100% free and open-source with all features included. Code Climate's free tier is very limited and paid plans start at $249/month for teams with additional per-developer costs.",
+        "Yes, GuardScan is 100% free and open-source with all features included. Code Climate's free tier is very limited and paid plans are priced per team or developer.",
     },
     {
       question: "Can GuardScan work offline unlike Code Climate?",
@@ -59,7 +59,7 @@ export default function CodeClimateAlternative() {
     <div className="min-h-screen">
       <SEO
         title="GuardScan vs Code Climate: Privacy-First Alternative for Code Quality"
-        description="Compare GuardScan and Code Climate for code quality analysis. GuardScan offers 100% local analysis, privacy-first architecture, and zero cost vs Code Climate's $249/month plans."
+        description="Compare GuardScan and Code Climate for code quality analysis. GuardScan offers 100% local analysis, privacy-first architecture, and zero cost vs Code Climate's paid plans."
         canonical="https://guardscancli.vercel.app/comparison/codeclimate-alternative"
         keywords="codeclimate alternative, guardscan vs codeclimate, privacy-first code quality, local code quality, free codeclimate alternative, code quality tool comparison"
         structuredData={structuredData}
@@ -121,7 +121,7 @@ export default function CodeClimateAlternative() {
               <div className="text-center mb-6">
                 <div className="text-5xl mb-4">☁️</div>
                 <h2 className="text-3xl font-bold">Code Climate</h2>
-                <p className="text-2xl font-bold mt-2">$249-$999+/month</p>
+                <p className="text-2xl font-bold mt-2">Commercial plans</p>
                 <p className="text-sm text-muted-foreground">
                   Team & Business Plans
                 </p>
@@ -197,7 +197,7 @@ export default function CodeClimateAlternative() {
               </p>
               <p className="text-muted-foreground">
                 <strong className="text-foreground">Code Climate:</strong>{" "}
-                $249-$999+/month
+                Paid plans (see vendor)
               </p>
             </Card>
 
@@ -262,7 +262,7 @@ export default function CodeClimateAlternative() {
                   <td className="p-4 text-center font-semibold text-primary">
                     Free
                   </td>
-                  <td className="p-4 text-center">$249-$999/month</td>
+                  <td className="p-4 text-center">Paid plans (see vendor)</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="p-4">Local/Offline Analysis</td>
@@ -527,7 +527,7 @@ export default function CodeClimateAlternative() {
                 GuardScan runs 100% locally with complete privacy and works
                 offline, while Code Climate requires cloud-based analysis with
                 code uploads. GuardScan is free and open-source, while Code
-                Climate starts at $249/month for teams.
+                Climate is a paid commercial product.
               </p>
             </Card>
 
@@ -549,8 +549,7 @@ export default function CodeClimateAlternative() {
               <p className="text-muted-foreground">
                 Yes, GuardScan is 100% free and open-source with all features
                 included. Code Climate's free tier is very limited and paid
-                plans start at $249/month for teams with additional
-                per-developer costs.
+                plans are priced per team or developer.
               </p>
             </Card>
 

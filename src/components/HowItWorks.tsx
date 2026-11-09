@@ -16,8 +16,8 @@ const steps = [
   {
     icon: FileText,
     title: "Get Actionable Reports",
-    description: "Beautiful Markdown reports with severity levels, file references, and specific recommendations.",
-    command: "cat guardscan-report.md",
+    description: "Markdown, JSON, or SARIF reports with severity levels, file references, and specific recommendations.",
+    command: "guardscan scan --format sarif -o guardscan.sarif",
   },
 ];
 

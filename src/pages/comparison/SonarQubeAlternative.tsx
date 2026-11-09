@@ -29,7 +29,7 @@ export default function SonarQubeAlternative() {
     {
       question: "What is the main difference between GuardScan and SonarQube?",
       answer:
-        "GuardScan runs 100% locally on your machine with no code uploads required, while SonarQube typically requires a server setup and code analysis happens on that server. GuardScan is free and open-source, while SonarQube has paid tiers starting at $150/month for teams.",
+        "GuardScan runs 100% locally on your machine with no code uploads required, while SonarQube typically requires a server setup and code analysis happens on that server. GuardScan is free and open-source, while SonarQube also offers paid commercial editions.",
     },
     {
       question: "Is GuardScan free like SonarQube Community Edition?",
@@ -44,7 +44,7 @@ export default function SonarQubeAlternative() {
     {
       question: "How does GuardScan compare to SonarQube for enterprise use?",
       answer:
-        "For enterprises prioritizing privacy and cost, GuardScan excels with local analysis and zero licensing costs. SonarQube offers advanced team features, quality gates, and extensive integrations but requires significant infrastructure and costs $30K+/year for enterprise plans.",
+        "For enterprises prioritizing privacy and cost, GuardScan excels with local analysis and zero licensing costs. SonarQube offers advanced team features, quality gates, and extensive integrations but requires server infrastructure, and enterprise plans are paid.",
     },
   ]);
 
@@ -119,7 +119,7 @@ export default function SonarQubeAlternative() {
               <div className="text-center mb-6">
                 <div className="text-5xl mb-4">🔍</div>
                 <h2 className="text-3xl font-bold">SonarQube</h2>
-                <p className="text-2xl font-bold mt-2">$150-$30K+/year</p>
+                <p className="text-2xl font-bold mt-2">Commercial editions</p>
                 <p className="text-sm text-muted-foreground">
                   Enterprise Plans
                 </p>
@@ -194,8 +194,8 @@ export default function SonarQubeAlternative() {
                 forever
               </p>
               <p className="text-muted-foreground">
-                <strong className="text-foreground">SonarQube:</strong> $150/mo
-                - $30K+/year
+                <strong className="text-foreground">SonarQube:</strong> Community
+                Edition is free; paid editions are priced by vendor
               </p>
             </Card>
 
@@ -260,7 +260,7 @@ export default function SonarQubeAlternative() {
                   <td className="p-4 text-center font-semibold text-primary">
                     Free
                   </td>
-                  <td className="p-4 text-center">$150/month</td>
+                  <td className="p-4 text-center">Paid editions (see vendor)</td>
                 </tr>
                 <tr className="border-b border-border/50">
                   <td className="p-4">Local/Offline Analysis</td>
@@ -510,8 +510,8 @@ export default function SonarQubeAlternative() {
                 GuardScan runs 100% locally on your machine with no code uploads
                 required, while SonarQube typically requires a server setup and
                 code analysis happens on that server. GuardScan is free and
-                open-source, while SonarQube has paid tiers starting at
-                $150/month for teams.
+                open-source, while SonarQube also offers paid commercial
+                editions.
               </p>
             </Card>
 
@@ -549,8 +549,8 @@ export default function SonarQubeAlternative() {
                 For enterprises prioritizing privacy and cost, GuardScan excels
                 with local analysis and zero licensing costs. SonarQube offers
                 advanced team features, quality gates, and extensive
-                integrations but requires significant infrastructure and costs
-                $30K+/year for enterprise plans.
+                integrations but requires server infrastructure, and enterprise
+                plans are paid.
               </p>
             </Card>
           </div>
