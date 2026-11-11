@@ -38,7 +38,7 @@ export const generateSoftwareApplicationSchema = () => ({
   },
   description:
     "AI code review that never sees your code. GuardScan runs locally with no server and never uploads your code; static analysis works offline, and AI review is optional with your own provider key or a local model. Free and open source.",
-  softwareVersion: "1.1.0",
+  softwareVersion: "1.1.1",
   downloadUrl: "https://github.com/ntanwir10/GuardScan",
   installUrl: "https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md",
   screenshot: "https://guardscancli.vercel.app/opengraph-image.png",
