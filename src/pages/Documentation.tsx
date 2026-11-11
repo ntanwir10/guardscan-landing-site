@@ -49,6 +49,7 @@ import { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
+import { LIVE_STANDALONE_CHANNELS } from "@/lib/install-channels";
 
 const commands = [
   {
@@ -1173,6 +1174,22 @@ guardscan --version`}
                     <li>npm</li>
                   </ul>
                 </div>
+                {LIVE_STANDALONE_CHANNELS.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-foreground">
+                      Without Node.js
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      These package managers install a standalone binary with
+                      Node.js bundled:
+                    </p>
+                    <CodeBlock
+                      code={LIVE_STANDALONE_CHANNELS.map(
+                        (c) => `# ${c.label}\n${c.command.replace(/ && /g, "\n")}`
+                      ).join("\n\n")}
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Quick Start Steps */}

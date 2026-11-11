@@ -1,7 +1,7 @@
 import { Terminal, Github, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InlineCode } from "@/components/InlineCode";
-import { LIVE_INSTALL_CHANNELS } from "@/lib/install-channels";
+import { LIVE_INSTALL_CHANNELS, LIVE_STANDALONE_CHANNELS } from "@/lib/install-channels";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export const CTA = () => {
@@ -56,7 +56,11 @@ export const CTA = () => {
 
             {/* Install channels (only live ones render) */}
             <div className="pt-6 text-sm text-muted-foreground space-y-2">
-              <p>Requires Node.js 22+. Install with your package manager:</p>
+              <p>
+                {LIVE_STANDALONE_CHANNELS.length > 0
+                  ? "Install with your package manager. npm, pnpm, Yarn and Bun need Node.js 22+; the others bundle it:"
+                  : "Requires Node.js 22+. Install with your package manager:"}
+              </p>
               <div className="flex flex-wrap justify-center gap-2">
                 {LIVE_INSTALL_CHANNELS.map((c) => (
                   <InlineCode
