@@ -60,7 +60,7 @@ export default function DockerfileSecurity() {
     {
       question: "Does GuardScan work offline for Docker scanning?",
       answer:
-        "Yes, GuardScan runs completely locally on your machine and works 100% offline. No internet connection or code uploads required.",
+        "Yes, Dockerfile scanning runs locally on your machine and works offline. No internet connection or code uploads required.",
     },
     {
       question: "How does GuardScan compare to Docker Scout or Snyk Container?",
@@ -384,7 +384,7 @@ export default function DockerfileSecurity() {
 [MEDIUM] Using 'latest' tag for base image
   Location: Dockerfile:1
   Issue: FROM node:latest is unpinned
-  Fix: Use specific version like node:20.10.0`}
+  Fix: Use specific version like node:22.12.0`}
                   </pre>
                 </Card>
               </div>
@@ -609,7 +609,7 @@ export default function DockerfileSecurity() {
                           Run Security Scan
                         </h3>
                         <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                          guardscan security
+                          guardscan security -o guardscan-report.md
                         </code>
                         <p className="text-muted-foreground mt-3">
                           GuardScan will automatically detect and scan your
@@ -694,8 +694,8 @@ export default function DockerfileSecurity() {
                       Does GuardScan work offline for Docker scanning?
                     </h3>
                     <p className="text-muted-foreground">
-                      Yes, GuardScan runs completely locally on your machine and
-                      works 100% offline. No internet connection required, and
+                      Yes, Dockerfile scanning runs locally on your machine and
+                      works offline. No internet connection required, and
                       your Dockerfiles never leave your computer. Perfect for
                       air-gapped environments and secure networks.
                     </p>
@@ -822,8 +822,8 @@ export default function DockerfileSecurity() {
                         Offline Analysis
                       </h3>
                       <p className="text-muted-foreground text-sm mb-4">
-                        Complete security scanning for air-gapped environments.
-                        Works 100% offline.
+                        Security scanning for air-gapped environments. Static
+                        analysis works offline.
                       </p>
                       <span className="text-primary text-sm font-medium">
                         Learn more →

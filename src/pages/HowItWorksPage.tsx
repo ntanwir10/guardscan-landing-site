@@ -18,11 +18,10 @@ const steps = [
     icon: Terminal,
     title: "Install & Initialize",
     description:
-      "One command to install globally. Initialize your project config and client ID in seconds.",
+      "One command to install globally. Initialize your local configuration in seconds.",
     command: "npm install -g guardscan && guardscan init",
     details: [
       "Creates ~/.guardscan/config.yml with your settings",
-      "Generates unique client_id for privacy-first tracking",
       "Auto-detects your repository and language",
       "Ready to scan in under 30 seconds",
     ],
@@ -45,7 +44,7 @@ const steps = [
     title: "Get Actionable Reports",
     description:
       "Beautiful Markdown reports with severity levels, file references, and specific recommendations.",
-    command: "cat guardscan-report.md",
+    command: "guardscan security -o guardscan-report.md",
     details: [
       "Executive summary with severity breakdown",
       "File and line number references for every finding",
@@ -179,7 +178,7 @@ export default function HowItWorksPage() {
       <section className="py-16 px-4 bg-card/50">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-4xl font-bold text-center mb-12">
-            All Available <span className="text-gradient">Commands</span>
+            Common <span className="text-gradient">Commands</span>
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">

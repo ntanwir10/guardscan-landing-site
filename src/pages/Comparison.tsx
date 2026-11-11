@@ -239,7 +239,7 @@ const features = [
         coderabbit: true,
       },
       {
-        feature: "No external account required (for free tier)",
+        feature: "No external account required",
         guardscan: true,
         sonarqube: false,
         codeclimate: false,

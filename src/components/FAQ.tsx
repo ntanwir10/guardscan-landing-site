@@ -11,17 +11,17 @@ const faqs: Array<{ question: string; answer: ReactNode }> = [
   {
     question: "How does GuardScan guarantee privacy?",
     answer:
-      "GuardScan performs all static analysis locally on your machine. Your source code never leaves your computer. GuardScan operates no hosted telemetry or credit service. Telemetry is opt-in and off by default: if you enable it, a strict allowlist of aggregate events is queued locally and is sent only when you run `guardscan telemetry sync` to a collector you operate. When using AI features, code snippets are sent directly to your chosen AI provider (OpenAI, Claude, etc.), not to GuardScan servers. You maintain complete control over your code.",
+      "GuardScan performs all static analysis locally on your machine. GuardScan never uploads your source code, and scanning runs on your machine. GuardScan operates no hosted telemetry or credit service. Telemetry is opt-in and off by default: if you enable it, a strict allowlist of aggregate events is queued locally and is sent only when you run `guardscan telemetry sync` to a collector you operate. When using AI features, selected code context is sent directly to the AI provider you configure with your own key (OpenAI, Claude, etc.), not to GuardScan servers; with Ollama or LM Studio it stays on your machine. You maintain complete control over your code.",
   },
   {
     question: "Can I use GuardScan without an internet connection?",
     answer:
-      "Yes! GuardScan's core features (security scanning, code quality analysis, dependency checking, secrets detection) work completely offline. The only features that require internet are cloud AI providers, update checks, and online OSV dependency vulnerability lookups (which can reuse a fresh offline snapshot). You can scan your codebase in air-gapped environments without any limitations on static analysis.",
+      "Yes! GuardScan's static analysis and secrets detection work offline. Features that need internet are cloud AI providers, update checks, and OSV dependency vulnerability lookups. For offline CVE scanning (opt-in with `--cve`), prepare a snapshot while online with `guardscan vuln db update`; AI features offline need a local model (Ollama or LM Studio). You can scan your codebase in air-gapped environments without limitations on static analysis.",
   },
   {
     question: "Which AI providers are supported?",
     answer:
-      "GuardScan supports 6+ AI providers: OpenAI (gpt-5.1, gpt-4o, gpt-4.1-mini), Anthropic (claude-sonnet-4.5), Google (gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash), Ollama (local AI with codellama, llama2, mistral), LM Studio (local model server), and OpenRouter (multi-model aggregator). You can switch between providers anytime without vendor lock-in. For complete privacy, use Ollama or LM Studio to run AI models locally.",
+      "GuardScan supports 6+ AI providers: OpenAI, Anthropic Claude, Google Gemini, Ollama (local AI), LM Studio (local model server), and OpenRouter (multi-model aggregator). Run `guardscan models list` to see the available models. You can switch between providers anytime without vendor lock-in. For complete privacy, use Ollama or LM Studio to run AI models locally.",
   },
   {
     question: "How much does GuardScan cost?",
@@ -36,7 +36,7 @@ const faqs: Array<{ question: string; answer: ReactNode }> = [
   {
     question: "What languages and frameworks are supported?",
     answer:
-      "GuardScan supports 20+ programming languages including JavaScript, TypeScript, Python, Java, Go, Ruby, PHP, C#, Rust, and more. It analyzes frameworks like React, Vue, Angular, Django, Flask, Spring Boot, and Express. Infrastructure as Code (Terraform, Kubernetes) and container security (Dockerfile) are also fully supported.",
+      "GuardScan has built-in code parsers for 8 languages: JavaScript/TypeScript, Python, Java, Go, Rust, Ruby, PHP, and C#. Line counting covers more languages. It analyzes frameworks like React, Vue, Angular, Django, Flask, Spring Boot, and Express. Infrastructure as Code (Terraform, Kubernetes) and container security (Dockerfile) are also fully supported.",
   },
   {
     question: "How accurate are the security findings?",

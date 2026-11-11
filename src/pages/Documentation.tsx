@@ -104,7 +104,7 @@ const commands = [
     options: [
       { flag: "-f, --files <patterns...>", description: "Specific files or patterns to scan" },
       { flag: "--licenses", description: "Include license compliance scanning" },
-      { flag: "--cve", description: "Include exact-version dependency vulnerability scanning (on by default when supported manifests are present)" },
+      { flag: "--cve", description: "Include exact-version dependency vulnerability scanning (opt-in; off by default)" },
       { flag: "--no-cve", description: "Skip dependency vulnerability scanning" },
       { flag: "--scope <scope>", description: "Dependency scope for CVE scanning (all or runtime)" },
       { flag: "--allow-partial", description: "Allow incomplete scanner coverage without an operational failure" },
@@ -209,7 +209,7 @@ const commands = [
     ],
     examples: [
       { command: "guardscan models list --provider gemini", description: "List Gemini models" },
-      { command: "guardscan models compare gpt-5.1 claude-sonnet-4.5", description: "Compare two models" },
+      { command: "guardscan models compare <model-a> <model-b>", description: "Compare two models" },
       { command: "guardscan models recommend --priority cost", description: "Pick the cheapest suitable model for your provider" },
     ],
   },
@@ -340,7 +340,7 @@ const commands = [
       { flag: "--skip-ai", description: "Skip AI code review" },
       { flag: "--coverage", description: "Include code coverage analysis" },
       { flag: "--licenses", description: "Include license compliance scanning" },
-      { flag: "--cve / --no-cve", description: "Include or skip dependency vulnerability scanning (on by default)" },
+      { flag: "--cve / --no-cve", description: "Include or skip dependency vulnerability scanning (opt-in; off by default)" },
       { flag: "--scope <scope>", description: "Dependency scope for CVE scanning (all or runtime)" },
       { flag: "--allow-partial", description: "Allow incomplete scanner coverage without an operational failure" },
       { flag: "--concurrency <number>", description: "Maximum number of scanners to run concurrently (default: 4)" },
@@ -1149,8 +1149,8 @@ export default function Documentation() {
               </h2>
               <p className="text-xl text-muted-foreground mb-8">
                 Get started with GuardScan in under 2 minutes! All static
-                analysis features work <strong>100% free and offline</strong> -
-                no API keys required!
+                analysis and secret scanning work <strong>free and offline</strong>{" "}
+                with no API keys required. CVE scanning is opt-in (<code>--cve</code>).
               </p>
 
               {/* Installation */}
@@ -1238,7 +1238,10 @@ guardscan --version`}
                             Detect secrets in your code (API keys, passwords,
                             tokens)
                           </li>
-                          <li>Scan dependencies for known vulnerabilities</li>
+                          <li>
+                            Scan dependencies for known vulnerabilities (when
+                            you add <code>--cve</code>)
+                          </li>
                           <li>Check Dockerfiles for security issues</li>
                           <li>
                             Analyze Infrastructure as Code (Terraform,
@@ -1249,8 +1252,9 @@ guardscan --version`}
                         </ul>
                         <div className="mt-3 p-3 bg-accent/10 border border-accent/30 rounded-lg">
                           <p className="text-sm text-foreground font-semibold">
-                            No API key needed - all security scanning works
-                            completely offline!
+                            No API key needed - static analysis and secret
+                            scanning work offline. CVE scanning (--cve) needs
+                            a snapshot from guardscan vuln db update.
                           </p>
                         </div>
                       </div>
@@ -1389,7 +1393,7 @@ guardscan chat`}
                     <ul className="text-sm text-muted-foreground space-y-2 ml-4 list-disc">
                       <li>Scans your code locally on your machine</li>
                       <li>Never uploads source code to any server</li>
-                      <li>Works completely offline for static analysis</li>
+                      <li>Works offline for static analysis and secret scanning</li>
                       <li>
                         Uses your own AI API keys (BYOK - Bring Your Own Key)
                       </li>
@@ -1446,13 +1450,14 @@ guardscan --no-telemetry security`}
                       Offline-First Architecture
                     </h4>
                     <p className="text-sm text-muted-foreground mb-3 font-semibold">
-                      Static Analysis (Works completely offline, 100% FREE):
+                      Static analysis (works offline, free):
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
                       <li>Secrets detection (20+ patterns)</li>
                       <li>
-                        Dependency vulnerability scanning (OSV lookup, or a
-                        fresh offline snapshot)
+                        Dependency vulnerability scanning (opt-in with --cve;
+                        offline needs a snapshot from guardscan vuln db
+                        update)
                       </li>
                       <li>Code metrics and complexity analysis</li>
                       <li>LOC counting (20+ languages)</li>
@@ -1470,9 +1475,10 @@ guardscan --no-telemetry security`}
                       Requires your API key:
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
-                      <li>OpenAI GPT-4, GPT-3.5</li>
-                      <li>Anthropic Claude (Opus, Sonnet, Haiku)</li>
+                      <li>OpenAI</li>
+                      <li>Anthropic Claude</li>
                       <li>Google Gemini</li>
+                      <li>OpenRouter</li>
                       <li>Ollama (local AI; keyless)</li>
                       <li>LM Studio (local AI; keyless)</li>
                     </ul>
@@ -1573,7 +1579,7 @@ guardscan init`}
                     <code className="px-1 py-0.5 rounded bg-muted">
                       guardscan security
                     </code>{" "}
-                    (works offline, 100% free!)
+                    (static checks work offline, free)
                   </li>
                   <li>
                     <strong className="text-foreground">Configure AI</strong>{" "}
@@ -1877,7 +1883,7 @@ guardscan init`}
                       <code className="px-1 py-0.5 rounded bg-muted">
                         --model &lt;name&gt;
                       </code>{" "}
-                      pick model (e.g., gpt-5.1, claude-sonnet-4.5)
+                      pick a model (see guardscan models list)
                     </li>
                     <li>
                       <code className="px-1 py-0.5 rounded bg-muted">
@@ -2118,7 +2124,7 @@ guardscan init`}
                     </h3>
                     <p className="text-muted-foreground mb-6">
                       Get your API key from OpenAI and configure GuardScan to
-                      use GPT-4 or GPT-3.5 for AI-powered code analysis.
+                      use an OpenAI model for AI-powered code analysis (see guardscan models list).
                     </p>
                   </div>
 
@@ -2322,8 +2328,9 @@ guardscan run`}
                       Ollama Local AI Setup
                     </h3>
                     <p className="text-muted-foreground mb-6">
-                      Run GuardScan completely free with local AI models. No API
-                      keys, no cloud costs, 100% private.
+                      Run GuardScan with local AI models (Ollama or LM Studio).
+                      No API keys and no cloud costs; code stays on your
+                      machine.
                     </p>
                   </div>
 
@@ -2898,7 +2905,7 @@ apk add --no-cache \\
                   </h4>
                   <CodeBlock
                     code={
-                      "# Mount current directory\ndocker run --rm -v $(pwd):/workspace -w /workspace \\\n  node:lts-alpine guardscan security"
+                      "# Mount current directory\ndocker run --rm -v $(pwd):/workspace -w /workspace \\\n  node:lts-alpine sh -c \"npm install -g guardscan && guardscan security\""
                     }
                   />
                 </div>
@@ -2909,11 +2916,11 @@ apk add --no-cache \\
                   <CodeBlock
                     code={`# PowerShell - Use forward slashes
 docker run --rm -v ${"${PWD}"}:/workspace -w /workspace \\
-  node:lts-alpine guardscan security
+  node:lts-alpine sh -c "npm install -g guardscan && guardscan security"
 
 # CMD - Use forward slashes
 docker run --rm -v %CD%:/workspace -w /workspace \\
-  node:lts-alpine guardscan security`}
+  node:lts-alpine sh -c "npm install -g guardscan && guardscan security"`}
                   />
                 </div>
                 <div>
@@ -2923,7 +2930,7 @@ docker run --rm -v %CD%:/workspace -w /workspace \\
                   <CodeBlock
                     code={`# Mount specific project directory
 docker run --rm -v /path/to/project:/workspace -w /workspace \\
-  node:lts-alpine guardscan security`}
+  node:lts-alpine sh -c "npm install -g guardscan && guardscan security"`}
                   />
                 </div>
               </div>
@@ -2949,7 +2956,7 @@ docker run --rm -v /path/to/project:/workspace -w /workspace \\
                   </h4>
                   <CodeBlock
                     code={
-                      "# Use .env file\ndocker run --rm \\\n  --env-file .env \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  node:lts-alpine guardscan run"
+                      "# Use .env file\ndocker run --rm \\\n  --env-file .env \\\n  -v $(pwd):/workspace \\\n  -w /workspace \\\n  node:lts-alpine sh -c \"npm install -g guardscan && guardscan run\""
                     }
                   />
                 </div>
@@ -3083,7 +3090,7 @@ jobs:
                     </p>
                     <CodeBlock
                       code={
-                        "# Fix permissions (Linux/macOS)\ndocker run --rm -v $(pwd):/workspace -w /workspace \\\n  --user $(id -u):$(id -g) \\\n  node:lts-alpine guardscan security"
+                        "# Fix permissions (Linux/macOS)\ndocker run --rm -v $(pwd):/workspace -w /workspace \\\n  --user $(id -u):$(id -g) \\\n  node:lts-alpine sh -c \"npm install -g --prefix /tmp/gs guardscan && /tmp/gs/bin/guardscan security\""
                       }
                     />
                   </Card>
@@ -3132,17 +3139,6 @@ docker run -v C:\\Users\\username\\project:/workspace`}
                       className="text-primary hover:underline"
                     >
                       Full Docker Guide
-                    </a>
-                  </li>
-                  <li>
-                    •{" "}
-                    <a
-                      href="https://github.com/ntanwir10/GuardScan/blob/main/docs/DOCKER_ALPINE_GUIDE.md"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      Alpine Linux Specific Guide
                     </a>
                   </li>
                   <li>

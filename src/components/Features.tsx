@@ -5,13 +5,13 @@ const features = [
   {
     icon: Lock,
     title: "Privacy Guaranteed",
-    description: "Your source code never leaves your machine. All static analysis runs locally with zero uploads to our servers.",
+    description: "GuardScan has no server and never uploads your code. Scanning runs locally; optional AI review sends context only to the provider you configure, or stays local with Ollama or LM Studio.",
     color: "text-primary",
   },
   {
     icon: Wifi,
     title: "Works Offline",
-    description: "Full security and quality scanning without internet. No network dependency for core analysis features.",
+    description: "Static analysis and secret scanning work without internet. CVE scanning needs a prepared snapshot; AI needs a local model.",
     color: "text-accent",
   },
   {
@@ -23,7 +23,7 @@ const features = [
   {
     icon: Puzzle,
     title: "Multi-AI Support",
-    description: "Choose from OpenAI, Claude, Gemini, or run locally with Ollama. No vendor lock-in, switch anytime.",
+    description: "Choose from OpenAI, Claude, Gemini, OpenRouter, or run locally with Ollama or LM Studio. No vendor lock-in, switch anytime.",
     color: "text-secondary",
   },
   {

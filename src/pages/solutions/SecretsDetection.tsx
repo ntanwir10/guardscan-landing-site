@@ -256,7 +256,7 @@ export default function SecretsDetection() {
                   <span className="text-primary">2.</span> Run Secrets Scan
                 </h3>
                 <code className="block p-4 rounded-lg bg-code-bg text-terminal-green font-mono text-sm">
-                  cd your-project && guardscan security
+                  cd your-project && guardscan security -o guardscan-report.md
                 </code>
               </div>
 
@@ -300,7 +300,7 @@ export default function SecretsDetection() {
             <Card className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Zap className="w-6 h-6 text-primary" />
-                <h3 className="font-bold text-lg">Works Completely Offline</h3>
+                <h3 className="font-bold text-lg">Works Offline</h3>
               </div>
               <p className="text-muted-foreground">
                 No internet required. Scan in air-gapped environments, on
@@ -404,7 +404,7 @@ export default function SecretsDetection() {
                   </h3>
                   <p className="text-muted-foreground text-sm mb-4">
                     Complete security scanning for air-gapped environments.
-                    Works 100% offline with no internet required.
+                    Static analysis and secret scanning work offline.
                   </p>
                   <span className="text-primary text-sm font-medium">
                     Learn more →

@@ -4,14 +4,14 @@ const stats = [
   {
     icon: Shield,
     value: "100%",
-    label: "Privacy Guarantee",
-    description: "Zero code uploads",
+    label: "Local Scanning",
+    description: "No code uploaded to GuardScan",
   },
   {
     icon: Code2,
-    value: "20+",
+    value: "8",
     label: "Languages",
-    description: "Supported out of box",
+    description: "With built-in code parsers",
   },
   {
     icon: Users,

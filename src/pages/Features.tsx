@@ -73,7 +73,7 @@ export default function Features() {
                     Dependency Vulnerabilities
                   </h3>
                   <p className="text-muted-foreground">
-                    Scan npm, pip, Maven, Cargo dependencies
+                    Scan npm, pip, Go, Ruby, Maven, Cargo dependencies
                   </p>
                 </div>
               </div>
@@ -482,25 +482,25 @@ export default function Features() {
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">OpenAI</h3>
               <p className="text-muted-foreground text-sm">
-                gpt-5.1, gpt-4o, gpt-4.1-mini
+                See guardscan models list
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Anthropic Claude</h3>
               <p className="text-muted-foreground text-sm">
-                claude-sonnet-4.5
+                See guardscan models list
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Google Gemini</h3>
               <p className="text-muted-foreground text-sm">
-                gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash
+                See guardscan models list
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">
               <h3 className="font-semibold text-lg mb-2">Ollama</h3>
               <p className="text-muted-foreground text-sm">
-                Local, privacy-focused - codellama, llama2, mistral
+                Local and privacy-focused
               </p>
             </Card>
             <Card className="p-6 bg-card/50 border-primary/20">

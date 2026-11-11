@@ -35,8 +35,8 @@ export const Hero = () => {
           
           {/* Subheadline */}
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed">
-            GuardScan runs locally on your machine. All security scanning happens offline. 
-            Your source code <span className="text-primary font-semibold">never leaves your computer</span>.
+            GuardScan has no server and <span className="text-primary font-semibold">never uploads your code</span>.
+            Scanning runs locally and works offline. AI review is optional: it uses your own key, or stays local with Ollama or LM Studio.
           </p>
           
           {/* CTA buttons */}
@@ -80,7 +80,7 @@ export const Hero = () => {
           <div className="flex flex-wrap justify-center gap-8 pt-8 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-primary" />
-              <span>100% Local Analysis</span>
+              <span>Local Analysis</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-accent" />

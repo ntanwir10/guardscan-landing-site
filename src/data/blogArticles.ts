@@ -76,8 +76,8 @@ All code analysis happens on your machine. Your code never leaves your infrastru
 ### Privacy by Design
 - No code uploads
 - No external API calls for analysis
-- No data collection
-- No telemetry
+- No code collection
+- Telemetry is opt-in and off by default
 
 ### Optional AI Integration
 When you choose to use AI features, GuardScan gives you complete control:
@@ -89,7 +89,7 @@ When you choose to use AI features, GuardScan gives you complete control:
 
 Privacy-first code review offers tangible business advantages:
 
-1. **Compliance**: Meet GDPR, HIPAA, and SOC 2 requirements
+1. **Data residency**: Keeping code on machines you control can help with data-residency requirements
 2. **IP Protection**: Keep trade secrets internal
 3. **Zero Trust**: No reliance on third-party security
 4. **Cost Control**: No per-seat licensing for code scanning
@@ -121,8 +121,8 @@ npm install -g guardscan
 # Initialize in your project
 guardscan init
 
-# Run a comprehensive scan
-guardscan scan
+# Run a comprehensive scan and save the report
+guardscan scan --format markdown -o guardscan-report.md
 
 # View results
 cat guardscan-report.md`,
@@ -302,16 +302,7 @@ guardscan config -p ollama
 guardscan config -p none
 \`\`\`
 
-Models in the GuardScan registry include:
-
-| Provider | Models |
-|----------|--------|
-| OpenAI | gpt-5.1, gpt-4o, gpt-4.1-mini |
-| Google | gemini-3-pro, gemini-2.5-pro, gemini-2.5-flash |
-| Anthropic | claude-sonnet-4.5 |
-| Ollama (local) | codellama, llama2, mistral |
-
-Run \`guardscan models list\` to see what your installed version supports. Larger hosted models generally reason better about complex code; local models trade some quality for privacy and zero per-request cost. Check your provider's current pricing yourself, since it changes.
+Supported providers are Claude (Anthropic), OpenAI, Gemini, OpenRouter, and local Ollama or LM Studio. Run \`guardscan models list\` to see the models your installed version supports. Larger hosted models generally reason better about complex code; local models trade some quality for privacy and zero per-request cost. Check your provider's current pricing yourself, since it changes.
 
 ## Decide what may leave your machine
 
@@ -596,9 +587,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: npm install -g guardscan
-      - run: guardscan scan
+      - run: guardscan scan --format markdown -o guardscan-report.md
       - uses: actions/upload-artifact@v3
         with:
           name: security-report
@@ -611,10 +604,10 @@ Create \`.gitlab-ci.yml\`:
 
 \`\`\`yaml
 security_scan:
-  image: node:20
+  image: node:22
   script:
     - npm install -g guardscan
-    - guardscan scan
+    - guardscan scan --format markdown -o guardscan-report.md
   artifacts:
     paths:
       - guardscan-report.md
@@ -629,7 +622,7 @@ pipeline {
     stage('Security Scan') {
       steps {
         sh 'npm install -g guardscan'
-        sh 'guardscan scan'
+        sh 'guardscan scan --format markdown -o guardscan-report.md'
         archiveArtifacts 'guardscan-report.md'
       }
     }
@@ -652,7 +645,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - run: npm install -g guardscan
       - run: guardscan scan`,
       },
@@ -1167,8 +1162,8 @@ SAST (Static Application Security Testing) analyzes source code, bytecode, or bi
 **Pricing:** Free and open-source
 
 **Key Features:**
-- Runs 100% locally (no code uploads)
-- Works offline
+- Runs locally (no code uploads)
+- Static analysis works offline
 - Multi-AI provider support
 - Secrets detection
 - OWASP Top 10 coverage
@@ -1358,19 +1353,19 @@ Many organizations require code security scanning in air-gapped environments or 
 **Use Cases:**
 - Air-gapped military/government systems
 - Financial institutions with strict data policies
-- Healthcare systems (HIPAA compliance)
+- Healthcare systems handling sensitive data
 - Industrial control systems (ICS/SCADA)
 - Travel and remote work
 
 ## Offline Scanning with GuardScan
 
-GuardScan provides full security scanning capabilities offline:
+GuardScan runs its static security checks offline:
 
 ### Security Features (Offline)
 - Secrets detection
 - OWASP Top 10 scanning
 - Code quality analysis
-- Dependency vulnerability scanning
+- Dependency vulnerability scanning (opt-in with \`--cve\`; offline use needs a snapshot prepared online with \`guardscan vuln db update\`)
 - Docker security scanning
 
 ### AI Features (Offline)
@@ -1390,7 +1385,7 @@ guardscan review
 
 ## Best Practices
 
-1. **Regular Updates:** Update vulnerability databases when online
+1. **Regular Updates:** Refresh the vulnerability snapshot with \`guardscan vuln db update\` when online
 2. **Local Models:** Use Ollama for AI features
 3. **Documentation:** Keep offline copies of security standards
 4. **Validation:** Verify offline capabilities before deployment
@@ -1488,7 +1483,7 @@ guardscan security
 guardscan security -f "src/**"
 
 # Export results
-guardscan security --format json > secrets-report.json
+guardscan security --format json -o secrets-report.json
 \`\`\`
 
 ### What GuardScan Detects
@@ -2061,7 +2056,7 @@ Shows exact file, line number, and code snippet causing the issue.
 Scans complete in minutes; some tools (like GuardScan) in seconds.
 
 **6. Works Offline**
-Tools like GuardScan operate 100% locally without internet.
+Tools like GuardScan run static analysis locally without internet.
 
 **7. Low Cost**
 Many excellent SAST tools are free (GuardScan, Semgrep, SonarQube CE).
@@ -2613,7 +2608,7 @@ select call, "Dangerous use of eval()"
 
 **Key Differentiators:**
 - 100% local execution (no code uploaded)
-- Works completely offline
+- Static analysis works offline
 - Zero licensing costs
 - Multi-AI provider support
 
@@ -2881,7 +2876,7 @@ jobs:
       - name: Install GuardScan
         run: npm install -g guardscan
       - name: Run Security Scan
-        run: guardscan security --fail-on high
+        run: guardscan security --fail-on high --format markdown -o guardscan-report.md
       - name: Upload Report
         uses: actions/upload-artifact@v3
         if: always()
@@ -2967,7 +2962,7 @@ Consider a layered approach using multiple tools, each for their strengths.
 
 **Getting Started:**
 
-**Free Tier (Recommended for most):**
+**Recommended for most teams:**
 \`\`\`bash
 # 1. Install GuardScan
 npm install -g guardscan
