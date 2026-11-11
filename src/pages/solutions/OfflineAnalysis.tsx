@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 
 export default function OfflineAnalysis() {
   const howToSchema = generateHowToSchema(
-    "How to Run Code Security Scanning Completely Offline",
+    "How to Run Code Security Scanning Offline",
     "Step-by-step guide to performing security analysis without internet connectivity using GuardScan",
     [
       {
@@ -52,14 +52,14 @@ export default function OfflineAnalysis() {
 
   const faqSchema = generateFAQSchema([
     {
-      question: "Does GuardScan really work 100% offline?",
+      question: "Does GuardScan really work offline?",
       answer:
-        "Yes, GuardScan performs all security scanning, secrets detection, and code quality analysis completely offline. No internet connection required. Even AI code review works offline when using Ollama with local models.",
+        "Static analysis, secrets detection, and code quality analysis work offline with no internet connection. CVE scanning (opt-in with --cve) needs a snapshot prepared online with guardscan vuln db update. AI code review works offline only with a local model (Ollama or LM Studio).",
     },
     {
       question: "What security features work without internet?",
       answer:
-        "All security features work offline: secrets detection (20+ types), OWASP Top 10 scanning, code quality analysis, Dockerfile security, dependency vulnerability scanning, and AI code review (with Ollama).",
+        "Secrets detection (20+ types), OWASP Top 10 scanning, code quality analysis, and Dockerfile security work offline. Dependency vulnerability scanning works offline from a snapshot prepared online with guardscan vuln db update, and AI code review works offline with a local model (Ollama or LM Studio).",
     },
     {
       question: "Is offline scanning suitable for enterprise/government use?",
@@ -69,7 +69,7 @@ export default function OfflineAnalysis() {
     {
       question: "How do I update GuardScan in an air-gapped environment?",
       answer:
-        "Download GuardScan and its dependencies on an internet-connected machine, transfer via approved media (USB, internal network), then install offline. Security signatures can be updated similarly when online access is available.",
+        "Download GuardScan and its dependencies on an internet-connected machine, transfer via approved media (USB, internal network), then install offline. The vulnerability snapshot is refreshed with guardscan vuln db update when online access is available.",
     },
   ]);
 
@@ -82,7 +82,7 @@ export default function OfflineAnalysis() {
     <>
       <SEO
         title="Offline Code Security Scanning | GuardScan - Air-Gapped Ready"
-        description="Security scanning for air-gapped environments. Works 100% offline with no internet required. Perfect for government, military, finance, healthcare. Free and local."
+        description="Security scanning for air-gapped environments. Static analysis and secret scanning work offline with no internet required. Perfect for government, military, finance, healthcare. Free and local."
         canonical="https://guardscancli.vercel.app/solutions/offline-analysis"
         keywords="offline code analysis, air-gapped security, offline security scanning, privacy-first code review, local code analysis, no internet code scanner"
         structuredData={structuredData}
@@ -98,7 +98,7 @@ export default function OfflineAnalysis() {
               <div className="max-w-4xl mx-auto text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
                   <WifiOff className="w-4 h-4" />
-                  <span className="text-sm font-medium">100% Offline</span>
+                  <span className="text-sm font-medium">Offline-Capable</span>
                 </div>
 
                 <h1 className="text-5xl md:text-6xl font-bold mb-6">
@@ -112,7 +112,7 @@ export default function OfflineAnalysis() {
                   systems.
                   <strong className="text-foreground">
                     {" "}
-                    Works 100% offline with no data transmission.
+                    Static analysis works offline, with no code transmitted.
                   </strong>
                 </p>
 
@@ -262,7 +262,7 @@ export default function OfflineAnalysis() {
                   Full Security Suite - No Internet Required
                 </h2>
                 <p className="text-xl text-muted-foreground mb-12 text-center">
-                  Every GuardScan feature works completely offline
+                  Static analysis and secret scanning work offline; CVE scanning needs a prepared snapshot and AI needs a local model
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6">
@@ -271,7 +271,7 @@ export default function OfflineAnalysis() {
                       <CheckCircle className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="text-xl font-bold mb-2">
-                          Security Scanning (100% Offline)
+                          Security Scanning (Offline)
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• OWASP Top 10 vulnerability detection</li>
@@ -288,7 +288,7 @@ export default function OfflineAnalysis() {
                       <CheckCircle className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="text-xl font-bold mb-2">
-                          Secrets Detection (100% Offline)
+                          Secrets Detection (Offline)
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• 20+ credential type detection</li>
@@ -305,7 +305,7 @@ export default function OfflineAnalysis() {
                       <CheckCircle className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="text-xl font-bold mb-2">
-                          Dockerfile Scanning (100% Offline)
+                          Dockerfile Scanning (Offline)
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• 15+ Docker security checks</li>
@@ -326,7 +326,7 @@ export default function OfflineAnalysis() {
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• Local AI models (Ollama)</li>
-                          <li>• CodeLlama, Llama 2, Mistral</li>
+                          <li>• Local models via Ollama or LM Studio</li>
                           <li>• Context-aware suggestions</li>
                           <li>• No API key required</li>
                         </ul>
@@ -339,7 +339,7 @@ export default function OfflineAnalysis() {
                       <CheckCircle className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="text-xl font-bold mb-2">
-                          Pre-Commit Hooks (100% Offline)
+                          Pre-Commit Hooks (Offline)
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• Automatic pre-commit scanning</li>
@@ -356,7 +356,7 @@ export default function OfflineAnalysis() {
                       <CheckCircle className="w-6 h-6 text-accent flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="text-xl font-bold mb-2">
-                          Detailed Reports (100% Offline)
+                          Detailed Reports (Offline)
                         </h3>
                         <ul className="space-y-2 text-muted-foreground">
                           <li>• Markdown report generation</li>
@@ -377,8 +377,9 @@ export default function OfflineAnalysis() {
                         Zero Internet Dependency
                       </h3>
                       <p className="text-muted-foreground">
-                        GuardScan never makes outbound network connections. All
-                        processing happens locally on your machine. Your code,
+                        In offline mode GuardScan makes no outbound network
+                        connections. All processing happens locally on your
+                        machine. Your code,
                         your network, your control.
                       </p>
                     </div>
@@ -432,10 +433,10 @@ export default function OfflineAnalysis() {
                       Complete security analysis locally
                     </p>
                     <div className="mt-4 p-3 rounded bg-card border text-left text-sm">
-                      ✓ All features work offline
+                      ✓ Static analysis works offline
                       <br />
-                      ✓ No data transmission
-                      <br />✓ Complete privacy
+                      ✓ No code transmitted
+                      <br />✓ AI stays local with Ollama or LM Studio
                     </div>
                   </div>
                 </div>
@@ -445,22 +446,18 @@ export default function OfflineAnalysis() {
                     Example: Offline Security Scan
                   </h3>
                   <pre className="text-terminal-green font-mono text-sm overflow-x-auto">
-                    {`$ guardscan security
-🛡️  GuardScan v1.1.0 (Offline Mode)
+                    {`$ guardscan security --offline -o guardscan-report.md
+🛡️  GuardScan Security Scan
 
-✓ Network: Disconnected
-✓ Privacy: 100% Local Processing
-✓ Analyzing 247 files...
+Repository: sample
 
-📋 Security Scan Complete (Offline):
+✓ Report saved: guardscan-report.md
 
-✓ Secrets Detection: 2 API keys found
-✓ OWASP Top 10: 5 vulnerabilities detected
-✓ Code Quality: 12 issues found
-✓ Dockerfile: 3 security concerns
-
-📄 Full report: guardscan-report.md
-⏱️  Scan completed in 1.8 seconds`}
+🔒 Security Summary
+  critical: 4
+  high: 1
+  Coverage: complete
+  Policy: passed`}
                   </pre>
                 </Card>
               </div>
@@ -520,8 +517,8 @@ export default function OfflineAnalysis() {
                           ollama pull codellama:13b
                         </code>
                         <p className="text-muted-foreground mt-2 text-sm">
-                          <strong>Recommended models:</strong> codellama:13b,
-                          llama2:13b, or mistral:7b
+                          <strong>Example models:</strong> codellama:13b or
+                          mistral:7b (see guardscan models list)
                         </p>
                       </div>
                     </div>
@@ -594,7 +591,7 @@ export default function OfflineAnalysis() {
                     </thead>
                     <tbody>
                       <tr className="border-b border-border/50">
-                        <td className="p-4">Works 100% Offline</td>
+                        <td className="p-4">Static Analysis Works Offline</td>
                         <td className="p-4 text-center">
                           <CheckCircle className="w-5 h-5 text-accent mx-auto" />
                         </td>
@@ -762,7 +759,7 @@ export default function OfflineAnalysis() {
                         </div>
                         <div className="p-4 bg-accent/10 rounded-lg">
                           <p className="text-sm">
-                            ✓ AI code review works 100% offline
+                            ✓ AI code review works offline with a local model
                             <br />
                             ✓ No API keys needed
                             <br />
@@ -802,7 +799,7 @@ export default function OfflineAnalysis() {
                     </li>
                     <li>
                       <strong className="text-foreground">4. Scan:</strong> Run
-                      guardscan security (fully offline)
+                      guardscan security (static checks work offline)
                     </li>
                   </ol>
                 </div>
@@ -823,14 +820,15 @@ export default function OfflineAnalysis() {
                     <Lock className="w-8 h-8 text-primary mb-3" />
                     <h3 className="text-xl font-bold mb-2">Complete Privacy</h3>
                     <p className="text-muted-foreground mb-3">
-                      Your code never leaves your machine. No data transmission,
-                      no telemetry, no uploads.
+                      Your code never leaves your machine. In offline mode there
+                      is no data transmission and no telemetry; telemetry is
+                      opt-in and off by default.
                     </p>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li>✓ Zero network calls</li>
+                      <li>✓ No network calls in offline mode</li>
                       <li>✓ No tracking</li>
                       <li>✓ IP protection</li>
-                      <li>✓ Compliance friendly</li>
+                      <li>✓ Keeps code on machines you control</li>
                     </ul>
                   </Card>
 
@@ -895,14 +893,14 @@ export default function OfflineAnalysis() {
                 <div className="space-y-6">
                   <Card className="p-6">
                     <h3 className="text-xl font-bold mb-3">
-                      Does GuardScan really work 100% offline?
+                      Does GuardScan really work offline?
                     </h3>
                     <p className="text-muted-foreground">
-                      Yes, GuardScan performs all security scanning, secrets
-                      detection, and code quality analysis completely offline.
-                      No internet connection required. Even AI code review works
-                      offline when using Ollama with local models like CodeLlama
-                      or Llama 2.
+                      Static analysis, secrets detection, and code quality
+                      analysis work offline with no internet connection. CVE
+                      scanning (opt-in with --cve) needs a snapshot prepared
+                      online with guardscan vuln db update. AI code review works
+                      offline only with a local model (Ollama or LM Studio).
                     </p>
                   </Card>
 
@@ -911,12 +909,13 @@ export default function OfflineAnalysis() {
                       What security features work without internet?
                     </h3>
                     <p className="text-muted-foreground">
-                      All security features work offline: secrets detection (20+
-                      credential types), OWASP Top 10 vulnerability scanning,
-                      code quality analysis, Dockerfile security checks,
-                      dependency vulnerability scanning, and AI code review
-                      (with Ollama). There are no feature limitations in offline
-                      mode.
+                      Secrets detection (20+ credential types), OWASP Top 10
+                      vulnerability scanning, code quality analysis, and
+                      Dockerfile security checks work offline. Dependency
+                      vulnerability scanning works offline from a snapshot
+                      prepared online with guardscan vuln db update, and AI
+                      code review works offline with a local model (Ollama or
+                      LM Studio).
                     </p>
                   </Card>
 
@@ -944,9 +943,8 @@ export default function OfflineAnalysis() {
                       internet-connected machine using 'npm pack guardscan',
                       transfer via approved media (USB, CD, internal network),
                       then install offline with 'npm install -g guardscan.tgz'.
-                      Security signatures and vulnerability databases can be
-                      updated similarly when online access is periodically
-                      available.
+                      The vulnerability snapshot is refreshed with guardscan vuln
+                      db update when online access is periodically available.
                     </p>
                   </Card>
 
@@ -957,7 +955,7 @@ export default function OfflineAnalysis() {
                     <p className="text-muted-foreground">
                       Absolutely! GuardScan is perfect for developers working in
                       remote locations, on planes, trains, or areas with
-                      unreliable internet. All features work offline, so you can
+                      unreliable internet. Static analysis works offline, so you can
                       maintain security practices wherever you code.
                     </p>
                   </Card>
@@ -1014,7 +1012,7 @@ export default function OfflineAnalysis() {
                 <div className="mt-8 flex items-center justify-center gap-8 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <WifiOff className="w-4 h-4" />
-                    <span>100% Offline</span>
+                    <span>Offline-Capable</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Lock className="w-4 h-4" />

@@ -13,7 +13,7 @@ export const generateOrganizationSchema = () => ({
   url: "https://guardscancli.vercel.app",
   logo: "https://guardscancli.vercel.app/web-app-manifest-512x512.png",
   description:
-    "Privacy-first AI code review tool that runs locally on your machine. Free, open source, and works offline.",
+    "Privacy-first AI code review tool that runs locally on your machine. Free, open source, and static analysis works offline.",
   sameAs: ["https://github.com/ntanwir10/GuardScan"],
   contactPoint: {
     "@type": "ContactPoint",
@@ -37,7 +37,7 @@ export const generateSoftwareApplicationSchema = () => ({
     priceCurrency: "USD",
   },
   description:
-    "AI code review that never sees your code. GuardScan runs locally with offline security scanning, multi-AI support, 100% free and open source.",
+    "AI code review that never sees your code. GuardScan runs locally with no server and never uploads your code; static analysis works offline, and AI review is optional with your own provider key or a local model. Free and open source.",
   softwareVersion: "1.1.0",
   downloadUrl: "https://github.com/ntanwir10/GuardScan",
   installUrl: "https://github.com/ntanwir10/GuardScan/blob/main/QUICKSTART.md",

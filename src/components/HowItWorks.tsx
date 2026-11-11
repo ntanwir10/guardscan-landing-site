@@ -4,7 +4,7 @@ const steps = [
   {
     icon: Terminal,
     title: "Install & Initialize",
-    description: "One command to install globally. Initialize your project config and client ID in seconds.",
+    description: "One command to install globally. Initialize your local configuration in seconds.",
     command: "npm install -g guardscan && guardscan init",
   },
   {

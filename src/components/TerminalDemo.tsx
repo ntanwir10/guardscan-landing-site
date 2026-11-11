@@ -162,24 +162,9 @@ const commands = [
     output: [
       "📋 Available Models",
       "",
-      "CLAUDE",
-      "  Claude Sonnet 4.5         claude-sonnet-4.5         200,000 ctx  [LATEST]",
+      "Models are grouped by provider (CLAUDE, GEMINI, OLLAMA, OPENAI, ...).",
       "",
-      "GEMINI",
-      "  Gemini 2.5 Flash          gemini-2.5-flash        1,000,000 ctx",
-      "  Gemini 2.5 Pro            gemini-2.5-pro          1,000,000 ctx",
-      "  Gemini 3 Pro              gemini-3-pro            2,000,000 ctx  [LATEST]",
-      "",
-      "OLLAMA",
-      "  Code Llama                codellama                   4,096 ctx",
-      "  Mistral                   mistral                     8,192 ctx",
-      "",
-      "OPENAI",
-      "  GPT-4.1 Mini              gpt-4.1-mini               32,000 ctx",
-      "  GPT-4o                    gpt-4o                    128,000 ctx",
-      "  GPT-5.1                   gpt-5.1                   200,000 ctx  [LATEST]",
-      "",
-      "(trimmed: full list shows every model in the registry)"
+      "(trimmed: the list depends on your installed version)"
 ],
   },
   {
@@ -220,9 +205,6 @@ const commands = [
       "3. System Settings",
       "   Telemetry: Disabled",
       "   Offline Mode: Yes",
-      "   CVE Scanning: Enabled",
-      "   Exact dependency versions are checked with OSV;",
-      "   offline runs require a fresh, matching local snapshot.",
       "",
       "(trimmed)"
 ],
