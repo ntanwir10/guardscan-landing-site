@@ -1075,15 +1075,21 @@ export default function Documentation() {
               </p>
               <p className="text-sm text-muted-foreground mb-6">
                 Documentation version:{" "}
-                <strong className="text-foreground">v1.1.0</strong>. Install
+                <strong className="text-foreground">v1.1.1</strong>. Install
                 it with <code>npm install -g guardscan</code> (Node.js 22 or
                 newer).
               </p>
               <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
                 <h4 className="font-semibold text-foreground mb-2">
-                  What's new in 1.1.0
+                  What's new in 1.1
                 </h4>
                 <ul className="text-sm text-muted-foreground space-y-1 ml-4 list-disc">
+                  <li>
+                    1.1.1 adds standalone binaries for macOS, Linux and Windows
+                    with Node.js bundled, each with a Sigstore signature and a
+                    GitHub build attestation, plus native package-manager
+                    installs (see Installation). npm releases carry provenance.
+                  </li>
                   <li>Node.js 22 or newer is now required.</li>
                   <li>
                     The hosted telemetry endpoint is retired. Telemetry is
@@ -2388,7 +2394,7 @@ guardscan run`}
 
                     <div className="bg-accent/10 border border-accent/30 rounded-lg p-4">
                       <h5 className="font-semibold text-foreground mb-2">
-                        Endpoints (1.1.0)
+                        Endpoints
                       </h5>
                       <ul className="space-y-2 text-sm text-muted-foreground ml-4 list-disc">
                         <li>
