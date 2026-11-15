@@ -50,6 +50,7 @@ import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 import { LIVE_STANDALONE_CHANNELS } from "@/lib/install-channels";
+import { InstallChannelTable } from "@/components/InstallChannelTable";
 
 const commands = [
   {
@@ -1179,6 +1180,25 @@ guardscan --version`}
                     <li>Node.js &gt;= 22.0.0</li>
                     <li>npm</li>
                   </ul>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-foreground">
+                    Where GuardScan is available
+                  </h4>
+                  <InstallChannelTable />
+                  <p className="text-sm text-muted-foreground">
+                    Standalone binaries for every platform, each with a Sigstore
+                    signature and a GitHub build attestation, are on{" "}
+                    <a
+                      href="https://github.com/ntanwir10/GuardScan/releases/latest"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      GitHub Releases
+                    </a>
+                    .
+                  </p>
                 </div>
                 {LIVE_STANDALONE_CHANNELS.length > 0 && (
                   <div className="space-y-2">
