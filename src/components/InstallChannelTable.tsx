@@ -5,10 +5,6 @@ import { cn } from "@/lib/utils";
 
 const STATUS: Record<InstallChannelStatus, { label: string; className: string }> = {
   live: { label: "Live", className: "border-terminal-green/40 bg-terminal-green/10 text-terminal-green" },
-  moderation: {
-    label: "In moderation",
-    className: "border-yellow-500/40 bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-  },
   publishing: { label: "Publishing", className: "border-border bg-muted text-muted-foreground" },
 };
 
