@@ -58,7 +58,7 @@ export const CTA = () => {
             <div className="pt-6 text-sm text-muted-foreground space-y-2">
               <p>
                 {LIVE_STANDALONE_CHANNELS.length > 0
-                  ? "Install with your package manager. npm, pnpm, Yarn and Bun need Node.js 22+; the others bundle it:"
+                  ? "Install with your package manager. npm, npx, pnpm, Yarn and Bun need Node.js 22+; the others bundle it:"
                   : "Requires Node.js 22+. Install with your package manager:"}
               </p>
               <div className="flex flex-wrap justify-center gap-2">
