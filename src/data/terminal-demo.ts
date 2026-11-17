@@ -42,7 +42,7 @@ export const DEMO_SESSIONS: DemoSession[] = [
           "",
           "Repository: acme-api",
           "",
-          "✓ Report saved: ~/acme-api/guardscan-security-2026-11-15T19-37-06-888Z.md",
+          "✓ Report saved: ~/acme-api/guardscan-security-2026-11-17T06-01-07-132Z.md",
           "",
           "🔒 Security Summary",
           "  critical: 11",
@@ -56,7 +56,7 @@ export const DEMO_SESSIONS: DemoSession[] = [
     ],
     "exitCode": 0,
     "report": {
-      "file": "guardscan-security-2026-11-15T19-37-06-888Z.md",
+      "file": "guardscan-security-2026-11-17T06-01-07-132Z.md",
       "counts": {
         "critical": 11,
         "high": 13,
