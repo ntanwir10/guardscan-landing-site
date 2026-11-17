@@ -45,7 +45,7 @@ const Index = () => {
               See It <span className="text-gradient">In Action</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Watch GuardScan analyze your code in real-time
+              Real GuardScan output from a sample API with planted vulnerabilities
             </p>
           </div>
           <TerminalDemo />
